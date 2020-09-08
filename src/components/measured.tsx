@@ -32,7 +32,7 @@ export const useSize = (target: React.MutableRefObject<HTMLElement | null>) => {
       height: 0,
     };
     setSize([Math.round(width), Math.round(height)]);
-  }, []);
+  }, [target]);
 
   useResizeObserver(target, (entry) => {
     const { width, height } = entry.contentRect;

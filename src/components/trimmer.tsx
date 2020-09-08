@@ -37,7 +37,7 @@ export const Trimmer = <T extends { position: Vector2; id: string }>({
           left: v.position[0],
         }))
       ),
-    []
+    [data, insert]
   );
   useEffect(() => {
     const [[left, top], [right, bottom]] = finder;
@@ -72,7 +72,7 @@ export const Trimmer = <T extends { position: Vector2; id: string }>({
         ],
       });
     }
-  }, [finder]);
+  }, [finder, read]);
 
   const ref = useRef(null);
   const size = useSize(ref);
