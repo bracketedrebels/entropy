@@ -1,75 +1,31 @@
 {
-  "name": "entropy",
-  "version": "0.1.0",
-  "private": true,
+  "name": "empty-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "parcel src/index.html -d dev --target browser --open",
+    "build": "parcel build src/index.html -d dist --target browser",
+    "clean": "rm -r dist dev"
+  },
   "dependencies": {
-    "@react-hook/resize-observer": "^1.1.0",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.54",
-    "@types/react": "^16.9.44",
-    "@types/react-dom": "^16.9.8",
-    "gl-matrix": "^3.3.0",
-    "lodash": "^4.17.19",
-    "lokijs": "^1.5.11",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-hooks-worker": "^1.0.0",
-    "react-scripts": "3.4.1",
-    "react-spring": "^8.0.27",
-    "react-use-gesture": "^7.0.15",
-    "typescript": "^3.7.5",
-    "victormono": "^1.4.1"
+    "threads": "^1.6.3"
   },
-  "scripts": {
-    "start:react": "rescripts start",
-    "build": "rescripts build",
-    "test": "rescripts test",
-    "build:tailwind": "tailwind build src/tailwind.css -o src/index.css",
-    "watch:tailwind": "chokidar 'src/tailwind.config.js' 'src/**/*.css' 'src/**/*.scss' --ignore src/index.css -c 'npm run build:tailwind'",
-    "start": "npm-run-all build:tailwind --parallel watch:tailwind start:react",
-    "prebuild": "run-s build:tailwind"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "rescripts": [
-    [
-      "use-babel-config",
-      {
-        "presets": [
-          "react-app",
-          [
-            "@babel/preset-typescript",
-            {
-              "allowNamespaces": true
-            }
-          ]
-        ]
-      }
-    ]
-  ],
   "devDependencies": {
-    "@rescripts/cli": "0.0.14",
-    "@rescripts/rescript-use-babel-config": "0.0.10",
-    "@types/lodash": "^4.14.159",
-    "@types/lokijs": "^1.5.3",
-    "chokidar-cli": "^2.1.0",
-    "npm-run-all": "^4.1.5",
-    "tailwindcss": "^1.7.2"
+    "@fullhuman/postcss-purgecss": "^2.3.0",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "autoprefixer": "^9.8.6",
+    "parcel-bundler": "^1.12.4",
+    "postcss-modules": "^3.2.2",
+    "prettier": "^2.1.1",
+    "tailwindcss": "^1.8.6",
+    "typescript": "^4.0.2"
   }
 }
