@@ -1,0 +1,338 @@
+@import url("https://use.typekit.net/rcn0owy.css");
+
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+* {
+  @apply select-none outline-none;
+}
+
+.neumorphic-illumination {
+  --α: calc(var(--neumorphic-light-azimuth) * 0.01745329251);
+  --sin: calc(
+    (
+      1 - ((var(--α) * var(--α)) / 2) +
+        ((var(--α) * var(--α) * var(--α) * var(--α)) / 24) -
+        (
+          (var(--α) * var(--α) * var(--α) * var(--α) * var(--α) * var(--α)) /
+            720
+        )
+    )
+  );
+  --cos: calc(
+    (
+      var(--α) - (var(--α) * var(--α) * var(--α) / 6) +
+        (var(--α) * var(--α) * var(--α) * var(--α) * var(--α) / 120) -
+        (
+          var(--α) * var(--α) * var(--α) * var(--α) * var(--α) * var(--α) *
+            var(--α) / 5040
+        )
+    )
+  );
+
+  --shadow-h-offset: calc(var(--sin) * var(--neumorphic-offset));
+  --shadow-v-offset: calc(var(--cos) * var(--neumorphic-offset));
+  --light-h-offset: calc(0px - var(--shadow-h-offset));
+  --light-v-offset: calc(0px - var(--shadow-v-offset));
+}
+
+.neumorphic-box {
+  box-shadow: var(--shadow-h-offset) var(--shadow-v-offset)
+      var(--neumorphic-offset) var(--neumorphic-shadow),
+    var(--light-h-offset) var(--light-v-offset) var(--neumorphic-offset)
+      var(--neumorphic-light);
+}
+
+.neumorphic-box-inset {
+  box-shadow: inset var(--shadow-h-offset) var(--shadow-v-offset)
+      var(--neumorphic-offset) var(--neumorphic-shadow),
+    inset var(--light-h-offset) var(--light-v-offset) var(--neumorphic-offset)
+      var(--neumorphic-light);
+}
+
+.neumorphic-text-raised {
+  text-shadow: var(--shadow-h-offset) var(--shadow-v-offset)
+      var(--neumorphic-offset) var(--neumorphic-shadow),
+    var(--light-h-offset) var(--light-v-offset) var(--neumorphic-offset)
+      var(--neumorphic-light);
+}
+
+.neumorphic-filter {
+  filter: drop-shadow(
+      var(--shadow-h-offset) var(--shadow-v-offset) var(--neumorphic-offset)
+        var(--neumorphic-shadow)
+    )
+    drop-shadow(
+      var(--light-h-offset) var(--light-v-offset) var(--neumorphic-offset)
+        var(--neumorphic-light)
+    );
+}
+
+.neumorphic-filter-inverse {
+  filter: drop-shadow(
+    var(--shadow-h-offset) var(--shadow-v-offset) var(--neumorphic-offset)
+      var(--neumorphic-light),
+    var(--light-h-offset) var(--light-v-offset) var(--neumorphic-offset)
+      var(--neumorphic-shadow)
+  );
+}
+
+.neumorphic-raise-1 {
+  --neumorphic-offset: 1px;
+}
+.neumorphic-raise-2 {
+  --neumorphic-offset: 2px;
+}
+.neumorphic-raise-3 {
+  --neumorphic-offset: 3px;
+}
+.neumorphic-raise-4 {
+  --neumorphic-offset: 4px;
+}
+.neumorphic-raise-5 {
+  --neumorphic-offset: 5px;
+}
+
+.neu-box-raised-1 {
+  @apply neumorphic-raise-1 neumorphic-illumination neumorphic-box;
+}
+.neu-box-raised-2 {
+  @apply neumorphic-raise-2 neumorphic-illumination neumorphic-box;
+}
+.neu-box-raised-3 {
+  @apply neumorphic-raise-3 neumorphic-illumination neumorphic-box;
+}
+.neu-box-raised-4 {
+  @apply neumorphic-raise-4 neumorphic-illumination neumorphic-box;
+}
+.neu-box-raised-5 {
+  @apply neumorphic-raise-5 neumorphic-illumination neumorphic-box;
+}
+
+.neu-box-lowered-1 {
+  --neumorphic-offset: 1px;
+  @apply neumorphic-illumination neumorphic-box-inset;
+}
+
+.neu-box-lowered-2 {
+  --neumorphic-offset: 2px;
+  @apply neumorphic-illumination neumorphic-box-inset;
+}
+
+.neu-box-lowered-3 {
+  --neumorphic-offset: 3px;
+  @apply neumorphic-illumination neumorphic-box-inset;
+}
+
+.neu-box-lowered-4 {
+  --neumorphic-offset: 4px;
+  @apply neumorphic-illumination neumorphic-box-inset;
+}
+
+.neu-box-lowered-5 {
+  --neumorphic-offset: 5px;
+  @apply neumorphic-illumination neumorphic-box-inset;
+}
+
+.neu-text-raised-1 {
+  --neumorphic-offset: 1px;
+  @apply neumorphic-illumination neumorphic-text-raised;
+}
+
+.neu-text-raised-2 {
+  --neumorphic-offset: 2px;
+  @apply neumorphic-illumination neumorphic-text-raised;
+}
+
+.neu-text-raised-3 {
+  --neumorphic-offset: 3px;
+  @apply neumorphic-illumination neumorphic-text-raised;
+}
+
+.neu-text-raised-4 {
+  --neumorphic-offset: 4px;
+  @apply neumorphic-illumination neumorphic-text-raised;
+}
+
+.neu-text-raised-5 {
+  --neumorphic-offset: 5px;
+  @apply neumorphic-illumination neumorphic-text-raised;
+}
+
+.neu-concave {
+  background-image: linear-gradient(
+    calc((90 + var(--neumorphic-light-azimuth)) * 1deg),
+    var(--neumorphic-shadow) 0%,
+    var(--neumorphic-light) 100%
+  );
+  background-blend-mode: overlay;
+}
+
+.neu-convex {
+  background-image: linear-gradient(
+    calc((90 + var(--neumorphic-light-azimuth)) * 1deg),
+    var(--neumorphic-light) 0%,
+    var(--neumorphic-shadow) 100%
+  );
+  background-blend-mode: overlay;
+}
+
+[class*="before:"]:before,
+[class*="after:"]:after {
+  content: "";
+}
+
+.glass-landed {
+  --neumorphic-offset: 4px;
+  @apply neumorphic-illumination;
+  position: relative;
+  transition: all 0.2s;
+  z-index: 0;
+}
+
+.glass-landed::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+      ellipse 100% 100%,
+      rgba(255, 255, 255, 0.4) 0,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 100% 100%,
+      rgba(255, 255, 255, 0.2) 0,
+      transparent 50%
+    ),
+    radial-gradient(ellipse at 0 0, rgba(255, 255, 255, 1) 0, transparent 50%),
+    radial-gradient(ellipse at 0 0, rgba(255, 255, 255, 1) 0, transparent 50%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0, rgba(0, 0, 0, 0.07) 100%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0, rgba(0, 0, 0, 0.03) 100%),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.03) 0,
+      rgba(255, 255, 255, 0.05) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.07) 0,
+      rgba(255, 255, 255, 0.05) 100%
+    ),
+    linear-gradient(
+      calc((90 + var(--neumorphic-light-azimuth)) * 1deg),
+      rgba(0, 0, 0, 0.05) 0,
+      rgba(255, 255, 255, 0.1) 100%
+    );
+  background-position: calc(80% - var(--glass-bevel))
+      calc(100% - var(--glass-bevel)),
+    calc(100% - var(--glass-bevel)) calc(80% - var(--glass-bevel)),
+    var(--glass-bevel) var(--glass-bevel), var(--glass-bevel) var(--glass-bevel),
+    100% var(--glass-bevel), 0 var(--glass-bevel), var(--glass-bevel) 0,
+    var(--glass-bevel) 100%, var(--glass-bevel) var(--glass-bevel);
+  background-size: 60% 1px, 1px 60%, 100% 1px, 1px 100%,
+    var(--glass-bevel) calc(100% - (var(--glass-bevel) * 2)),
+    var(--glass-bevel) calc(100% - (var(--glass-bevel) * 2)),
+    calc(100% - (var(--glass-bevel) * 2)) var(--glass-bevel),
+    calc(100% - (var(--glass-bevel) * 2)) var(--glass-bevel),
+    calc(100% - (var(--glass-bevel) * 2)) calc(100% - (var(--glass-bevel) * 2));
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
+    no-repeat, no-repeat, no-repeat, no-repeat;
+  background-blend-mode: screen, screen, screen, screen, overlay, overlay,
+    overlay, overlay, screen;
+}
+
+.glass-landed::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  backdrop-filter: blur(2px);
+  background-color: rgba(30, 30, 50, 0.7);
+  background-image: linear-gradient(
+      calc((90 + var(--neumorphic-light-azimuth)) * 1deg),
+      rgba(255, 255, 255, 0.9) 0,
+      rgba(255, 255, 255, 0.5) 30%,
+      transparent 100%
+    ),
+    linear-gradient(
+      calc((45 + var(--neumorphic-light-azimuth)) * 1deg),
+      transparent 0%,
+      rgba(0, 0, 0, 0.2) 100%
+    ),
+    linear-gradient(
+      calc((135 + var(--neumorphic-light-azimuth)) * 1deg),
+      transparent 0%,
+      rgba(0, 0, 0, 0.2) 100%
+    );
+  border-radius: var(--glass-bevel);
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.03), 2px 2px 2px rgba(0, 0, 0, 0.07),
+    3px 3px 3px rgba(0, 0, 0, 0.1), 6px 4px 6px rgba(0, 0, 0, 0.12),
+    4px 6px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* UI Shorthands next */
+
+/* interactable */
+
+.ui\/interactable {
+  @apply bg-black bg-opacity-25 text-white cursor-pointer transition duration-200;
+}
+
+.ui\/interactable:focus,
+.ui\/interactable:hover {
+  @apply bg-surface text-black text-opacity-75 transition-none;
+}
+
+/* selected */
+
+.ui\/selected {
+  @apply bg-white bg-opacity-75 text-black text-opacity-75;
+}
+
+.bg-blueprint {
+  --primary-line-color: rgba(0, 0, 0, 0.05);
+  --primary-line-width: 1px;
+  --primary-square-size: 100px;
+  --secondary-line-color: rgba(0, 0, 0, 0.02);
+  --secondary-line-width: 1px;
+  --secondary-square-size: 20px;
+
+  background-image: linear-gradient(
+      var(--primary-line-color) var(--primary-line-width),
+      transparent var(--primary-line-width)
+    ),
+    linear-gradient(
+      90deg,
+      var(--primary-line-color) var(--primary-line-width),
+      transparent var(--primary-line-width)
+    ),
+    linear-gradient(
+      var(--secondary-line-color) var(--secondary-line-width),
+      transparent var(--secondary-line-width)
+    ),
+    linear-gradient(
+      90deg,
+      var(--secondary-line-color) var(--secondary-line-width),
+      transparent var(--secondary-line-width)
+    );
+  background-size: var(--primary-square-size) var(--primary-square-size),
+    var(--primary-square-size) var(--primary-square-size),
+    var(--secondary-square-size) var(--secondary-square-size),
+    var(--secondary-square-size) var(--secondary-square-size);
+  background-position: calc(50% - var(--primary-square-size) / 2)
+    calc(50% - var(--primary-square-size) / 2);
+}
+
+.touch-action-none {
+  touch-action: none;
+}

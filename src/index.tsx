@@ -1,8 +1,7 @@
-import * as React from "react";
+import React from "react";
 import * as ReactDOM from "react-dom";
-import "threads/register";
+import "./index.css";
 
-import { App } from "./App";
+import App from "./App";
 
-var mountNode = document.getElementById("app");
-ReactDOM.render(<App name="Jane" />, mountNode);
+ReactDOM.render(<App className="fixed inset-0 flex" />, document.getElementById("app"));

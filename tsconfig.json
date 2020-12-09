@@ -5,13 +5,22 @@
         "strict": true,
         "noImplicitReturns": true,
         "noImplicitAny": true,
-        "module": "es6",
-        "moduleResolution": "node",
-        "target": "es5",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "target": "ES5",
+        "esModuleInterop": true,
         "allowJs": true,
         "jsx": "react",
+        "allowSyntheticDefaultImports": true,
+        "lib": [
+            "ES6",
+            "WebWorker",
+            "ScriptHost",
+            "DOM"
+        ]
     },
     "include": [
         "./src/**/*"
     ]
 }
+

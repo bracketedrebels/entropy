@@ -2,30 +2,63 @@
   "name": "empty-project",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "private": true,
   "keywords": [],
   "author": "",
   "license": "ISC",
   "scripts": {
-    "start": "npm run dev",
-    "dev": "parcel src/index.html -d dev --target browser --open",
-    "build": "parcel build src/index.html -d dist --target browser",
-    "clean": "rm -r dist dev"
+    "clean": "rm -rf dist",
+    "build-dev": "webpack --mode development",
+    "build-prod": "webpack --mode production",
+    "start": "webpack serve --hot --mode development"
   },
   "dependencies": {
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "threads": "^1.6.3"
+    "@types/ramda": "^0.27.27",
+    "lodash": "^4.17.20",
+    "ramda": "^0.27.1",
+    "ramda-adjunct": "^2.28.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-hot-loader": "^4.13.0",
+    "react-router-dom": "^5.2.0",
+    "react-use-gesture": "^8.0.1",
+    "react-use-measure": "^2.0.2",
+    "ts-keycode-enum": "^1.0.6",
+    "xxhashjs": "^0.2.2"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.3.0",
+    "@hot-loader/react-dom": "^17.0.0+4.13.0",
+    "@types/lodash": "^4.14.165",
+    "@types/node": "^14.14.6",
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
+    "@types/react-router-dom": "^5.1.6",
+    "@types/webpack": "^4.41.24",
+    "@types/webpack-dev-server": "^3.11.1",
+    "@types/xxhashjs": "^0.2.2",
     "autoprefixer": "^9.8.6",
-    "parcel-bundler": "^1.12.4",
+    "css-loader": "^5.0.0",
+    "html-webpack-plugin": "^4.5.0",
+    "postcss": "^8.1.4",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^4.0.4",
     "postcss-modules": "^3.2.2",
+    "postcss-trig": "csstools/postcss-trig",
     "prettier": "^2.1.1",
+    "style-loader": "^2.0.0",
     "tailwindcss": "^1.8.6",
-    "typescript": "^4.0.2"
+    "tailwindcss-filters": "^3.0.0",
+    "ts-loader": "^8.0.7",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.3.2",
+    "webpack-cli": "^4.1.0",
+    "webpack-dev-server": "^3.11.0",
+    "worker-loader": "^3.0.5"
+  },
+  "resolutions": {
+    "@babel/core": "^7.9.0"
   }
 }
