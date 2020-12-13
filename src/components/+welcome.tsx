@@ -1,9 +1,9 @@
 import { debounce } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useCommandRunner } from "../business/data/commands";
-import projectActivate from "../business/data/commands/project.activate";
-import projectCreate from "../business/data/commands/project.create";
+import { useReducer, useTask } from "../model";
+import projectActivate from "../model/reducers/project.activate";
+import projectCreate from "../model/tasks/project.create";
 import UIOperation, { useStatus } from "./ui/UI.operation";
 import UITogglerVertical from "./ui/UI.toggler.vertical";
 import UIWizardPath from "./ui/UI.wizard.path";
@@ -11,8 +11,8 @@ import UIWizardStep from "./ui/UI.wizard.step";
 
 export default () => {
   const history = useHistory();
-  const createProject = useCommandRunner(projectCreate);
-  const activateProject = useCommandRunner(projectActivate);
+  const createProject = useTask(projectCreate);
+  const activateProject = useReducer(projectActivate);
   const [operation, setOperation] = useState<string>();
   const [status, setStatus] = useStatus();
 

@@ -1,19 +1,13 @@
-import { uniqueId } from "lodash";
-import { clamp, zip, __ } from "ramda";
+import { clamp } from "ramda";
 import React, {
-  CSSProperties,
   FunctionComponent,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
-import {
-  rubberbandIfOutOfBounds,
-  useDrag,
-  useGesture,
-} from "react-use-gesture";
+import { rubberbandIfOutOfBounds, useGesture } from "react-use-gesture";
 import useMeasure from "react-use-measure";
+import { useStorage } from "../model/hooks";
 import UILineJoint from "./ui/UI.joint";
 import UILines from "./ui/UI.lines";
 
@@ -126,13 +120,13 @@ const state: State = {
   ],
 };
 
-const zoomSteps = [];
-
 export default () => {
   const [ref, { width, height }] = useMeasure();
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState([0, 0]);
   const [dragging, setDragging] = useState(false);
+  const activeProject = useStorage(["projectActive"]);
+  useEffect(() => console.log(activeProject), [activeProject]);
 
   const onDrag = useCallback(({ active, delta }) => {
     setDragging(active);
@@ -204,7 +198,7 @@ export default () => {
                           key={i}
                           onChange={update(false)(income)(`${v.id}:${i}`)}
                         >
-                          <node.input name={name} type={""} />
+                          <node.input type={""} />
                         </UILineJoint>
                       ))}
                       <UILineJoint helix={4} onChange={update(true)(v.id)}>
@@ -232,9 +226,9 @@ namespace node {
   };
 
   export const input: FunctionComponent<{
-    name: string;
+    name?: string;
     type: string;
-  }> = ({ name }) => {
+  }> = ({ name = "" }) => {
     return (
       <div className="bg-black bg-opacity-25 flex justify-start items-center py-2 relative">
         <span className="w-4 h-px bg-white bg-opacity-50 my-auto" />
