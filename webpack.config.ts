@@ -17,7 +17,7 @@ module.exports = (env: any) =>
     output: {
       path: path.resolve(__dirname, "dist"),
       filename: "bundle.js",
-      publicPath: "/static",
+      publicPath: path.dirname(env.baseurl),
     },
     plugins: [
       new ForkTsCheckerWebpackPlugin(),
