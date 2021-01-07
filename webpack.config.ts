@@ -27,9 +27,6 @@ module.exports = (env: any) =>
         filename: "index.html",
         title: "Entropy",
         template: "src/index.ejs",
-        templateParameters: {
-          baseurl: env.baseurl,
-        },
         scriptLoading: "defer",
       }),
       new HtmlWebpackPlugin({
@@ -37,9 +34,6 @@ module.exports = (env: any) =>
         filename: "404.html",
         title: "Entropy",
         template: "src/index.ejs",
-        templateParameters: {
-          baseurl: env.baseurl,
-        },
         scriptLoading: "defer",
       }),
       new CopyWebpackPlugin({
@@ -59,17 +53,6 @@ module.exports = (env: any) =>
               },
             },
             "postcss-loader",
-          ],
-        },
-        {
-          test: /\.(png|jpg|gif)$/i,
-          use: [
-            {
-              loader: "url-loader",
-              options: {
-                limit: 8192,
-              },
-            },
           ],
         },
         {
