@@ -17,7 +17,7 @@ module.exports = (env: any) =>
     output: {
       path: path.resolve(__dirname, "dist"),
       filename: "bundle.js",
-      publicPath: "/",
+      publicPath: "/static",
     },
     plugins: [
       new ForkTsCheckerWebpackPlugin(),
@@ -26,10 +26,24 @@ module.exports = (env: any) =>
         appMountId: "app",
         filename: "index.html",
         title: "Entropy",
-        template: "src/index.html",
+        template: "src/index.ejs",
+        templateParameters: {
+          baseurl: env.baseurl,
+        },
+        scriptLoading: "defer",
+      }),
+      new HtmlWebpackPlugin({
+        appMountId: "app",
+        filename: "404.html",
+        title: "Entropy",
+        template: "src/index.ejs",
+        templateParameters: {
+          baseurl: env.baseurl,
+        },
+        scriptLoading: "defer",
       }),
       new CopyWebpackPlugin({
-        patterns: [{ from: "static" }],
+        patterns: [{ from: "static", to: "static" }],
       }),
     ],
     module: {
@@ -103,7 +117,7 @@ module.exports = (env: any) =>
 
 const buildEnvironment = (env: any) => {
   const basePath = `${path.join(__dirname)}${path.sep}.env`;
-  const envPath = `${basePath}.${env.ENVIRONMENT}`;
+  const envPath = `${basePath}.${env.environment}`;
   const finalPath = fs.existsSync(envPath) ? envPath : basePath;
   const fileEnv = dotenv.config({ path: finalPath }).parsed;
 

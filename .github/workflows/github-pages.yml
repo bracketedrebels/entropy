@@ -2,13 +2,13 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -19,13 +19,13 @@ jobs:
     steps:
       - name: checking out codebase
         uses: actions/checkout@v2
-        
+
       - name: dependencies installation
         run: npm i
 
       - name: building production bundle
-        run: npm run build-prod
-      
+        run: npm run build-prod -- --env baseurl=https://bracketedrebels.github.io/entropy/index.html
+
       - name: deploying to github pages
         uses: crazy-max/ghaction-github-pages@v2.2.0
         with:
@@ -33,4 +33,3 @@ jobs:
           target_branch: gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
