@@ -27,13 +27,7 @@ export default hot(
     >
       <div className="absolute inset-0 flex items-stretch justify-stretch bg-surface transition-all duration-200">
         <div className="absolute inset-0 pointer-events-none neu-convex" />
-        <div
-          className="absolute inset-0 bg-repeat-round opacity-25 pointer-events-none"
-          style={{
-            backgroundImage: "url(noise.jpg)",
-            backgroundBlendMode: "luminosity",
-          }}
-        />
+        <div className="absolute inset-0 bg-repeat-round opacity-25 pointer-events-none" />
 
         <BrowserRouter>
           <Suspense
