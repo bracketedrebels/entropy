@@ -5,11 +5,11 @@ import fp from "../utils/fingerprint";
 import { MessageType, Reducer, Storage, Task } from "./types";
 import { uniqueId } from "lodash";
 
-export const useReducer = <T>(reducer: Reducer<T>) => {
+export const useReducer = <T extends unknown[]>(reducer: Reducer<T>) => {
   const ctx = useContext(provider);
   const fingerprint = fp(reducer);
   return useCallback(
-    (payload: T) => {
+    (...payload: [...T]) => {
       ctx.postMessage({
         id: uniqueId(),
         type: MessageType.reduce,
@@ -23,10 +23,10 @@ export const useReducer = <T>(reducer: Reducer<T>) => {
   );
 };
 
-export const useTask = <T, U>(task: Task<T, U>) => {
+export const useTask = <T extends unknown[], U>(task: Task<T, U>) => {
   const ctx = useContext(provider);
   const fingerprint = fp(task);
-  return useCallback((payload: T) => {
+  return useCallback((...payload: [...T]) => {
     const id = uniqueId();
     ctx.postMessage({
       id,

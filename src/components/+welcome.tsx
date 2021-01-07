@@ -1,9 +1,14 @@
+import { PromiseOf } from "Any/_api";
 import { debounce } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useReducer, useTask } from "../model";
 import projectActivate from "../model/reducers/project.activate";
+import projectCache from "../model/reducers/project.cache";
 import projectCreate from "../model/tasks/project.create";
+import projectLoad from "../model/tasks/project.load";
+import projectsList from "../model/tasks/projects.list";
+import type { TaskReturnType } from "../model/types";
 import UIOperation, { useStatus } from "./ui/UI.operation";
 import UITogglerVertical from "./ui/UI.toggler.vertical";
 import UIWizardPath from "./ui/UI.wizard.path";
@@ -13,8 +18,20 @@ export default () => {
   const history = useHistory();
   const createProject = useTask(projectCreate);
   const activateProject = useReducer(projectActivate);
-  const [operation, setOperation] = useState<string>();
+  const loadProject = useTask(projectLoad);
+  const loadProjectsList = useTask(projectsList);
+  const cacheProject = useReducer(projectCache);
+
+  const [operation, setOperation] = useState<{
+    code: Operation;
+    payload?: any;
+  }>();
   const [status, setStatus] = useStatus();
+  const [projectsToLoad, setProjectsToLoad] = useState(
+    [] as TaskReturnType<typeof projectsList>
+  );
+
+  useEffect(() => void loadProjectsList().then(setProjectsToLoad), []);
 
   const runOperation = useCallback(
     <T,>(operation: () => Promise<T>) => (
@@ -45,10 +62,17 @@ export default () => {
   );
 
   useEffect(() => {
-    switch (operation) {
-      case "new-project-from-scratch": {
+    switch (operation?.code) {
+      case Operation.create: {
+        runOperation(() => createProject().then((v) => activateProject(v)));
+        break;
+      }
+      case Operation.load: {
         runOperation(() =>
-          createProject({ dependencies: [] }).then((v) => activateProject(v))
+          loadProject(operation.payload).then((v) => {
+            activateProject(v.id);
+            cacheProject(v);
+          })
         );
         break;
       }
@@ -66,21 +90,36 @@ export default () => {
             caption="From Scratch"
             description="Shiny brand new empty project. No dependencies."
             onAboutToChoose={() => (
-              setOperation("new-project-from-scratch"), true
+              setOperation({
+                code: Operation.create,
+                payload: OperationCreate.fromScratch,
+              }),
+              true
             )}
           />
+        </UIWizardStep>
+        <UIWizardStep caption="Load" description="Load existing project">
+          {projectsToLoad.map(({ name, url }) => (
+            <UIWizardStep
+              caption={name}
+              description={url}
+              onAboutToChoose={() => (
+                setOperation({
+                  code: Operation.load,
+                  payload: url,
+                }),
+                true
+              )}
+            />
+          ))}
         </UIWizardStep>
       </UIWizardPath>
       <UITogglerVertical active={!!status}>
         <div className="flex flex-row px-6 py-2 justify-between items-center text-white text-opacity-75 bg-black bg-opacity-25">
-          <div className="flex flex-col justify-evenly items-start">
-            <div className="text-2xl font-secondary">
-              {operationTitle(operation)}
-            </div>
-            <div className="text-sm font-secondary">
-              {operationSubtitle(operation)}
-            </div>
-          </div>
+          <OperationDescriptor
+            code={operation?.code}
+            payload={operation?.payload}
+          />
           <UIOperation
             status={status}
             onTransitionEnd={() =>
@@ -93,20 +132,41 @@ export default () => {
   );
 };
 
-const operationTitle = (operationType?: string) => {
-  switch (operationType) {
-    case "new-project-from-scratch":
-      return "Creating new project";
-    default:
-  }
-  return "";
-};
+const OperationDescriptor = ({
+  code,
+  payload,
+}: {
+  code: Operation | undefined;
+  payload: any;
+}) => (
+  <div className="flex flex-col justify-evenly items-start">
+    <div className="text-2xl font-secondary">
+      {code === Operation.create
+        ? "Creating new project"
+        : code === Operation.load
+        ? "Loading project"
+        : "Something is happening"}
+    </div>
+    <div className="text-sm font-secondary">
+      {code === Operation.create ? (
+        payload === OperationCreate.fromScratch ? (
+          "Using 'From Scratch' template"
+        ) : (
+          ""
+        )
+      ) : code === Operation.load ? (
+        <>{payload}</>
+      ) : (
+        ""
+      )}
+    </div>
+  </div>
+);
 
-const operationSubtitle = (operationType?: string) => {
-  switch (operationType) {
-    case "new-project-from-scratch":
-      return "Using 'From Scratch' template";
-    default:
-  }
-  return "";
-};
+const enum Operation {
+  create,
+  load,
+}
+const enum OperationCreate {
+  fromScratch,
+}

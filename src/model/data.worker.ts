@@ -61,12 +61,12 @@ const TaskMessageHandler = (
     fingerprint,
     payload,
   }: {
-    payload: any;
+    payload: unknown[];
     fingerprint: string;
   }
 ) => {
   if (fingerprint in tasks) {
-    tasks[fingerprint](payload)(ref.storage)
+    tasks[fingerprint](...(payload as []))(ref.storage)
       .then((resolution) =>
         ctx.postMessage({
           id,
@@ -91,7 +91,7 @@ const MutateMessageHandler = ({
 }) => {
   if (fingerprint in mutations) {
     const cmd = mutations[fingerprint];
-    const storage = cmd(payload)(ref.storage);
+    const storage = cmd(...(payload as []))(ref.storage);
     OnStateUpdated(ref.storage, storage);
     ref.storage = storage;
   } else {

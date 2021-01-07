@@ -1,0 +1,48 @@
+{
+  "id": "123a-5098-0125-98fa-089a-0c9d-089a",
+  "nodes": [
+    {
+      "id": 1,
+      "type": "const",
+      "position": [0, 0],
+      "value": {
+        "a": 1,
+        "b": 2,
+        "c": [3, 4, 5]
+      }
+    },
+    {
+      "id": 2,
+      "type": "const",
+      "position": [0, 15],
+      "value": "c"
+    },
+    {
+      "id": 3,
+      "type": "lambda",
+      "ref": "@entropy/pick",
+      "position": [10, 0],
+      "value": [1, 2]
+    },
+    {
+      "id": 4,
+      "type": "const",
+      "position": [-10, 20],
+      "value": 5
+    },
+    {
+      "id": 5,
+      "type": "lambda",
+      "ref": "@entropy/math/add",
+      "position": [0, 20],
+      "value": [4]
+    },
+    {
+      "id": 6,
+      "type": "lambda",
+      "position": [20, 0],
+      "ref": "@entropy/map",
+      "value": [5, 3]
+    }
+  ]
+}

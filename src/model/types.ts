@@ -1,14 +1,19 @@
+import { PromiseOf } from "Any/_api";
+import { Dictionary } from "ramda";
+
 export type Storage = {
-  projects?: {
+  projects?: Dictionary<{
     id: string;
     dependencies?: string[];
     name?: string;
     nodes?: {
-      id: string;
-      position?: [number, number];
+      id: number;
+      position: [number, number];
       dimensions?: [number, number];
+      type: "const" | "lambda";
+      value: number[];
     }[];
-  }[];
+  }>;
   projectActive?: string;
 };
 
@@ -25,5 +30,15 @@ export type CommandTransfer = {
   payload: any;
 };
 
-export type Task<T = any, U = any> = (payload: T) => (s: Storage) => Promise<U>;
-export type Reducer<T = any> = (payload: T) => (s: Storage) => Storage;
+export type Task<T extends unknown[] = [], U = any> = (
+  ...payload: [...T]
+) => (s: Storage) => Promise<U>;
+export type TaskReturnType<T extends Task> = PromiseOf<
+  ReturnType<ReturnType<T>>
+>;
+export type TaskPayloadType<T extends Task> = T extends Task<infer U>
+  ? U
+  : never;
+export type Reducer<T extends unknown[] = []> = (
+  ...payload: [...T]
+) => (s: Storage) => Storage;
