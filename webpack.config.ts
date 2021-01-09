@@ -9,8 +9,7 @@ import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import { entries } from "lodash";
 
 module.exports = (env: any) => {
-  const normalizedURL = path.normalize(env.baseurl);
-  console.log(buildEnvironment(env));
+  const normalizedBaseUrl = path.normalize(`${env.baseurl}/`);
   return {
     entry: ["react-hot-loader/patch", "./src/index.tsx"],
     devServer: {
@@ -19,7 +18,6 @@ module.exports = (env: any) => {
     output: {
       path: path.resolve(__dirname, "dist"),
       filename: "bundle.js",
-      publicPath: normalizedURL,
     },
     plugins: [
       new ForkTsCheckerWebpackPlugin(),
@@ -31,7 +29,7 @@ module.exports = (env: any) => {
         template: "src/index.ejs",
         scriptLoading: "defer",
         templateParameters: {
-          baseurl: normalizedURL,
+          baseurl: normalizedBaseUrl,
         },
       }),
       new HtmlWebpackPlugin({
@@ -41,7 +39,7 @@ module.exports = (env: any) => {
         template: "src/index.ejs",
         scriptLoading: "defer",
         templateParameters: {
-          baseurl: normalizedURL,
+          baseurl: normalizedBaseUrl,
         },
       }),
       new CopyWebpackPlugin({
@@ -119,7 +117,7 @@ const buildEnvironment = (env: any) => {
       [`process.env.${key}`]: v,
     }),
     {
-      "process.env.ROUTING_BASENAME": `'/${path.basename(env.baseurl)}'`,
+      "process.env.ROUTING_BASENAME": `'${env.baseurl}'`,
     }
   ) as Dictionary<any>;
 };
