@@ -8,8 +8,9 @@ import CopyWebpackPlugin from "copy-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import { entries } from "lodash";
 
-module.exports = (env: any) =>
-  ({
+module.exports = (env: any) => {
+  const normalizedURL = path.normalize(`${env.baseurl}/`);
+  return {
     entry: ["react-hot-loader/patch", "./src/index.tsx"],
     devServer: {
       historyApiFallback: true,
@@ -17,7 +18,7 @@ module.exports = (env: any) =>
     output: {
       path: path.resolve(__dirname, "dist"),
       filename: "bundle.js",
-      publicPath: path.normalize(`${env.baseurl}/`),
+      publicPath: normalizedURL,
     },
     plugins: [
       new ForkTsCheckerWebpackPlugin(),
@@ -29,7 +30,7 @@ module.exports = (env: any) =>
         template: "src/index.ejs",
         scriptLoading: "defer",
         templateParameters: {
-          baseurl: path.normalize(`${env.baseurl}/`),
+          baseurl: normalizedURL,
         },
       }),
       new HtmlWebpackPlugin({
@@ -39,7 +40,7 @@ module.exports = (env: any) =>
         template: "src/index.ejs",
         scriptLoading: "defer",
         templateParameters: {
-          baseurl: path.normalize(`${env.baseurl}/`),
+          baseurl: normalizedURL,
         },
       }),
       new CopyWebpackPlugin({
@@ -102,13 +103,15 @@ module.exports = (env: any) =>
         "react-dom": "@hot-loader/react-dom",
       },
     },
-  } as webpack.Configuration);
+  } as webpack.Configuration;
+};
 
 const buildEnvironment = (env: any) => {
   const basePath = `${path.join(__dirname)}${path.sep}.env`;
   const envPath = `${basePath}.${env.environment}`;
   const finalPath = fs.existsSync(envPath) ? envPath : basePath;
   const fileEnv = dotenv.config({ path: finalPath }).parsed;
+  const normalizedBaseName = path.normalize(`${path.basename(env.baseurl)}/`);
 
   return entries(fileEnv).reduce(
     (acc, [key, v]) => ({
@@ -116,9 +119,7 @@ const buildEnvironment = (env: any) => {
       [`process.env.${key}`]: v,
     }),
     {
-      "process.env.routingBasename": path.normalize(
-        `/${path.basename(env.baseurl)}`
-      ),
+      "process.env.routingBasename": normalizedBaseName,
     }
   ) as Dictionary<any>;
 };
