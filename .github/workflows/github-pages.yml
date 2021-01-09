@@ -24,7 +24,7 @@ jobs:
         run: npm i
 
       - name: building production bundle
-        run: npm run build-prod -- --env baseurl=https://bracketedrebels.github.io/entropy/index.html
+        run: npm run build-prod -- --env baseurl=entropy/
 
       - name: deploying to github pages
         uses: crazy-max/ghaction-github-pages@v2.2.0
