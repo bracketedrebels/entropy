@@ -116,7 +116,9 @@ const buildEnvironment = (env: any) => {
       [`process.env.${key}`]: v,
     }),
     {
-      "process.env.routingBasename": path.basename(env.baseurl),
+      "process.env.routingBasename": path.normalize(
+        `/${path.basename(env.baseurl)}`
+      ),
     }
   ) as Dictionary<any>;
 };
