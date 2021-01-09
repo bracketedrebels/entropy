@@ -285,7 +285,7 @@
 /* interactable */
 
 .ui\/interactable {
-  @apply bg-black bg-opacity-25 text-white cursor-pointer transition duration-200;
+  @apply bg-black bg-opacity-25 text-white cursor-pointer transition-all duration-200;
 }
 
 .ui\/interactable:focus,

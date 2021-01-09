@@ -8,7 +8,6 @@ module.exports = {
     darkModeVariant: true,
   },
   purge: ["./src/**/*.tsx", "./src/**/*.html"],
-  target: "relaxed",
   prefix: "",
   important: false,
   separator: ":",
