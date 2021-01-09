@@ -9,7 +9,8 @@ import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import { entries } from "lodash";
 
 module.exports = (env: any) => {
-  const normalizedURL = path.normalize(`${env.baseurl}/`);
+  const normalizedURL = path.normalize(`${env.baseurl}`);
+  console.log(buildEnvironment(env));
   return {
     entry: ["react-hot-loader/patch", "./src/index.tsx"],
     devServer: {
@@ -111,7 +112,7 @@ const buildEnvironment = (env: any) => {
   const envPath = `${basePath}.${env.environment}`;
   const finalPath = fs.existsSync(envPath) ? envPath : basePath;
   const fileEnv = dotenv.config({ path: finalPath }).parsed;
-  const normalizedBaseName = path.normalize(`${path.basename(env.baseurl)}/`);
+  const normalizedBaseName = path.normalize(`/${path.basename(env.baseurl)}`);
 
   return entries(fileEnv).reduce(
     (acc, [key, v]) => ({
