@@ -1,8 +1,6 @@
-import React, { Suspense, lazy, useMemo } from "react";
+import React, { Suspense, lazy } from "react";
 import { Switch, Route, BrowserRouter, Redirect } from "react-router-dom";
 import { hot } from "react-hot-loader/root";
-import { createBrowserHistory } from "history";
-
 // routing components...
 const Welcome = lazy(() => import("./components/+welcome"));
 const Editor = lazy(() => import("./components/+editor"));
@@ -30,7 +28,7 @@ export default hot(
         <div className="absolute inset-0 pointer-events-none neu-convex" />
         <div className="absolute inset-0 bg-repeat-round opacity-25 pointer-events-none" />
 
-        <BrowserRouter basename={process.env.routingBasename}>
+        <BrowserRouter basename={process.env.ROUTING_BASENAME}>
           <Suspense
             fallback={<div className="m-auto text-shadow">Loading...</div>}
           >
