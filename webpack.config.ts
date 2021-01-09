@@ -17,7 +17,7 @@ module.exports = (env: any) =>
     output: {
       path: path.resolve(__dirname, "dist"),
       filename: "bundle.js",
-      publicPath: path.dirname(env.baseurl),
+      publicPath: path.normalize(`${env.baseurl}/`),
     },
     plugins: [
       new ForkTsCheckerWebpackPlugin(),
@@ -28,6 +28,9 @@ module.exports = (env: any) =>
         title: "Entropy",
         template: "src/index.ejs",
         scriptLoading: "defer",
+        templateParameters: {
+          baseurl: path.normalize(`${env.baseurl}/`),
+        },
       }),
       new HtmlWebpackPlugin({
         appMountId: "app",
@@ -35,6 +38,9 @@ module.exports = (env: any) =>
         title: "Entropy",
         template: "src/index.ejs",
         scriptLoading: "defer",
+        templateParameters: {
+          baseurl: path.normalize(`${env.baseurl}/`),
+        },
       }),
       new CopyWebpackPlugin({
         patterns: [{ from: "static", to: "static" }],
@@ -109,6 +115,8 @@ const buildEnvironment = (env: any) => {
       ...acc,
       [`process.env.${key}`]: v,
     }),
-    {}
+    {
+      "process.env.routingBasename": path.basename(env.baseurl),
+    }
   ) as Dictionary<any>;
 };
