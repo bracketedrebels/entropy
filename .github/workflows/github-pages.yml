@@ -24,16 +24,7 @@ jobs:
         run: npm i
 
       - name: building production bundle
-        run: npm run build-prod -- -o dist
-
-      - name: copying static to dist
-        run: cp -a static/. dist/
-
-      - name: building styles
-        run: NODE_ENV=production npm run build-styles -- -o dist/index.css
-
-      - name: making 404 fallback
-        run: cp dist/index.html dist/404.html
+        run: npm run build-prod -- --env basename=/entropy/ --env output=dist
 
       - name: deploying to github pages
         uses: crazy-max/ghaction-github-pages@v2.2.0
