@@ -187,6 +187,19 @@ const prepareAllTheStaticResources = () => ({
           transform: (content) =>
             handlebars.compile(content.toString())({ basename, bundlename }),
         },
+        ...(environment === "prod"
+          ? [
+              {
+                from: "static/index.html",
+                to: `${output}${sep}404.html`,
+                transform: (content: Buffer) =>
+                  handlebars.compile(content.toString())({
+                    basename,
+                    bundlename,
+                  }),
+              },
+            ]
+          : []),
         { from: "static", to: output },
       ],
     }),
