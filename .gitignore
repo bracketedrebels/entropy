@@ -20,3 +20,5 @@ dist/
 .vscode/
 
 .npmrc
+
+package-lock.json

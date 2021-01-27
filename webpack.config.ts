@@ -1,15 +1,13 @@
 import path, { sep } from "path";
-import fs from "fs";
 import { append, concat, identity } from "ramda";
 
-import Dotenv from "dotenv-webpack";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import CopyPlugin from "copy-webpack-plugin";
 import postcss from "postcss";
 import handlebars from "handlebars";
 
-import type { Configuration } from "webpack";
+import { Configuration } from "webpack";
 import { DefinePlugin } from "webpack";
 
 /* helpers definitions */
@@ -85,21 +83,20 @@ const plugin = (
 
 const forceTypeChecking = () => () => append(new ForkTsCheckerWebpackPlugin());
 const defineRuntimeEnvironment = () => ({
-  environment,
   basename,
 }: Required<Environment>) => {
-  const basePath = `${__dirname}${path.sep}.env`;
-  const envPath = `${basePath}.${environment}`;
-  const finalPath = fs.existsSync(envPath) ? envPath : basePath;
-  return concat([
-    new Dotenv({
-      path: finalPath,
-      allowEmptyValues: true,
-    }),
+  return append(
     new DefinePlugin({
-      "process.env.ROUTING_BASENAME": basename,
-    }),
-  ]);
+      process: {
+        env: {
+          ROUTING_BASENAME: JSON.stringify(basename),
+          URL_API_GRAPHQL_GITHUB: JSON.stringify(
+            "https://api.github.com/graphql"
+          ),
+        },
+      },
+    })
+  );
 };
 
 const enableHMRForDevelopment = () => ({ environment }: Environment) =>
@@ -161,24 +158,28 @@ const prepareAllTheStaticResources = () => ({
         {
           from: "static/index.css",
           to: `${output}${sep}index.css`,
-          transform: (content) =>
-            postcss([
-              require("postcss-import"),
-              require("tailwindcss"),
-              require("autoprefixer"),
-              ...(environment === "prod"
-                ? [
-                    require("@fullhuman/postcss-purgecss")({
-                      content: ["./src/**/*.tsx", "./static/**/*.html"],
-                    }),
-                  ]
-                : []),
-            ])
-              .process(content, {
-                from: "static/index.css",
-                to: `${output}${sep}index.css`,
-              })
-              .then((v) => v.css),
+          transform: {
+            transformer(content: Buffer) {
+              return postcss([
+                require("postcss-import"),
+                require("tailwindcss"),
+                require("autoprefixer"),
+                ...(environment === "prod"
+                  ? [
+                      require("@fullhuman/postcss-purgecss")({
+                        content: ["./src/**/*.tsx", "./static/**/*.html"],
+                      }),
+                    ]
+                  : []),
+              ])
+                .process(content, {
+                  from: "static/index.css",
+                  to: `${output}${sep}index.css`,
+                })
+                .then((v) => v.css);
+            },
+            cache: true,
+          } as any,
         },
         {
           from: "static/index.html",
