@@ -6,6 +6,7 @@ import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import CopyPlugin from "copy-webpack-plugin";
 import postcss from "postcss";
 import handlebars from "handlebars";
+import purgecss from "@fullhuman/postcss-purgecss";
 
 import { Configuration } from "webpack";
 import { DefinePlugin } from "webpack";
@@ -166,8 +167,17 @@ const prepareAllTheStaticResources = () => ({
                 require("autoprefixer"),
                 ...(environment === "prod"
                   ? [
-                      require("@fullhuman/postcss-purgecss")({
+                      purgecss({
                         content: ["./src/**/*.tsx", "./static/**/*.html"],
+                        extractors: [
+                          {
+                            extractor: (content: string) =>
+                              content
+                                .match(/[A-z0-9-:\/]+/g)
+                                ?.map((v) => v.toString()) || [],
+                            extensions: ["tsx", "html"],
+                          },
+                        ],
                       }),
                     ]
                   : []),
