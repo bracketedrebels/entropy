@@ -159,8 +159,8 @@ const prepareAllTheStaticResources = () => ({
           from: "static/index.css",
           to: `${output}${sep}index.css`,
           transform: {
-            transformer(content: Buffer) {
-              return postcss([
+            transformer: (content: Buffer) =>
+              postcss([
                 require("postcss-import"),
                 require("tailwindcss"),
                 require("autoprefixer"),
@@ -176,16 +176,18 @@ const prepareAllTheStaticResources = () => ({
                   from: "static/index.css",
                   to: `${output}${sep}index.css`,
                 })
-                .then((v) => v.css);
-            },
+                .then((v) => v.css),
             cache: true,
           } as any,
         },
         {
           from: "static/index.html",
           to: `${output}${sep}index.html`,
-          transform: (content) =>
-            handlebars.compile(content.toString())({ basename, bundlename }),
+          transform: {
+            transformer: (content: Buffer) =>
+              handlebars.compile(content.toString())({ basename, bundlename }),
+            cache: true,
+          } as any,
         },
         ...(environment === "prod"
           ? [
