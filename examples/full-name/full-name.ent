@@ -1,0 +1,31 @@
+; Здесь нет объявлений типов. person — значение схемы в config space.
+(module fullname
+  (schema person "person.schema.json")
+
+  (graph source requests (inputs)
+    (output (call std.map http.readQuery (call http.requests))))
+
+  (graph sink responses (inputs replies)
+    (output (call http.responses replies)))
+
+  (graph function formatName (inputs person)
+    (node first (field person first))
+    (node last (field person last))
+    (node joined (call std.join " " (vector first last)))
+    (output (tuple (full joined))))
+
+  (graph function prepareSuccess (inputs person)
+    (output (call http.makeOk (call std.encode (call formatName person)))))
+
+  (graph function prepareResponse (inputs request)
+    (node result (call std.validate person (call http.getPayload request)))
+    (node content (call std.fold http.makeBadRequest prepareSuccess result))
+    (output (call http.makeResponse request content)))
+
+  (graph sink main (inputs)
+    (node incoming (call requests))
+    (node outgoing (call std.map prepareResponse incoming))
+    (output (call responses outgoing)))
+
+  (entry main)
+)

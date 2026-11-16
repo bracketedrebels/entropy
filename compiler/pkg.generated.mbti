@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bracketedrebels/entropy/compiler"
+
+import {
+  "moonbitlang/core/json",
+}
+
+// Values
+pub fn compile(@json.Json) -> @json.Json raise
+
+// Errors
+pub(all) suberror CompileError {
+  CompileError(String)
+}
+pub fn CompileError::output(Self, &Logger) -> Unit
+pub fn CompileError::to_string(Self) -> String
+pub impl Show for CompileError
+
+// Types and methods
+
+// Type aliases
+
+// Traits

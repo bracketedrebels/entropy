@@ -1,0 +1,13 @@
+(module http
+  (native-type Request (a))
+  (native-type RawHTTP ())
+  (native-type Reply ())
+  (native-type Response ())
+  (native source requests (fn () (Stream (Request RawHTTP))) (nodejs http.requests))
+  (native sink responses (fn ((Stream Response)) Unit) (nodejs http.responses))
+  (native function readQuery (fn ((Request RawHTTP)) (Request JSON)) (nodejs http.readQuery))
+  (native function getPayload (forall (a) (fn ((Request a)) a)) (nodejs http.getPayload))
+  (native function makeResponse (forall (a) (fn ((Request a) Reply) Response)) (nodejs http.makeResponse))
+  (native function makeOk (fn (JSON) Reply) (nodejs http.makeOk))
+  (native function makeBadRequest (fn (ValidationErrors) Reply) (nodejs http.makeBadRequest))
+)
