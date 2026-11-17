@@ -22,6 +22,7 @@ priv struct Compiled {
   parameters : Array[String]
   nodes : Array[(String, Typed)]
   output : Typed?
+  labels : Map[String, String]
 }
 
 ///|
@@ -44,6 +45,7 @@ priv struct Scope {
   visiting : Map[String, Bool]
   nodes : Array[(String, Typed)]
   json_types : Array[Type]
+  labels : Map[String, String]
 }
 
 ///|
@@ -266,6 +268,7 @@ fn Compiler::node_value(
   scope.visiting[name] = true
   let value = self.expression(scope, expr, false)
   let js = "n\{scope.nodes.length()}"
+  scope.labels[js] = name
   scope.nodes.push((js, value))
   let reference = { type_: value.type_, operation: Reference(js), }
   scope.values[name] = reference
@@ -421,7 +424,14 @@ fn Compiler::compile_definition(
           diagnostic(definition.at, "native sink must return Unit")
         }
       }
-      { scheme, definition, parameters: [], nodes: [], output: None, }
+      {
+        scheme,
+        definition,
+        parameters: [],
+        nodes: [],
+        output: None,
+        labels: Map([]),
+      }
     }
     Schema(type_, _) =>
       {
@@ -430,6 +440,7 @@ fn Compiler::compile_definition(
         parameters: [],
         nodes: [],
         output: None,
+        labels: Map([]),
       }
     Graph(forms) => {
       let scope : Scope = {
@@ -440,6 +451,7 @@ fn Compiler::compile_definition(
         visiting: Map([]),
         nodes: [],
         json_types: [],
+        labels: Map([]),
       }
       let inputs = forms[0].list()
       if inputs.is_empty() || inputs[0].atom() != "inputs" {
@@ -455,6 +467,7 @@ fn Compiler::compile_definition(
         }
         let type_ = self.inference.fresh()
         let js = "p\{parameters.length()}"
+        scope.labels[js] = name
         parameters.push(js)
         types.push(type_)
         scope.values[name] = { type_, operation: Reference(js), }
@@ -526,6 +539,7 @@ fn Compiler::compile_definition(
         parameters,
         nodes: scope.nodes,
         output: Some(out),
+        labels: scope.labels,
       }
     }
   }
@@ -644,5 +658,6 @@ pub fn compile(bundle : Json) -> Json raise {
   Json::object({
     "javascript": Json::string(lines.join("\n") + "\n"),
     "signatures": metadata,
+    "visualization": compiler.visualization(metadata, sources),
   })
 }

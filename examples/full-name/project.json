@@ -1,6 +1,18 @@
 {
+  "name": "Full name endpoint",
   "target": "nodejs",
-  "config": { "path": "/full-name", "hostname": "127.0.0.1", "port": 0, "timeoutMs": 5000 },
-  "modules": ["../../modules/stdlib.ent", "../../modules/http.ent", "full-name.ent"],
-  "schemas": { "person.schema.json": "person.schema.json" }
+  "config": {
+    "path": "/full-name",
+    "hostname": "127.0.0.1",
+    "port": 0,
+    "timeoutMs": 5000
+  },
+  "modules": [
+    "../../modules/stdlib.ent",
+    "../../modules/http.ent",
+    "full-name.ent"
+  ],
+  "schemas": {
+    "person.schema.json": "person.schema.json"
+  }
 }

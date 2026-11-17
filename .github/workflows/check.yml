@@ -35,3 +35,25 @@ jobs:
       - run: moon check --target native --deny-warn
       - run: npm test
       - run: npm run test:wasm
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy-pages:
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Deploy graph viewer
+        id: deployment
+        uses: actions/deploy-pages@v4
