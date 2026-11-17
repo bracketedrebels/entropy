@@ -1,0 +1,54 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bracketedrebels/entropy/backend/nodejs"
+
+import {
+  "moonbitlang/core/json",
+}
+
+// Values
+pub fn assemble(Array[Module]) -> Backend raise BackendError
+
+// Errors
+pub(all) suberror BackendError {
+  BackendError(String)
+}
+pub fn BackendError::output(Self, &Logger) -> Unit
+pub fn BackendError::to_string(Self) -> String
+pub impl Show for BackendError
+
+// Types and methods
+pub(all) struct Backend {
+  imports : Array[String]
+  bindings : Map[String, Binding]
+  intrinsics : Intrinsics?
+  program : Program?
+}
+pub fn Backend::require_intrinsics(Self) -> Intrinsics raise BackendError
+
+pub(all) struct Binding {
+  expression : String
+  json_input : Bool
+}
+
+pub(all) struct Intrinsics {
+  tuple : String
+  field : String
+  validator : String
+}
+
+pub(all) struct Module {
+  name : String
+  import_ : String
+  bindings : Map[String, Binding]
+  intrinsics : Intrinsics?
+  program : Program?
+}
+
+pub(all) struct Program {
+  setup : (@json.Json) -> String
+  finish : (String, @json.Json) -> String
+}
+
+// Type aliases
+
+// Traits

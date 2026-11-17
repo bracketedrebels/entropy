@@ -10,7 +10,7 @@ HTTP-программы. Структура страницы вдохновле�
 
 ## Откуда берутся данные
 
-`compile(bundle)` возвращает `visualization` вместе с JavaScript и сигнатурами.
+`compile(bundle, backend)` возвращает `visualization` вместе с JavaScript и сигнатурами.
 Экспорт версии 1 содержит `entry`, `graphs`, `elements`, `signatures`, `sources`.
 Он строится в `compiler/visualization.mbt` после проверки типов по тому же Typed
 IR, который использует JS backend. Браузер ничего не парсит и не выводит типы.

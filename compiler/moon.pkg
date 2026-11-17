@@ -1,3 +1,8 @@
 import {
   "moonbitlang/core/json",
+  "bracketedrebels/entropy/backend/nodejs",
 }
+
+import {
+  "bracketedrebels/entropy/modules/stdlib",
+} for "wbtest"

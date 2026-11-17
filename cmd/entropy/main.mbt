@@ -8,7 +8,8 @@ fn main {
     if args.length() != 2 {
       raise @compiler.CompileError("usage: entropy '<project-bundle-json>'")
     }
-    let result = @compiler.compile(@json.parse(args[1][:]))
+    let bundle = @json.parse(args[1][:])
+    let result = @compiler.compile(bundle, @modules.nodejs(bundle))
     println(result.stringify())
   } catch {
     error => {

@@ -11,14 +11,12 @@
     "build": "npm run build:compiler && node scripts/compile.mjs examples/full-name/project.json dist/full-name.mjs",
     "test:compiler": "moon test --target native",
     "test:wasm": "moon test --target wasm-gc",
-    "test": "npm run test:compiler && npm run build && node scripts/build-pages.mjs && node --test test/*.test.mjs",
+    "test": "npm run test:compiler && npm run build && node scripts/build-pages.mjs && node --test test/*.test.mjs modules/*/test/*.test.mjs",
     "start": "node scripts/serve.mjs dist/full-name.mjs",
     "build:pages": "npm run build:compiler && node scripts/build-pages.mjs",
     "dev": "node scripts/viewer-dev.mjs"
   },
-  "dependencies": {
-    "ajv": "8.20.0",
-    "ramda": "0.32.0",
-    "rxjs": "7.8.2"
-  }
+  "workspaces": [
+    "modules/*"
+  ]
 }

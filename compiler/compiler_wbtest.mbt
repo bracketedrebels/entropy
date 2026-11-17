@@ -1,3 +1,10 @@
+// Core-тесты явно подключают только stdlib. HTTP не является зависимостью ядра.
+
+///|
+fn compile_test(bundle : Json) -> Json raise {
+  compile(bundle, @nodejs.assemble([@stdlib.nodejs("./stdlib.mjs")]))
+}
+
 ///|
 fn test_bundle(source : String) -> Json {
   Json::object({
@@ -14,7 +21,7 @@ fn test_bundle(source : String) -> Json {
 
 ///|
 fn expect_error(source : String, fragment : String) -> Unit raise {
-  match (Ok(compile(test_bundle(source))) catch { error => Err(error) }) {
+  match (Ok(compile_test(test_bundle(source))) catch { error => Err(error) }) {
     Ok(_) => fail("expected compilation to fail: \{fragment}")
     Err(error) =>
       assert_true(error.to_string().contains(fragment), msg=error.to_string())
@@ -32,7 +39,7 @@ fn signature(output : Json, name : String) -> String raise {
 
 ///|
 test "identity graph generalizes independently at each call" {
-  let result = compile(
+  let result = compile_test(
     test_bundle(
       (
         #| (module m
@@ -51,7 +58,7 @@ test "identity graph generalizes independently at each call" {
 
 ///|
 test "generic native sources instantiate independently" {
-  let result = compile(
+  let result = compile_test(
     test_bundle(
       (
         #| (module m (native-type Stream (a))
@@ -68,7 +75,7 @@ test "generic native sources instantiate independently" {
 
 ///|
 test "relationships between input ports are inferred" {
-  let result = compile(
+  let result = compile_test(
     test_bundle(
       (
         #| (module m
@@ -93,7 +100,7 @@ test "relationships between input ports are inferred" {
 
 ///|
 test "partial application keeps the unbound generic input" {
-  let result = compile(
+  let result = compile_test(
     test_bundle(
       (
         #| (module m
@@ -113,7 +120,7 @@ test "partial application keeps the unbound generic input" {
 
 ///|
 test "row constraints merge and accept additional fields" {
-  let result = compile(
+  let result = compile_test(
     test_bundle(
       (
         #| (module m
@@ -155,7 +162,7 @@ test "cycles are errors but forward DAG edges are allowed" {
     "(module m (graph function recursive (inputs x) (output (call recursive x))) (entry recursive))",
     "recursive graph",
   )
-  let result = compile(
+  let result = compile_test(
     test_bundle(
       "(module m (graph function forward (inputs) (node a b) (node b true) (output a)) (graph sink main (inputs) (output unit)) (entry main))",
     ),
@@ -233,4 +240,41 @@ test "diagnostics include source positions and reject malformed text" {
   expect_error(
     "(module m (graph sink main (inputs) (output \"oops))", "unclosed string",
   )
+}
+
+///|
+test "a graph without native modules has no implicit HTTP host" {
+  let output = compile(
+    test_bundle(
+      "(module plain (graph sink main (inputs) (output unit)) (entry main))",
+    ),
+    @nodejs.assemble([]),
+  )
+  let js = json_string(
+    required(json_object(output, "output"), "javascript"),
+    "js",
+  )
+  assert_false(js.contains("http"))
+  assert_false(js.contains("import "))
+  assert_true(js.contains("run: () =>"))
+}
+
+///|
+test "custom native bindings are injected without changing compiler registries" {
+  let custom : @nodejs.Module = {
+    name: "custom",
+    import_: "",
+    bindings: {
+      "custom.echo": { expression: "(value => value)", json_input: false, },
+    },
+    intrinsics: None,
+    program: None,
+  }
+  let output = compile(
+    test_bundle(
+      "(module custom (native function echo (forall (a) (fn (a) a)) (nodejs custom.echo)) (graph sink main (inputs) (node seen (call echo true)) (output unit)) (entry main))",
+    ),
+    @nodejs.assemble([custom]),
+  )
+  assert_eq(signature(output, "custom.main"), "(fn () Unit)")
 }

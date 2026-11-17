@@ -72,12 +72,14 @@ curl 'http://127.0.0.1:3000/full-name?first=Dan'
 | --- | --- |
 | [full-name.ent](examples/full-name/full-name.ent) | Семантические исток и сток, чистое преобразование, весь пример |
 | [person.schema.json](examples/full-name/person.schema.json) | Единственный источник типа входных данных |
-| [http.ent](modules/http.ent) | Нативные HTTP-элементы и их сигнатуры |
-| [stdlib.ent](modules/stdlib.ent) | Stream, Result, map, switchMap, константы, кодек |
+| [http/module.ent](modules/http/module.ent) | Нативные HTTP-элементы и их сигнатуры |
+| [stdlib/module.ent](modules/stdlib/module.ent) | Stream, Result, map, switchMap, константы, кодек |
 | [types.mbt](compiler/types.mbt) | Унификация, generic-параметры, строки именованных полей |
 | [compiler.mbt](compiler/compiler.mbt) | Проверка графов и создание типизированного IR |
-| [nodejs.mbt](compiler/nodejs.mbt) | Генераторы нативных элементов и JS backend |
-| [http.mjs](runtime/http.mjs) | Сервер, корреляция, RxJS-подписки, исполнение ответов |
+| [nodejs.mbt](compiler/nodejs.mbt) | Генерация JS из проверенного IR |
+| [modules/README.md](modules/README.md) | Пакеты модулей и локальные зависимости |
+| [sexpr-parser.md](docs/sexpr-parser.md) | Проверка sennenki/sexp и требования к парсеру |
+| [http/runtime.mjs](modules/http/runtime.mjs) | Сервер, корреляция, RxJS-подписки, исполнение ответов |
 | [m1.md](docs/m1.md) | Семантика, формат графов и явные границы M1 |
 | [moonbit.md](docs/moonbit.md) | Краткий путеводитель по использованным приёмам MoonBit |
 
@@ -85,6 +87,17 @@ curl 'http://127.0.0.1:3000/full-name?first=Dan'
 Нативность относится к элементу, а не к модулю. Истоки и стоки называются
 существительными (`requests`, `responses`), преобразования — глаголами
 (`readQuery`, `formatName`, `prepareResponse`).
+
+## Организация модулей
+
+Каждый модуль содержит всё своё: `module.ent`, `runtime.mjs`, `nodejs.mbt`,
+`package.json`, `moon.pkg`, README и тесты. Проект подключает публичный манифест
+модуля; пути внутри него разрешаются локально. `http` явно зависит от `stdlib`.
+JS-зависимости объявлены в пакетах, корневой npm workspace объединяет установку.
+
+Ядро получает backend от host и не импортирует HTTP. Статический каталог
+генераторов находится в `modules/catalog.mbt`. Подробнее —
+[организация модулей](modules/README.md).
 
 ## Граф без аннотаций типов
 

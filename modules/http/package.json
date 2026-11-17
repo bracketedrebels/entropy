@@ -1,0 +1,26 @@
+{
+  "name": "@entropy/http",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./runtime.mjs",
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "entropy": {
+    "namespace": "http",
+    "source": "./module.ent",
+    "dependencies": [
+      "../stdlib/package.json"
+    ],
+    "platforms": {
+      "nodejs": {
+        "generator": "http",
+        "runtime": "./runtime.mjs"
+      }
+    }
+  },
+  "dependencies": {
+    "rxjs": "7.8.2"
+  }
+}

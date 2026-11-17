@@ -1,0 +1,5 @@
+import {
+  "bracketedrebels/entropy/backend/nodejs",
+  "bracketedrebels/entropy/modules/stdlib",
+  "bracketedrebels/entropy/modules/http",
+}

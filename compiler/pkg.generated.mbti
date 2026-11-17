@@ -2,11 +2,12 @@
 package "bracketedrebels/entropy/compiler"
 
 import {
+  "bracketedrebels/entropy/backend/nodejs",
   "moonbitlang/core/json",
 }
 
 // Values
-pub fn compile(@json.Json) -> @json.Json raise
+pub fn compile(@json.Json, @nodejs.Backend) -> @json.Json raise
 
 // Errors
 pub(all) suberror CompileError {

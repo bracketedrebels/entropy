@@ -8,8 +8,7 @@
     "timeoutMs": 5000
   },
   "modules": [
-    "../../modules/stdlib.ent",
-    "../../modules/http.ent",
+    "../../modules/http/package.json",
     "full-name.ent"
   ],
   "schemas": {
