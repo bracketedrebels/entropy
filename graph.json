@@ -1,0 +1,1089 @@
+{
+  "version": 1,
+  "target": "nodejs",
+  "entry": "fullname.main",
+  "signatures": {
+    "std.keep": "(fn ('t0) 't0)",
+    "std.join": "(fn (String (Vector String)) String)",
+    "std.map": "(fn ((fn ('t1) 't2) (Stream 't1)) (Stream 't2))",
+    "std.switchMap": "(fn ((fn ('t3) (Stream 't4)) (Stream 't3)) (Stream 't4))",
+    "std.constant": "(fn ('t5) (Stream 't5))",
+    "std.fold": "(fn ((fn ('t6) 't8) (fn ('t7) 't8) (Result 't6 't7)) 't8)",
+    "std.validate": "(fn ((Schema 't9) JSON) (Result ValidationErrors 't9))",
+    "std.encode": "(fn ('t10) JSON) where JsonEncodable('t10)",
+    "http.requests": "(fn () (Stream (Request RawHTTP)))",
+    "http.responses": "(fn ((Stream Response)) Unit)",
+    "http.readQuery": "(fn ((Request RawHTTP)) (Request JSON))",
+    "http.getPayload": "(fn ((Request 't11)) 't11)",
+    "http.makeResponse": "(fn ((Request 't12) Reply) Response)",
+    "http.makeOk": "(fn (JSON) Reply)",
+    "http.makeBadRequest": "(fn (ValidationErrors) Reply)",
+    "fullname.person": "(Schema (tuple (first String) (last String)))",
+    "fullname.requests": "(fn () (Stream (Request JSON)))",
+    "fullname.responses": "(fn ((Stream Response)) Unit)",
+    "fullname.formatName": "(fn ((tuple (first String) (last String) | 't25)) (tuple (full String)))",
+    "fullname.prepareSuccess": "(fn ((tuple (first String) (last String) | 't30)) Reply)",
+    "fullname.prepareResponse": "(fn ((Request JSON)) Response)",
+    "fullname.main": "(fn () Unit)"
+  },
+  "elements": [
+    {
+      "id": "std.keep",
+      "module": "std",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/stdlib.ent",
+      "line": 8,
+      "type": "(fn ('t0) 't0)",
+      "schema": null
+    },
+    {
+      "id": "std.join",
+      "module": "std",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/stdlib.ent",
+      "line": 9,
+      "type": "(fn (String (Vector String)) String)",
+      "schema": null
+    },
+    {
+      "id": "std.map",
+      "module": "std",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/stdlib.ent",
+      "line": 10,
+      "type": "(fn ((fn ('t1) 't2) (Stream 't1)) (Stream 't2))",
+      "schema": null
+    },
+    {
+      "id": "std.switchMap",
+      "module": "std",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/stdlib.ent",
+      "line": 12,
+      "type": "(fn ((fn ('t3) (Stream 't4)) (Stream 't3)) (Stream 't4))",
+      "schema": null
+    },
+    {
+      "id": "std.constant",
+      "module": "std",
+      "role": "source",
+      "kind": "native",
+      "file": "../../modules/stdlib.ent",
+      "line": 14,
+      "type": "(fn ('t5) (Stream 't5))",
+      "schema": null
+    },
+    {
+      "id": "std.fold",
+      "module": "std",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/stdlib.ent",
+      "line": 15,
+      "type": "(fn ((fn ('t6) 't8) (fn ('t7) 't8) (Result 't6 't7)) 't8)",
+      "schema": null
+    },
+    {
+      "id": "std.validate",
+      "module": "std",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/stdlib.ent",
+      "line": 17,
+      "type": "(fn ((Schema 't9) JSON) (Result ValidationErrors 't9))",
+      "schema": null
+    },
+    {
+      "id": "std.encode",
+      "module": "std",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/stdlib.ent",
+      "line": 19,
+      "type": "(fn ('t10) JSON)",
+      "schema": null
+    },
+    {
+      "id": "http.requests",
+      "module": "http",
+      "role": "source",
+      "kind": "native",
+      "file": "../../modules/http.ent",
+      "line": 6,
+      "type": "(fn () (Stream (Request RawHTTP)))",
+      "schema": null
+    },
+    {
+      "id": "http.responses",
+      "module": "http",
+      "role": "sink",
+      "kind": "native",
+      "file": "../../modules/http.ent",
+      "line": 7,
+      "type": "(fn ((Stream Response)) Unit)",
+      "schema": null
+    },
+    {
+      "id": "http.readQuery",
+      "module": "http",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/http.ent",
+      "line": 8,
+      "type": "(fn ((Request RawHTTP)) (Request JSON))",
+      "schema": null
+    },
+    {
+      "id": "http.getPayload",
+      "module": "http",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/http.ent",
+      "line": 9,
+      "type": "(fn ((Request 't11)) 't11)",
+      "schema": null
+    },
+    {
+      "id": "http.makeResponse",
+      "module": "http",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/http.ent",
+      "line": 10,
+      "type": "(fn ((Request 't12) Reply) Response)",
+      "schema": null
+    },
+    {
+      "id": "http.makeOk",
+      "module": "http",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/http.ent",
+      "line": 11,
+      "type": "(fn (JSON) Reply)",
+      "schema": null
+    },
+    {
+      "id": "http.makeBadRequest",
+      "module": "http",
+      "role": "function",
+      "kind": "native",
+      "file": "../../modules/http.ent",
+      "line": 12,
+      "type": "(fn (ValidationErrors) Reply)",
+      "schema": null
+    },
+    {
+      "id": "fullname.person",
+      "module": "fullname",
+      "role": "value",
+      "kind": "schema",
+      "file": "full-name.ent",
+      "line": 3,
+      "type": "(Schema (tuple (first String) (last String)))",
+      "schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Full name input",
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "string"
+          },
+          "last": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "first",
+          "last"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "id": "fullname.requests",
+      "module": "fullname",
+      "role": "source",
+      "kind": "graph",
+      "file": "full-name.ent",
+      "line": 5,
+      "type": "(fn () (Stream (Request JSON)))",
+      "schema": null
+    },
+    {
+      "id": "fullname.responses",
+      "module": "fullname",
+      "role": "sink",
+      "kind": "graph",
+      "file": "full-name.ent",
+      "line": 8,
+      "type": "(fn ((Stream Response)) Unit)",
+      "schema": null
+    },
+    {
+      "id": "fullname.formatName",
+      "module": "fullname",
+      "role": "function",
+      "kind": "graph",
+      "file": "full-name.ent",
+      "line": 11,
+      "type": "(fn ((tuple (first String) (last String) | 't25)) (tuple (full String)))",
+      "schema": null
+    },
+    {
+      "id": "fullname.prepareSuccess",
+      "module": "fullname",
+      "role": "function",
+      "kind": "graph",
+      "file": "full-name.ent",
+      "line": 17,
+      "type": "(fn ((tuple (first String) (last String) | 't30)) Reply)",
+      "schema": null
+    },
+    {
+      "id": "fullname.prepareResponse",
+      "module": "fullname",
+      "role": "function",
+      "kind": "graph",
+      "file": "full-name.ent",
+      "line": 20,
+      "type": "(fn ((Request JSON)) Response)",
+      "schema": null
+    },
+    {
+      "id": "fullname.main",
+      "module": "fullname",
+      "role": "sink",
+      "kind": "graph",
+      "file": "full-name.ent",
+      "line": 25,
+      "type": "(fn () Unit)",
+      "schema": null
+    }
+  ],
+  "graphs": [
+    {
+      "id": "fullname.requests",
+      "nodes": [
+        {
+          "id": "e0",
+          "label": "std.map",
+          "kind": "call",
+          "role": "function",
+          "type": "(Stream (Request JSON))",
+          "symbol": "std.map",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(fn ((Request RawHTTP)) (Request JSON))"
+            },
+            {
+              "name": "arg2",
+              "type": "(Stream (Request RawHTTP))"
+            }
+          ]
+        },
+        {
+          "id": "e1",
+          "label": "http.readQuery",
+          "kind": "function-value",
+          "role": "function",
+          "type": "(fn ((Request RawHTTP)) (Request JSON))",
+          "symbol": "http.readQuery",
+          "native": true,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e2",
+          "label": "http.requests",
+          "kind": "call",
+          "role": "source",
+          "type": "(Stream (Request RawHTTP))",
+          "symbol": "http.requests",
+          "native": true,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "output",
+          "label": "output",
+          "kind": "output",
+          "role": "output",
+          "type": "(Stream (Request JSON))",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "(Stream (Request JSON))"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge0",
+          "from": "e1",
+          "to": "e0",
+          "port": 0,
+          "type": "(fn ((Request RawHTTP)) (Request JSON))",
+          "kind": "function"
+        },
+        {
+          "id": "edge1",
+          "from": "e2",
+          "to": "e0",
+          "port": 1,
+          "type": "(Stream (Request RawHTTP))",
+          "kind": "data"
+        },
+        {
+          "id": "edge2",
+          "from": "e0",
+          "to": "output",
+          "port": 0,
+          "type": "(Stream (Request JSON))",
+          "kind": "data"
+        }
+      ]
+    },
+    {
+      "id": "fullname.responses",
+      "nodes": [
+        {
+          "id": "p0",
+          "label": "replies",
+          "kind": "input",
+          "role": "input",
+          "type": "(Stream Response)",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e0",
+          "label": "http.responses",
+          "kind": "call",
+          "role": "sink",
+          "type": "Unit",
+          "symbol": "http.responses",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(Stream Response)"
+            }
+          ]
+        },
+        {
+          "id": "output",
+          "label": "output",
+          "kind": "output",
+          "role": "output",
+          "type": "Unit",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "Unit"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge0",
+          "from": "p0",
+          "to": "e0",
+          "port": 0,
+          "type": "(Stream Response)",
+          "kind": "data"
+        },
+        {
+          "id": "edge1",
+          "from": "e0",
+          "to": "output",
+          "port": 0,
+          "type": "Unit",
+          "kind": "data"
+        }
+      ]
+    },
+    {
+      "id": "fullname.formatName",
+      "nodes": [
+        {
+          "id": "p0",
+          "label": "person",
+          "kind": "input",
+          "role": "input",
+          "type": "(tuple (first String) (last String) | 't25)",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e0",
+          "label": "first",
+          "kind": "field",
+          "role": "function",
+          "type": "String",
+          "symbol": null,
+          "native": false,
+          "value": "first",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "(tuple (first String) (last String) | 't25)"
+            }
+          ]
+        },
+        {
+          "id": "e1",
+          "label": "last",
+          "kind": "field",
+          "role": "function",
+          "type": "String",
+          "symbol": null,
+          "native": false,
+          "value": "last",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "(tuple (first String) (last String) | 't25)"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "label": "joined",
+          "kind": "call",
+          "role": "function",
+          "type": "String",
+          "symbol": "std.join",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "String"
+            },
+            {
+              "name": "arg2",
+              "type": "(Vector String)"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "label": "constant",
+          "kind": "constant",
+          "role": "value",
+          "type": "String",
+          "symbol": null,
+          "native": false,
+          "value": "\" \"",
+          "inputs": []
+        },
+        {
+          "id": "e4",
+          "label": "vector",
+          "kind": "vector",
+          "role": "function",
+          "type": "(Vector String)",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "item1",
+              "type": "String"
+            },
+            {
+              "name": "item2",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "id": "e5",
+          "label": "tuple",
+          "kind": "tuple",
+          "role": "function",
+          "type": "(tuple (full String))",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "full",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "id": "output",
+          "label": "output",
+          "kind": "output",
+          "role": "output",
+          "type": "(tuple (full String))",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "(tuple (full String))"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge0",
+          "from": "p0",
+          "to": "e0",
+          "port": 0,
+          "type": "(tuple (first String) (last String) | 't25)",
+          "kind": "data"
+        },
+        {
+          "id": "edge1",
+          "from": "p0",
+          "to": "e1",
+          "port": 0,
+          "type": "(tuple (first String) (last String) | 't25)",
+          "kind": "data"
+        },
+        {
+          "id": "edge2",
+          "from": "e3",
+          "to": "e2",
+          "port": 0,
+          "type": "String",
+          "kind": "data"
+        },
+        {
+          "id": "edge3",
+          "from": "e0",
+          "to": "e4",
+          "port": 0,
+          "type": "String",
+          "kind": "data"
+        },
+        {
+          "id": "edge4",
+          "from": "e1",
+          "to": "e4",
+          "port": 1,
+          "type": "String",
+          "kind": "data"
+        },
+        {
+          "id": "edge5",
+          "from": "e4",
+          "to": "e2",
+          "port": 1,
+          "type": "(Vector String)",
+          "kind": "data"
+        },
+        {
+          "id": "edge6",
+          "from": "e2",
+          "to": "e5",
+          "port": 0,
+          "type": "String",
+          "kind": "data"
+        },
+        {
+          "id": "edge7",
+          "from": "e5",
+          "to": "output",
+          "port": 0,
+          "type": "(tuple (full String))",
+          "kind": "data"
+        }
+      ]
+    },
+    {
+      "id": "fullname.prepareSuccess",
+      "nodes": [
+        {
+          "id": "p0",
+          "label": "person",
+          "kind": "input",
+          "role": "input",
+          "type": "(tuple (first String) (last String) | 't30)",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e0",
+          "label": "http.makeOk",
+          "kind": "call",
+          "role": "function",
+          "type": "Reply",
+          "symbol": "http.makeOk",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "JSON"
+            }
+          ]
+        },
+        {
+          "id": "e1",
+          "label": "std.encode",
+          "kind": "call",
+          "role": "function",
+          "type": "JSON",
+          "symbol": "std.encode",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(tuple (full String))"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "label": "fullname.formatName",
+          "kind": "call",
+          "role": "function",
+          "type": "(tuple (full String))",
+          "symbol": "fullname.formatName",
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(tuple (first String) (last String) | 't30)"
+            }
+          ]
+        },
+        {
+          "id": "output",
+          "label": "output",
+          "kind": "output",
+          "role": "output",
+          "type": "Reply",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "Reply"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge0",
+          "from": "p0",
+          "to": "e2",
+          "port": 0,
+          "type": "(tuple (first String) (last String) | 't30)",
+          "kind": "data"
+        },
+        {
+          "id": "edge1",
+          "from": "e2",
+          "to": "e1",
+          "port": 0,
+          "type": "(tuple (full String))",
+          "kind": "data"
+        },
+        {
+          "id": "edge2",
+          "from": "e1",
+          "to": "e0",
+          "port": 0,
+          "type": "JSON",
+          "kind": "data"
+        },
+        {
+          "id": "edge3",
+          "from": "e0",
+          "to": "output",
+          "port": 0,
+          "type": "Reply",
+          "kind": "data"
+        }
+      ]
+    },
+    {
+      "id": "fullname.prepareResponse",
+      "nodes": [
+        {
+          "id": "p0",
+          "label": "request",
+          "kind": "input",
+          "role": "input",
+          "type": "(Request JSON)",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e0",
+          "label": "result",
+          "kind": "call",
+          "role": "function",
+          "type": "(Result ValidationErrors (tuple (first String) (last String)))",
+          "symbol": "std.validate",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(Schema (tuple (first String) (last String)))"
+            },
+            {
+              "name": "arg2",
+              "type": "JSON"
+            }
+          ]
+        },
+        {
+          "id": "e1",
+          "label": "fullname.person",
+          "kind": "schema",
+          "role": "value",
+          "type": "(Schema (tuple (first String) (last String)))",
+          "symbol": "fullname.person",
+          "native": false,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e2",
+          "label": "http.getPayload",
+          "kind": "call",
+          "role": "function",
+          "type": "JSON",
+          "symbol": "http.getPayload",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(Request JSON)"
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "label": "content",
+          "kind": "call",
+          "role": "function",
+          "type": "Reply",
+          "symbol": "std.fold",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(fn (ValidationErrors) Reply)"
+            },
+            {
+              "name": "arg2",
+              "type": "(fn ((tuple (first String) (last String))) Reply)"
+            },
+            {
+              "name": "arg3",
+              "type": "(Result ValidationErrors (tuple (first String) (last String)))"
+            }
+          ]
+        },
+        {
+          "id": "e4",
+          "label": "http.makeBadRequest",
+          "kind": "function-value",
+          "role": "function",
+          "type": "(fn (ValidationErrors) Reply)",
+          "symbol": "http.makeBadRequest",
+          "native": true,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e5",
+          "label": "fullname.prepareSuccess",
+          "kind": "function-value",
+          "role": "function",
+          "type": "(fn ((tuple (first String) (last String))) Reply)",
+          "symbol": "fullname.prepareSuccess",
+          "native": false,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e6",
+          "label": "http.makeResponse",
+          "kind": "call",
+          "role": "function",
+          "type": "Response",
+          "symbol": "http.makeResponse",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(Request JSON)"
+            },
+            {
+              "name": "arg2",
+              "type": "Reply"
+            }
+          ]
+        },
+        {
+          "id": "output",
+          "label": "output",
+          "kind": "output",
+          "role": "output",
+          "type": "Response",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "Response"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge0",
+          "from": "e1",
+          "to": "e0",
+          "port": 0,
+          "type": "(Schema (tuple (first String) (last String)))",
+          "kind": "config"
+        },
+        {
+          "id": "edge1",
+          "from": "p0",
+          "to": "e2",
+          "port": 0,
+          "type": "(Request JSON)",
+          "kind": "data"
+        },
+        {
+          "id": "edge2",
+          "from": "e2",
+          "to": "e0",
+          "port": 1,
+          "type": "JSON",
+          "kind": "data"
+        },
+        {
+          "id": "edge3",
+          "from": "e4",
+          "to": "e3",
+          "port": 0,
+          "type": "(fn (ValidationErrors) Reply)",
+          "kind": "function"
+        },
+        {
+          "id": "edge4",
+          "from": "e5",
+          "to": "e3",
+          "port": 1,
+          "type": "(fn ((tuple (first String) (last String))) Reply)",
+          "kind": "function"
+        },
+        {
+          "id": "edge5",
+          "from": "e0",
+          "to": "e3",
+          "port": 2,
+          "type": "(Result ValidationErrors (tuple (first String) (last String)))",
+          "kind": "data"
+        },
+        {
+          "id": "edge6",
+          "from": "p0",
+          "to": "e6",
+          "port": 0,
+          "type": "(Request JSON)",
+          "kind": "data"
+        },
+        {
+          "id": "edge7",
+          "from": "e3",
+          "to": "e6",
+          "port": 1,
+          "type": "Reply",
+          "kind": "data"
+        },
+        {
+          "id": "edge8",
+          "from": "e6",
+          "to": "output",
+          "port": 0,
+          "type": "Response",
+          "kind": "data"
+        }
+      ]
+    },
+    {
+      "id": "fullname.main",
+      "nodes": [
+        {
+          "id": "e0",
+          "label": "incoming",
+          "kind": "call",
+          "role": "source",
+          "type": "(Stream (Request JSON))",
+          "symbol": "fullname.requests",
+          "native": false,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e1",
+          "label": "outgoing",
+          "kind": "call",
+          "role": "function",
+          "type": "(Stream Response)",
+          "symbol": "std.map",
+          "native": true,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(fn ((Request JSON)) Response)"
+            },
+            {
+              "name": "arg2",
+              "type": "(Stream (Request JSON))"
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "label": "fullname.prepareResponse",
+          "kind": "function-value",
+          "role": "function",
+          "type": "(fn ((Request JSON)) Response)",
+          "symbol": "fullname.prepareResponse",
+          "native": false,
+          "value": "",
+          "inputs": []
+        },
+        {
+          "id": "e3",
+          "label": "fullname.responses",
+          "kind": "call",
+          "role": "sink",
+          "type": "Unit",
+          "symbol": "fullname.responses",
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "arg1",
+              "type": "(Stream Response)"
+            }
+          ]
+        },
+        {
+          "id": "output",
+          "label": "output",
+          "kind": "output",
+          "role": "output",
+          "type": "Unit",
+          "symbol": null,
+          "native": false,
+          "value": "",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "Unit"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge0",
+          "from": "e2",
+          "to": "e1",
+          "port": 0,
+          "type": "(fn ((Request JSON)) Response)",
+          "kind": "function"
+        },
+        {
+          "id": "edge1",
+          "from": "e0",
+          "to": "e1",
+          "port": 1,
+          "type": "(Stream (Request JSON))",
+          "kind": "data"
+        },
+        {
+          "id": "edge2",
+          "from": "e1",
+          "to": "e3",
+          "port": 0,
+          "type": "(Stream Response)",
+          "kind": "data"
+        },
+        {
+          "id": "edge3",
+          "from": "e3",
+          "to": "output",
+          "port": 0,
+          "type": "Unit",
+          "kind": "data"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "name": "../../modules/stdlib.ent",
+      "text": "; Stream — тип stdlib, с RxJS Observable в качестве runtime M1.\n(module std\n  (native-type Stream (a))\n  (native-type Result (e a))\n  (native-type JSON ())\n  (native-type Schema (a))\n  (native-type ValidationErrors ())\n  (native function keep (forall (a) (fn (a) a)) (nodejs core.identity))\n  (native function join (fn (String (Vector String)) String) (nodejs text.join))\n  (native function map\n    (forall (a b) (fn ((fn (a) b) (Stream a)) (Stream b))) (nodejs rx.map))\n  (native function switchMap\n    (forall (a b) (fn ((fn (a) (Stream b)) (Stream a)) (Stream b))) (nodejs rx.switchMap))\n  (native source constant (forall (a) (fn (a) (Stream a))) (nodejs rx.of))\n  (native function fold\n    (forall (e a b) (fn ((fn (e) b) (fn (a) b) (Result e a)) b)) (nodejs result.fold))\n  (native function validate\n    (forall (a) (fn ((Schema a) JSON) (Result ValidationErrors a))) (nodejs json.validate))\n  (native function encode (forall (a) (fn (a) JSON)) (nodejs json.encode))\n)\n",
+      "path": "modules/stdlib.ent"
+    },
+    {
+      "name": "../../modules/http.ent",
+      "text": "(module http\n  (native-type Request (a))\n  (native-type RawHTTP ())\n  (native-type Reply ())\n  (native-type Response ())\n  (native source requests (fn () (Stream (Request RawHTTP))) (nodejs http.requests))\n  (native sink responses (fn ((Stream Response)) Unit) (nodejs http.responses))\n  (native function readQuery (fn ((Request RawHTTP)) (Request JSON)) (nodejs http.readQuery))\n  (native function getPayload (forall (a) (fn ((Request a)) a)) (nodejs http.getPayload))\n  (native function makeResponse (forall (a) (fn ((Request a) Reply) Response)) (nodejs http.makeResponse))\n  (native function makeOk (fn (JSON) Reply) (nodejs http.makeOk))\n  (native function makeBadRequest (fn (ValidationErrors) Reply) (nodejs http.makeBadRequest))\n)\n",
+      "path": "modules/http.ent"
+    },
+    {
+      "name": "full-name.ent",
+      "text": "; Здесь нет объявлений типов. person — значение схемы в config space.\n(module fullname\n  (schema person \"person.schema.json\")\n\n  (graph source requests (inputs)\n    (output (call std.map http.readQuery (call http.requests))))\n\n  (graph sink responses (inputs replies)\n    (output (call http.responses replies)))\n\n  (graph function formatName (inputs person)\n    (node first (field person first))\n    (node last (field person last))\n    (node joined (call std.join \" \" (vector first last)))\n    (output (tuple (full joined))))\n\n  (graph function prepareSuccess (inputs person)\n    (output (call http.makeOk (call std.encode (call formatName person)))))\n\n  (graph function prepareResponse (inputs request)\n    (node result (call std.validate person (call http.getPayload request)))\n    (node content (call std.fold http.makeBadRequest prepareSuccess result))\n    (output (call http.makeResponse request content)))\n\n  (graph sink main (inputs)\n    (node incoming (call requests))\n    (node outgoing (call std.map prepareResponse incoming))\n    (output (call responses outgoing)))\n\n  (entry main)\n)\n",
+      "path": "examples/full-name/full-name.ent"
+    }
+  ],
+  "title": "Full name endpoint",
+  "repository": "https://github.com/bracketedrebels/entropy",
+  "revision": "0e3727a6c5ef9e3ae640f9b92e96d3fe028382c3",
+  "sourceRef": "0e3727a6c5ef9e3ae640f9b92e96d3fe028382c3"
+}
