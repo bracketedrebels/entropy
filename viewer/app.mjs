@@ -60,12 +60,16 @@ function navigate(graph, node) {
   if (location.hash.slice(1) === hash.toString()) route();
   else location.hash = hash.toString();
 }
+const narrowScreen = matchMedia('(max-width: 900px)');
 function setSidebar(open) {
+  if (!open && $('sidebar').contains(document.activeElement) && narrowScreen.matches) $('menu').focus();
+  $('sidebar').inert = narrowScreen.matches && !open;
   $('sidebar').classList.toggle('open', open);
   $('scrim').hidden = !open;
   $('menu').setAttribute('aria-expanded', String(open));
 }
 function renderLibrary() {
+  if (!state.model) return;
   const query = $('search').value.trim().toLowerCase();
   const groups = new Map();
   for (const item of state.model.elements) {
@@ -386,7 +390,9 @@ function toast(message) {
 $('search').addEventListener('input', renderLibrary);
 $('menu').addEventListener('click', () => setSidebar(!$('sidebar').classList.contains('open')));
 $('scrim').addEventListener('click', () => setSidebar(false));
-$('entry-link').addEventListener('click', () => navigate(state.model.entry));
+$('entry-link').addEventListener('click', () => {
+  if (state.model) navigate(state.model.entry);
+});
 $('graph-tab').addEventListener('click', () => setView('graph'));
 $('source-tab').addEventListener('click', () => setView('source'));
 for (const name of ['graph', 'source'])
@@ -464,6 +470,8 @@ document.addEventListener('keydown', (event) => {
   }
 });
 window.addEventListener('hashchange', route);
+narrowScreen.addEventListener('change', () => setSidebar(false));
+setSidebar(false);
 new ResizeObserver(() => fit()).observe($('viewport'));
 $('retry').addEventListener('click', () => location.reload());
 try {

@@ -1400,4 +1400,6 @@ footer > span:first-child {
   }
 }
 /* The terminal node has a compact body; keep its type separate from its title. */
-.graph-node[data-kind='output'] .node-kind { display: none; }
+.graph-node[data-kind='output'] .node-kind {
+  display: none;
+}
