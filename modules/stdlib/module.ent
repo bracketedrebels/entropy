@@ -1,0 +1,20 @@
+; Stream — тип stdlib, с RxJS Observable в качестве runtime M1.
+(module std
+  (native-type Stream (a))
+  (native-type Result (e a))
+  (native-type JSON ())
+  (native-type Schema (a))
+  (native-type ValidationErrors ())
+  (native function keep (forall (a) (fn (a) a)) (nodejs core.identity))
+  (native function join (fn (String (Vector String)) String) (nodejs text.join))
+  (native function map
+    (forall (a b) (fn ((fn (a) b) (Stream a)) (Stream b))) (nodejs rx.map))
+  (native function switchMap
+    (forall (a b) (fn ((fn (a) (Stream b)) (Stream a)) (Stream b))) (nodejs rx.switchMap))
+  (native source constant (forall (a) (fn (a) (Stream a))) (nodejs rx.of))
+  (native function fold
+    (forall (e a b) (fn ((fn (e) b) (fn (a) b) (Result e a)) b)) (nodejs result.fold))
+  (native function validate
+    (forall (a) (fn ((Schema a) JSON) (Result ValidationErrors a))) (nodejs json.validate))
+  (native function encode (forall (a) (fn (a) JSON)) (nodejs json.encode))
+)
