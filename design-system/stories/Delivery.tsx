@@ -37,7 +37,7 @@ export function Delivery({ id }: { id: string }) {
         <path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
     </Pill.Action>
   }>
-    <Reveal open={open} id={id + '-options'} returnFocusRef={trigger} collapsed={visible.length ?
+    <Reveal followViewport open={open} id={id + '-options'} returnFocusRef={trigger} collapsed={visible.length ?
       visible.map(([key, name, detail]) => <Row key={key} as="button" className="tn-choice" leading={<Mark selected />}
         description={detail} onClick={() => activateRow(key)}>{name}</Row>) :
       <Row as="button" onClick={expand}>Доставка выключена</Row>}>

@@ -1,69 +1,64 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the action will run. 
+name: Graph editor
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [master]
+    paths: &graph-paths
+      - 'src/**'
+      - 'static/**'
+      - 'package*.json'
+      - 'tsconfig*.json'
+      - '*.config.*'
   pull_request:
-    branches: [ master ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: [master]
+    paths: *graph-paths
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  storybook:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    defaults:
-      run:
-        working-directory: design-system
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: design-system/package-lock.json
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build-storybook
+      - run: npm i
+      - run: npm run build-prod
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/master'
         with:
-          name: trinet-storybook
-          path: design-system/storybook-static
+          name: graph-editor
+          path: dist
           if-no-files-found: error
 
-  gh-pages:
-    needs: storybook
+  publish:
+    if: github.ref == 'refs/heads/master'
+    needs: build
     runs-on: ubuntu-latest
+    concurrency: entropy-pages-publish
+    environment: github-pages
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     steps:
-      - name: checking out codebase
-        uses: actions/checkout@v2
-        
-      - name: dependencies installation
-        run: npm i
-
-      - name: building production bundle
-        run: npm run build-prod
-      
-      - name: include the component catalog in Pages
-        if: github.ref == 'refs/heads/master'
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
         with:
-          name: trinet-storybook
-          path: dist/storybook
-
-      - name: deploying to github pages
-        if: github.ref == 'refs/heads/master'
-        uses: crazy-max/ghaction-github-pages@v2.2.0
+          ref: gh-pages
+          path: published
+      - uses: actions/download-artifact@v4
         with:
-          build_dir: dist
-          target_branch: gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+          name: graph-editor
+          path: graph
+      - name: Update the editor and preserve the sibling catalog
+        run: |
+          rsync -a --delete --exclude=/.git/ --exclude=/storybook/ --exclude=/CNAME --exclude=/.nojekyll graph/ published/
+          cd published
+          git add -A
+          if ! git diff --cached --quiet; then
+            git -c user.name=github-actions -c user.email=github-actions@users.noreply.github.com commit -m "Publish editor for ${GITHUB_SHA}"
+            git push origin HEAD:gh-pages
+          fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: published
+      - uses: actions/deploy-pages@v4
