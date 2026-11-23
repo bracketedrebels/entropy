@@ -1,0 +1,26 @@
+{
+  "name": "@entropy/stdlib",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./runtime.mjs",
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "entropy": {
+    "namespace": "std",
+    "source": "./module.ent",
+    "dependencies": [],
+    "platforms": {
+      "nodejs": {
+        "generator": "stdlib",
+        "runtime": "./runtime.mjs"
+      }
+    }
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "ramda": "0.32.0",
+    "rxjs": "7.8.2"
+  }
+}
