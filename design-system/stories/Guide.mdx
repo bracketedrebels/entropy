@@ -1,0 +1,6 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+import readme from '../README.md?raw';
+
+<Meta title="Справочник/Компоненты React" />
+
+<Markdown>{readme.replace('[Принципы взаимодействия](../docs/design-system/forms.md)', '[Принципы взаимодействия](https://github.com/bracketedrebels/entropy/blob/master/docs/design-system/forms.md)')}</Markdown>

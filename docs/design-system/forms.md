@@ -59,3 +59,7 @@ A capsule with a chevron is one target across its entire width. It describes the
 The form establishes the interaction language. The graph editor is the next place to test it. Consider a node with a selected input while keyboard focus moves to a port. Can a reader still identify the node, the saved choice, the focused port and the existing connection? A groove already denotes a boundary and a lamp denotes focus. A connection needs to remain recognisable when the lamp moves.
 
 A second trial is to open a node’s settings near the edge of the canvas. Check whether its title, ports and connected edges remain traceable as details appear, and whether the user can collapse it from where they finished editing. The graph prototype should settle how neighbours move and how connections are drawn.
+
+## React components
+
+The component kit includes Row, Reveal, Ridge, Pill and Field. The first two reference fields are delivery channels and introductory text. [Component API and Storybook setup](../../design-system/README.md)

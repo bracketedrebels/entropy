@@ -14,7 +14,32 @@ on:
   workflow_dispatch:
 
 jobs:
+  storybook:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: design-system
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: design-system/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build-storybook
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trinet-storybook
+          path: design-system/storybook-static
+          if-no-files-found: error
+
   gh-pages:
+    needs: storybook
     runs-on: ubuntu-latest
     steps:
       - name: checking out codebase
@@ -26,7 +51,15 @@ jobs:
       - name: building production bundle
         run: npm run build-prod
       
+      - name: include the component catalog in Pages
+        if: github.ref == 'refs/heads/master'
+        uses: actions/download-artifact@v4
+        with:
+          name: trinet-storybook
+          path: dist/storybook
+
       - name: deploying to github pages
+        if: github.ref == 'refs/heads/master'
         uses: crazy-max/ghaction-github-pages@v2.2.0
         with:
           build_dir: dist
