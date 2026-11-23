@@ -1,6 +1,6 @@
-# Trinet · CSS и поведение
+# NEUI · CSS и поведение
 
-Первый срез дизайн-системы Entropy. В Storybook есть рабочая композиция «Настройки сводки», отдельные сценарии примитивов и переключатель светлой и графитовой тем. В истории «Настройки уведомлений» десять полей прототипа используют общий жёлоб, строки выбора, раскрытие и мета-действия. [Принципы взаимодействия](../docs/design-system/forms.md)
+NEUI объединяет неоморфизм и UI. По-русски «не UI» подчёркивает внимание к UX. Форма уведомлений Trinet служит примером использования кита. В Storybook есть рабочая композиция «Настройки сводки», отдельные сценарии примитивов и переключатель светлой и графитовой тем. В истории «Настройки уведомлений» десять полей прототипа используют общий жёлоб, строки выбора, раскрытие и мета-действия. [Принципы взаимодействия](../docs/design-system/forms.md)
 
 ## Запуск
 
@@ -12,7 +12,7 @@ Workflow Component catalog проверяет pull request и прикладыв
 
 ## API
 
-Разместите нативные контролы внутри элемента с классом `tn-surface` и атрибутом `data-theme="dark"` или `data-theme="light"`. В Storybook эту обёртку и Ubuntu Light предоставляет каталог. Кнопка **Show code** под каждым примером показывает тот же TSX, который выполняется в превью, включая импорты, состояние и обработчики. У двух вариантов Row после компонента приведены параметры выбранного сценария.
+Разместите нативные контролы внутри элемента с классом `neui-surface` и атрибутом `data-theme="dark"` или `data-theme="light"`. В Storybook эту обёртку и Ubuntu Light предоставляет каталог. Кнопка **Show code** под каждым примером показывает тот же TSX, который выполняется в превью, включая импорты, состояние и обработчики. У двух вариантов Row после компонента приведены параметры выбранного сценария.
 
 ### CSS API на Tailwind 4
 
@@ -20,27 +20,27 @@ Workflow Component catalog проверяет pull request и прикладыв
 
 ```css
 @import "tailwindcss";
-@import "@trinet/design-system/tailwind.css";
+@import "@neui/kit/tailwind.css";
 ```
 
 Примитивы попадают в слой `components`. Утилиты Tailwind можно передавать через `className`. Их значения берутся с текущей поверхности, поэтому один и тот же класс подходит для обеих тем.
 
 | Что оформляем | Примеры утилит | Токены поверхности |
 |---|---|---|
-| Поверхность, шрифт и текст | `bg-surface`, `font-ui`, `text-ink`, `text-muted` | `--tn-bg`, `--tn-font`, `--tn-text`, `--tn-muted` |
-| Жёлоб и фокус | `stroke-groove`, `stroke-lip`, `text-accent`, `bg-focus-core`, `bg-focus-halo`, `h-focus-band` | `--tn-channel`, `--tn-lip`, `--tn-copper`, `--tn-core`, `--tn-halo`, `--tn-band` |
-| Отклик, метаданные и ошибки | `bg-ripple`, `bg-pill`, `text-danger` | `--tn-wave`, `--tn-pill-bg`, `--tn-danger` |
-| Высота целей и скругления | `min-h-hit`, `min-h-action`, `min-h-choice`, `rounded-row`, `rounded-choice` | `--tn-hit`, `--tn-action-height`, `--tn-choice-height`, `--tn-row-radius`, `--tn-choice-radius` |
+| Поверхность, шрифт и текст | `bg-surface`, `font-ui`, `text-ink`, `text-muted` | `--neui-bg`, `--neui-font`, `--neui-text`, `--neui-muted` |
+| Жёлоб и фокус | `stroke-groove`, `stroke-lip`, `text-accent`, `bg-focus-core`, `bg-focus-halo`, `h-focus-band` | `--neui-channel`, `--neui-lip`, `--neui-copper`, `--neui-core`, `--neui-halo`, `--neui-band` |
+| Отклик, метаданные и ошибки | `bg-ripple`, `bg-pill`, `text-danger` | `--neui-wave`, `--neui-pill-bg`, `--neui-danger` |
+| Высота целей и скругления | `min-h-hit`, `min-h-action`, `min-h-choice`, `rounded-row`, `rounded-choice` | `--neui-hit`, `--neui-action-height`, `--neui-choice-height`, `--neui-row-radius`, `--neui-choice-radius` |
 
 Например, класс `brand` на светлой поверхности задаёт общий акцент для жёлоба, выбранной точки и собственного текста с `text-accent`:
 
 ```css
-.tn-surface.brand[data-theme="light"] {
-  --tn-copper: #86421c;
+.neui-surface.brand[data-theme="light"] {
+  --neui-copper: #86421c;
 }
 ```
 
-В графитовой теме источник света и ореол настраиваются через `--tn-core` и `--tn-halo`. Для геометрии жёлоба задавайте радиус и высоту световой полосы в пикселях. Приложение с обычным CSS может подключить только `@trinet/design-system/styles.css` и использовать те же переменные.
+В графитовой теме источник света и ореол настраиваются через `--neui-core` и `--neui-halo`. Для геометрии жёлоба задавайте радиус и высоту световой полосы в пикселях. Приложение с обычным CSS может подключить только `@neui/kit/styles.css` и использовать те же переменные.
 
 ### Кто владеет разметкой
 
@@ -48,39 +48,50 @@ Workflow Component catalog проверяет pull request и прикладыв
 
 | Примитив | Разметка и CSS | Подключаемое поведение |
 |---|---|---|
-| Row | `tn-row` на label, button или другом контейнере. Прямые дети занимают именованные области `row-area-leading`, `row-area-content`, `row-area-trailing`. Описание можно поместить рядом с текстом внутри content. | Нативный контрол управляет выбором. Для волны добавьте `tn-ripple` и `ref={useRipple()}` на саму цель. |
-| Pill | `tn-pill` на одном элементе. Для действия подойдёт `button type="button"`, для вычисленного статуса — `output`. CSS рисует фон внутри области нажатия. | Нативная активация и обработчик приложения. |
+| Row | `neui-row` на label, button или другом контейнере. Прямые дети занимают именованные области `neui-row-area-leading`, `neui-row-area-content`, `neui-row-area-trailing`. Описание можно поместить рядом с текстом внутри content. | Нативный контрол управляет выбором. Для волны добавьте `neui-ripple` на саму цель после однократного импорта `@neui/kit/ripple` в приложение. |
+| Pill | `neui-pill` на одном элементе. Для действия подойдёт `button type="button"`, для вычисленного статуса — `output`. CSS рисует фон внутри области нажатия. | Нативная активация и обработчик приложения. |
 | Field | `fieldset` и `legend` группируют контролы. При отдельной видимой подписи укажите её ID через `aria-labelledby`, пояснения свяжите через `aria-describedby`. | Валидация и выбор момента показа ошибок принадлежат форме. |
-| Reveal | `tn-reveal` задаёт переход между высотами, `tn-reveal-clip` ограничивает содержимое. Потомки остаются смонтированными. | `useReveal(open, triggerRef?)` возвращает props панели, управляет inert, aria-hidden и возвратом фокуса. `useRevealGroup(open, { followViewport, onCollapsed })` возвращает ref группы для сопровождения раскрытия и завершения сворачивания. |
+| Reveal | `neui-reveal` задаёт переход между высотами, `neui-reveal-clip` ограничивает содержимое. Потомки остаются смонтированными. | `useReveal(open, triggerRef?)` возвращает props панели, управляет inert, aria-hidden и возвратом фокуса. `useRevealGroup(open, { followViewport, onCollapsed })` возвращает ref группы для сопровождения раскрытия и завершения сворачивания. |
 | Ridge | В рецепте `recipes/Ridge.tsx` видны подпись, sticky-дуги, стенки, прорезь, SVG-маски и зона метаданных. У каждой части есть CSS-класс. | `useRidge()` возвращает ref корня. Хук привязывает геометрию к реальной ширине, baseline и фокусу. `useFocusAnchor(ref, measure)` задаёт центр света в координатах viewport, например по строке каретки. |
 
 ```html
-<label class="tn-row">
-  <input class="row-area-leading" type="checkbox" name="delivery" value="email" />
-  <span class="row-area-content">Электронная почта</span>
+<label class="neui-row">
+  <input class="neui-row-area-leading" type="checkbox" name="delivery" value="email" />
+  <span class="neui-row-area-content">Электронная почта</span>
 </label>
-<button type="button" class="tn-pill">Сбросить</button>
+<button type="button" class="neui-pill">Сбросить</button>
 ```
 
 ### Жизненный цикл поведения
 
 `prepareBehavior(attach)` вызывается один раз на уровне модуля. Он возвращает React-хук со стабильным callback-ref. Каждый экземпляр хука подключает поведение к своему узлу и вызывает cleanup при замене узла или размонтировании. Статическую конфигурацию можно замкнуть в `attach`. Изменяемое состояние передавайте в обычный хук, как `open` в `useReveal`.
 
-```tsx
-import { prepareBehavior } from '@trinet/design-system'
-import { attachRipple } from '@trinet/design-system/dom'
+В обычном DOM функции `attachRidge` и `attachFocusAnchor` доступны через `@neui/kit/dom`. Для ripple достаточно одного импорта на документ.
 
-const usePressLight = prepareBehavior(attachRipple)
+### Ripple
 
-export function PreviewAction() {
-  const ripple = usePressLight()
-  return <button type="button" ref={ripple} className="tn-row tn-ripple">
-    <span className="row-area-content">Предпросмотр</span>
-  </button>
-}
+В точке входа приложения или в Storybook preview подключите:
+
+```ts
+import '@neui/kit/ripple'
 ```
 
-Готовый `useRipple` уже создан этой фабрикой. В обычном DOM вызовите `const detach = attachRipple(element)` и затем `detach()` при снятии поведения. Точка входа `@trinet/design-system/dom` также экспортирует `attachRidge` и `attachFocusAnchor` и загружается без React.
+```html
+<button type="button" class="neui-row neui-ripple">
+  <span class="neui-row-area-content">Предпросмотр</span>
+</button>
+```
+
+Делегирование событий работает и для добавленных позже строк. При нажатии волна начинается в точке касания. При активации с клавиатуры она начинается у маркера или в центре. Отпускание завершает рост и гасит свет, отмена касания при прокрутке сразу очищает отклик. Параметры темы и анимации задаются в CSS.
+
+| Переменная | Значение |
+|---|---|
+| `--neui-ripple-progress` | Прогресс от 0 до 1. При 1 радиус достигает самого далёкого угла. |
+| `--neui-ripple-x`, `--neui-ripple-y` | Координаты центра в процентах, по умолчанию 50% и 50%. |
+| `--neui-wave` | Цвет волны на текущей поверхности. |
+| `--neui-ripple-duration`, `--neui-ripple-fade` | Рост за 240 мс, затем затухание за 170 мс. При уменьшенном движении переход мгновенный. |
+
+Псевдоэлемент интерполирует зарегистрированное CSS-свойство через `transition`. Для ручного предпросмотра задайте `--neui-ripple-progress: .5` на элементе с классом `neui-ripple`. Paint Worklet рисует маску после успешной загрузки модуля. При отсутствии API или запрете загрузки ту же маску рисует радиальный градиент.
 
 ### Контракт жёлоба
 

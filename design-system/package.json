@@ -1,10 +1,11 @@
 {
-  "name": "@trinet/design-system",
+  "name": "@neui/kit",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./ripple": "./src/ripple/index.ts",
     "./dom": "./src/dom.ts",
     "./behaviors": "./src/behaviors.ts",
     "./styles.css": "./src/styles.css",

@@ -1,5 +1,5 @@
 import type { ReactNode, RefObject } from 'react'
-import { useReveal, useRevealGroup } from '@trinet/design-system/behaviors'
+import { useReveal, useRevealGroup } from '@neui/kit/behaviors'
 
 export interface RevealProps {
   open: boolean
@@ -14,8 +14,8 @@ export interface RevealProps {
 
 function Item({ open, children, returnFocusRef }: Pick<RevealProps, 'open' | 'children' | 'returnFocusRef'>) {
   const panel = useReveal(open, returnFocusRef)
-  return <div className="tn-reveal" {...panel}>
-    <div className="tn-reveal-clip">{children}</div>
+  return <div className="neui-reveal" {...panel}>
+    <div className="neui-reveal-clip">{children}</div>
   </div>
 }
 

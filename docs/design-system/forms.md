@@ -1,6 +1,6 @@
 # Form design guide
 
-The Trinet notification form is the reference for this guide. Its fields answer three different questions at a glance. What value have I chosen? Where am I working? What can I do here next? The same answers should remain legible as a field grows from one line to a full screen. [Try the reference form](https://trinet-radio-touch.dewyfrog69.chatgpt.site/?locale=ru-RU).
+NEUI is the design system. The Trinet notification form is its reference application. Its fields answer three different questions at a glance. What value have I chosen? Where am I working? What can I do here next? The same answers should remain legible as a field grows from one line to a full screen. [Try the reference form](https://trinet-radio-touch.dewyfrog69.chatgpt.site/?locale=ru-RU).
 
 ## 1. One value occupies one region of the surface
 
@@ -66,6 +66,6 @@ The component kit includes Row, Reveal, Ridge, Pill and Field. The React notific
 
 ## Implementing the patterns
 
-The application owns the elements, their semantics and their order. Publish layout and material as CSS. Mark row children with named grid areas. A metadata capsule can be a native button or an output with the same class. Attach interaction to those elements through a hook when it needs event coordinates, focus management or measurement. A hook factory can capture static options once outside rendering. Each mounted instance owns its listeners and cleanup.
+The application owns the elements, their semantics and their order. Publish layout and material as CSS. Mark row children with named grid areas. A metadata capsule can be a native button or an output with the same class. A single application import delegates press feedback to elements marked with `neui-ripple`. CSS transitions drive the progress supplied to the paint worklet or gradient. Attach hooks to individual elements for focus management and measurement. A hook factory can capture static options once outside rendering. Each mounted instance owns its listeners and cleanup.
 
 Publish compound structures such as the ridge as editable recipes. Their sticky tracks, drawing surface and content regions belong to the consuming markup. Keep the choice of renderer independent of the field’s value and accessible name. [CSS API, hooks and recipes](../../design-system/README.md)

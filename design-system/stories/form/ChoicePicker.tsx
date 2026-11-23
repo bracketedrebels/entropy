@@ -1,6 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode, RefObject } from 'react'
-import { useRipple } from '../../src'
 import { Field } from '../../recipes/Field'
 import { Reveal } from '../../recipes/Reveal'
 import { Icon } from './Icon'
@@ -39,8 +38,6 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   const search = useRef<HTMLInputElement>(null)
   const localTrigger = useRef<HTMLButtonElement>(null)
   const trigger = triggerRef ?? localTrigger
-  const searchRipple = useRipple()
-  const promptRipple = useRipple()
   const optionsId = id + '-options'
   const searchable = options.length > 6
   const windowed = options.length > 40
@@ -124,7 +121,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
     const pitch = probe.current?.getBoundingClientRect().height ?? 0
     if (windowed && list.current && pitch) {
       const top = list.current.getBoundingClientRect().top + index * pitch
-      const ceiling = Math.max(0, search.current?.closest('.tn-header-slot')?.getBoundingClientRect().bottom ?? 0)
+      const ceiling = Math.max(0, search.current?.closest('.neui-header-slot')?.getBoundingClientRect().bottom ?? 0)
       const floor = Math.min(window.innerHeight, trigger.current?.getBoundingClientRect().top ?? window.innerHeight)
       if (top < ceiling) window.scrollBy(0, top - ceiling)
       else if (top + pitch > floor) window.scrollBy(0, top + pitch - floor)
@@ -157,7 +154,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   function flushGap(index: number) {
     if (!gap) return
     rows.push(<Reveal.Item key={'gap-' + (index - gap)} open={open}>
-      <div aria-hidden="true" style={{ height: 'calc(' + gap + ' * var(--tn-project-height))' }} />
+      <div aria-hidden="true" style={{ height: 'calc(' + gap + ' * var(--neui-project-height))' }} />
     </Reveal.Item>)
     gap = 0
   }
@@ -179,39 +176,39 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   flushGap(matches.length)
 
   return <Field id={id} label={label} description={description} header={searchable && <Reveal open={open} returnFocusRef={trigger}>
-    <div ref={searchRipple} className="tn-row tn-ripple tn-entry">
-      <Icon name="search" className="row-area-leading place-self-center" />
-      <input ref={search} type="search" className="tn-field-input row-area-content" aria-label={searchLabel} placeholder={searchLabel}
+    <div className="neui-row neui-ripple neui-entry">
+      <Icon name="search" className="neui-row-area-leading place-self-center" />
+      <input ref={search} type="search" className="neui-field-input neui-row-area-content" aria-label={searchLabel} placeholder={searchLabel}
         disabled={!open} aria-controls={optionsId} value={query} onChange={e => filter(e.target.value)}
         onKeyDown={e => {
           if (e.key === 'Escape') { e.preventDefault(); close() }
           if (matches.length && (e.key === 'ArrowDown' || e.key === 'Enter')) { e.preventDefault(); focusOption(0) }
         }} />
-      {query && <button className="tn-clear row-area-trailing" type="button"
+      {query && <button className="neui-clear neui-row-area-trailing" type="button"
         aria-label="Очистить поиск" onClick={() => { filter(''); search.current?.focus({ preventScroll: true }) }}>
         <Icon name="clear" />
       </button>}
     </div>
   </Reveal>} meta={<>
-    <button type="button" className="tn-pill" ref={trigger} aria-controls={optionsId} aria-expanded={open}
+    <button type="button" className="neui-pill" ref={trigger} aria-controls={optionsId} aria-expanded={open}
       aria-label={(open ? 'Свернуть' : 'Раскрыть') + ' ' + actionLabel + '. ' + caption}
       onClick={e => open ? close() : expand(e.detail === 0 ? (searchable ? 'search' : order[0]?.[0]) : undefined)}>
-      {caption}<svg className="tn-chev" data-open={open} width="12" height="12" viewBox="0 0 16 16" aria-hidden="true">
+      {caption}<svg className="neui-chev" data-open={open} width="12" height="12" viewBox="0 0 16 16" aria-hidden="true">
         <path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
     </button>{recovery}
   </>}>
     <Reveal.Group followViewport open={open} id={optionsId} onCollapsed={() => setSettled(true)}>
-      <div ref={list} className={windowed ? 'tn-catalog' : undefined}>
-        {windowed && <div ref={probe} className="tn-pitch" aria-hidden="true" />}
+      <div ref={list} className={windowed ? 'neui-catalog' : undefined}>
+        {windowed && <div ref={probe} className="neui-pitch" aria-hidden="true" />}
         {rows}
       </div>
-      {open && !!terms.length && <p className="tn-note" role="status">{matches.length
+      {open && !!terms.length && <p className="neui-note" role="status">{matches.length
         ? 'Найдено: ' + matches.length : 'Совпадений нет. Попробуйте другой запрос.'}</p>}
       <Reveal.Item open={!open && !chosen.length} returnFocusRef={trigger}>
-        <button type="button" ref={promptRipple} className="tn-row tn-ripple"
+        <button type="button" className="neui-row neui-ripple"
           onClick={() => expand(searchable ? 'search' : order[0]?.[0])}>
-          <Icon name={name === 'delivery' ? 'mail' : 'project'} className="row-area-leading place-self-center" />
-          <span className="tn-row-copy">{emptyLabel}</span>
+          <Icon name={name === 'delivery' ? 'mail' : 'project'} className="neui-row-area-leading place-self-center" />
+          <span className="neui-row-copy">{emptyLabel}</span>
         </button>
       </Reveal.Item>
     </Reveal.Group>

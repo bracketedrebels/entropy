@@ -11,7 +11,7 @@ const meta = {
     docs: {
       source: { code: source },
       description: {
-        component: 'tn-row задаёт CSS Grid с именованными областями leading, content и trailing. Разместите в них свои элементы классом row-area-*. Нативный label связывает текст и checkbox. useRipple подключает отклик к поверхности строки.',
+        component: 'neui-row задаёт CSS Grid с именованными областями leading, content и trailing. Разместите в них свои элементы классом neui-row-area-*. Нативный label связывает текст и checkbox. Класс neui-ripple подключает отклик к поверхности строки.',
       },
     },
   },

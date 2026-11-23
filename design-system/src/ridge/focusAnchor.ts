@@ -9,9 +9,9 @@ export function attachFocusAnchor(node: Element, measure: () => number) {
 
 export function focusCentre(shell: HTMLElement) {
   const active = shell.ownerDocument.activeElement
-  if (!active || active.closest('.tn-ridge') !== shell) return null
+  if (!active || active.closest('.neui-ridge') !== shell) return null
   const measure = anchors.get(active)
   if (measure) return measure()
-  const rect = (active.closest('.tn-row,.tn-pill') ?? active).getBoundingClientRect()
+  const rect = (active.closest('.neui-row,.neui-pill') ?? active).getBoundingClientRect()
   return rect.top + rect.height / 2
 }

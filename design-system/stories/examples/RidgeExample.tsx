@@ -6,9 +6,9 @@ export function RidgeExample() {
   return (
     <Ridge id={id} label="Этапы обработки">
       {Array.from({ length: 24 }, (_, index) => (
-        <label className="tn-row" key={index}>
-          <input className="row-area-leading place-self-center" type="radio" name={id} defaultChecked={index === 0} />
-          <span className="row-area-content">Этап {index + 1}</span>
+        <label className="neui-row" key={index}>
+          <input className="neui-row-area-leading place-self-center" type="radio" name={id} defaultChecked={index === 0} />
+          <span className="neui-row-area-content">Этап {index + 1}</span>
         </label>
       ))}
     </Ridge>

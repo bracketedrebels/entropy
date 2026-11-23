@@ -22,7 +22,7 @@ export function NotificationSettings() {
     setState(old => ({ ...old, primaryProject: key,
       projects: key ? [key, ...old.projects.filter(value => value !== key)] : old.projects }))
   }
-  const recovery = (state.primaryProject || previousProject) && <button type="button" className="tn-pill"
+  const recovery = (state.primaryProject || previousProject) && <button type="button" className="neui-pill"
     aria-label={(previousProject ? 'Вернуть' : 'Сбросить') + ' первый проект'}
     onClick={() => {
       priorityTrigger.current?.focus({ preventScroll: true })
@@ -30,8 +30,8 @@ export function NotificationSettings() {
       else { setPreviousProject(state.primaryProject); setState(old => ({ ...old, primaryProject: '' })) }
     }}>{previousProject ? 'Вернуть' : 'Сбросить'}</button>
 
-  return <main className="tn-example" lang="ru"><h1>Настройки сводки</h1>
-    <form className="tn-settings" onSubmit={e => e.preventDefault()}>
+  return <main className="neui-example" lang="ru"><h1>Настройки сводки</h1>
+    <form className="neui-settings" onSubmit={e => e.preventDefault()}>
       <RadioField id={id + '-frequency'} name="frequency" label="Как часто присылать сводку?" options={frequency}
         value={state.frequency} onChange={value => setText('frequency', value)} />
       <RadioField id={id + '-format'} name="format" label="В каком формате?" options={format}
@@ -39,7 +39,7 @@ export function NotificationSettings() {
       <ChoicePicker id={id + '-delivery'} name="delivery" label="Куда доставлять сводку?" actionLabel="каналы доставки"
         options={channels} multiple selected={state.delivery} emptyLabel="Доставка выключена" triggerRef={deliveryTrigger}
         onChange={delivery => setState(old => ({ ...old, delivery }))} />
-      <Reveal open={emailEnabled} returnFocusRef={deliveryTrigger}><div className="tn-conditional-field">
+      <Reveal open={emailEnabled} returnFocusRef={deliveryTrigger}><div className="neui-conditional-field">
         <EmailField id={id + '-email'} enabled={emailEnabled} value={state.emailText} applied={state.emailAddress}
           onChange={(emailText, emailAddress) => setState(old => ({ ...old, emailText, emailAddress }))} />
       </div></Reveal>
@@ -63,7 +63,7 @@ export function NotificationSettings() {
       <TextField id={id + '-sender'} name="senderName" label="Имя отправителя" icon="person" value="Trinet"
         description="Имя задано профилем отправителя." readOnly />
     </form>
-    <p className="tn-after" role="status">{saved ? 'Настройки и черновики сохраняются на этом устройстве.'
+    <p className="neui-after" role="status">{saved ? 'Настройки и черновики сохраняются на этом устройстве.'
       : 'Не удалось сохранить на устройстве. Изменения пока доступны в этой вкладке.'}</p>
   </main>
 }

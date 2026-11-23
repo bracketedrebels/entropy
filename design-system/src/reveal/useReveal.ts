@@ -27,7 +27,7 @@ export function useRevealGroup<T extends HTMLElement = HTMLDivElement>(open: boo
     if (!host.current || previous.current === open) return
     previous.current = open
     if (open) {
-      if (followViewport) return followExpansion(host.current.closest<HTMLElement>('.tn-ridge') ?? host.current, host.current)
+      if (followViewport) return followExpansion(host.current.closest<HTMLElement>('.neui-ridge') ?? host.current, host.current)
       return
     }
     if (!settled.current) return

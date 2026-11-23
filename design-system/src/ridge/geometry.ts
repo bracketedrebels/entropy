@@ -7,15 +7,15 @@ type TimelineConstructor = new (options: TimelineOptions) => AnimationTimeline
 export function attachRidge(shell: HTMLElement) {
   // Select this instance's frame only, including when the consumer nests another Ridge.
   function find(part: string) {
-    const node = Array.from(shell.getElementsByClassName('tn-' + part)).find(el => el.closest('.tn-ridge') === shell)
-    if (!node) throw new Error('Ridge requires a .tn-' + part + ' in its frame.')
+    const node = Array.from(shell.getElementsByClassName('neui-' + part)).find(el => el.closest('.neui-ridge') === shell)
+    if (!node) throw new Error('Ridge requires a .neui-' + part + ' in its frame.')
     return node as HTMLElement
   }
   const caption = find('caption'), baseline = find('baseline'), header = find('header-slot'), meta = find('meta')
   const head = find('head'), foot = find('foot'), body = find('body')
   const topClip = find('top-clip'), bottomClip = find('bottom-clip'), ink = find('ink')
   const panes = ['upper', 'walls', 'base'].map(part => find(part))
-  const textures = panes.map(pane => pane.querySelector<SVGGElement>('.tn-texture')!)
+  const textures = panes.map(pane => pane.querySelector<SVGGElement>('.neui-texture')!)
   const lights = panes.map(pane => pane.querySelector('rect')!)
   const shift = (y: number) => 'translateY(' + y + 'px)'
   const translate = (y: number) => '0 ' + y + 'px'
@@ -30,7 +30,7 @@ export function attachRidge(shell: HTMLElement) {
     const centre = focusCentre(shell)
     for (const light of lights) light.toggleAttribute('data-lit', centre !== null)
     if (centre === null) return
-    const height = parseFloat(getComputedStyle(shell).getPropertyValue('--tn-band'))
+    const height = parseFloat(getComputedStyle(shell).getPropertyValue('--neui-band'))
     const y = centre - shell.getBoundingClientRect().top - height / 2
     for (const light of lights) {
       light.setAttribute('y', String(y))
@@ -57,20 +57,20 @@ export function attachRidge(shell: HTMLElement) {
     const top = base.top - label.top
     const start = Math.max(top + gap, label.height + 2)
     const band = header.offsetHeight, metadata = meta.offsetHeight
-    shell.style.setProperty('--tn-start', (start + band) + 'px')
-    shell.style.setProperty('--tn-foot-pad', Math.max(inset, metadata) + 'px')
+    shell.style.setProperty('--neui-start', (start + band) + 'px')
+    shell.style.setProperty('--neui-foot-pad', Math.max(inset, metadata) + 'px')
     const height = shell.getBoundingClientRect().height, bottom = height - left
     const maxR = Math.max(0, Math.min((right-left)/2, (bottom-top)/2))
-    const radius = Math.min(parseFloat(getComputedStyle(shell).getPropertyValue('--tn-row-radius')) + gap, maxR)
-    const pill = meta.querySelector('.tn-pill')
-    const faceHeight = pill ? pill.getBoundingClientRect().height - 2 * parseFloat(getComputedStyle(pill).getPropertyValue('--tn-pill-inset')) : 0
+    const radius = Math.min(parseFloat(getComputedStyle(shell).getPropertyValue('--neui-row-radius')) + gap, maxR)
+    const pill = meta.querySelector('.neui-pill')
+    const faceHeight = pill ? pill.getBoundingClientRect().height - 2 * parseFloat(getComputedStyle(pill).getPropertyValue('--neui-pill-inset')) : 0
     const br = faceHeight > 0 ? Math.min(faceHeight / 2 + gap, maxR) : radius
     const depth = Math.max(radius, br, metadata - left)
     const headH = top + radius + band
     join = bottom - depth
     const travel = Math.max(0, join - headH)
-    shell.style.setProperty('--tn-head', headH + 'px')
-    shell.style.setProperty('--tn-foot', (height - join) + 'px')
+    shell.style.setProperty('--neui-head', headH + 'px')
+    shell.style.setProperty('--neui-foot', (height - join) + 'px')
     const x = Math.min(right - radius, base.left - shell.getBoundingClientRect().left + 8)
     const paths = [
       `M ${x} ${top} H ${right-radius} a ${radius} ${radius} 0 0 1 ${radius} ${radius} V ${headH+4} M ${left} ${headH+4} V ${start+1.65}`,
@@ -79,7 +79,7 @@ export function attachRidge(shell: HTMLElement) {
     ]
     const heights = [headH, travel, height-join]
     panes.forEach((pane, index) => {
-      pane.querySelectorAll('mask path, .tn-cut, .tn-lip, .tn-floor').forEach(path => path.setAttribute('d', paths[index]))
+      pane.querySelectorAll('mask path, .neui-cut, .neui-lip, .neui-floor').forEach(path => path.setAttribute('d', paths[index]))
       pane.querySelector('mask')!.setAttribute('height', String(heights[index]+8))
     })
     const inner = Math.max(0, radius-gap), upper = band ? 0 : inner

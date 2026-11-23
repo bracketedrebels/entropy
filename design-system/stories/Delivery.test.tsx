@@ -21,12 +21,12 @@ const choices = () => screen.queryAllByRole<HTMLInputElement>('checkbox')
 it('retains the visible row and its open panel when disclosure reverses', () => {
   render(<Delivery id="delivery" />)
   const inbox = row('Входящие Trinet')
-  const panel = inbox.closest('.tn-reveal')!
+  const panel = inbox.closest('.neui-reveal')!
   for (const count of [6, 0, 6, 0]) {
     fireEvent.click(disclosure())
     expect(choices()).toHaveLength(count)
     expect(row('Входящие Trinet')).toBe(inbox)
-    expect(inbox.closest('.tn-reveal')).toBe(panel)
+    expect(inbox.closest('.neui-reveal')).toBe(panel)
     expect(panel.getAttribute('data-open')).toBe('true')
   }
   fireEvent.click(inbox)

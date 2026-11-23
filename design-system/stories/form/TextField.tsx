@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
-import { useFocusAnchor, useRipple } from '../../src'
+import { useFocusAnchor } from '../../src'
 import { Field } from '../../recipes/Field'
 import { Icon } from './Icon'
 
@@ -13,7 +13,6 @@ type Props = {
 }
 
 export function TextField({ id, name, label, icon, value, limit, description, placeholder, readOnly, onChange }: Props) {
-  const ripple = useRipple()
   const editor = useRef<HTMLTextAreaElement>(null)
   const mirror = useRef<HTMLDivElement>(null)
   const remaining = limit === undefined ? Infinity : limit - value.length
@@ -38,15 +37,15 @@ export function TextField({ id, name, label, icon, value, limit, description, pl
   }, [])
   const word = words.select(remaining)
   return <Field id={id} label={label} description={description} meta={remaining <= 50 &&
-    <span id={id + '-count'} className="tn-pill tn-count" style={{ '--urgency': (50 - remaining) * 2 + '%' } as CSSProperties}>
+    <span id={id + '-count'} className="neui-pill neui-count" style={{ '--urgency': (50 - remaining) * 2 + '%' } as CSSProperties}>
       {word === 'one' ? 'Остался' : 'Осталось'} {remaining} {endings[word] ?? 'символа'}
     </span>}>
-    <div ref={ripple} className="tn-row tn-ripple tn-edit">
-      <Icon name={icon} className="tn-row-leading" />
-      <textarea ref={editor} className="tn-editor" name={name} placeholder={placeholder} readOnly={readOnly} aria-labelledby={id + '-label'}
+    <div className="neui-row neui-ripple neui-edit">
+      <Icon name={icon} className="neui-row-leading" />
+      <textarea ref={editor} className="neui-editor" name={name} placeholder={placeholder} readOnly={readOnly} aria-labelledby={id + '-label'}
         aria-describedby={[description && id + '-description', remaining <= 50 && id + '-count'].filter(Boolean).join(' ') || undefined} rows={1} value={value} maxLength={limit}
         onChange={event => onChange?.(event.target.value)} />
-      <span className="tn-caret-mirror" aria-hidden="true" ref={mirror}>{value + '\u200b'}</span>
+      <span className="neui-caret-mirror" aria-hidden="true" ref={mirror}>{value + '\u200b'}</span>
     </div>
   </Field>
 }

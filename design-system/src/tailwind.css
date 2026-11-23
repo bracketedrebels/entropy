@@ -2,29 +2,34 @@
 
 /* Resolve semantic utilities on the element, including inside nested themed surfaces. */
 @theme inline {
-  --font-ui: var(--tn-font);
-  --color-ink: var(--tn-text);
-  --color-muted: var(--tn-muted);
-  --color-groove: var(--tn-channel);
-  --color-lip: var(--tn-lip);
-  --color-accent: var(--tn-copper);
-  --color-focus-core: var(--tn-core);
-  --color-focus-halo: var(--tn-halo);
-  --color-ripple: var(--tn-wave);
-  --color-pill: var(--tn-pill-bg);
-  --color-danger: var(--tn-danger);
-  --spacing-focus-band: var(--tn-band);
-  --spacing-hit: var(--tn-hit);
-  --spacing-action: var(--tn-action-height);
-  --spacing-choice: var(--tn-choice-height);
-  --radius-row: var(--tn-row-radius);
-  --radius-choice: var(--tn-choice-radius);
+  --font-ui: var(--neui-font);
+  --color-ink: var(--neui-text);
+  --color-muted: var(--neui-muted);
+  --color-groove: var(--neui-channel);
+  --color-lip: var(--neui-lip);
+  --color-accent: var(--neui-copper);
+  --color-focus-core: var(--neui-core);
+  --color-focus-halo: var(--neui-halo);
+  --color-ripple: var(--neui-wave);
+  --color-pill: var(--neui-pill-bg);
+  --color-danger: var(--neui-danger);
+  --spacing-focus-band: var(--neui-band);
+  --spacing-hit: var(--neui-hit);
+  --spacing-action: var(--neui-action-height);
+  --spacing-choice: var(--neui-choice-height);
+  --radius-row: var(--neui-row-radius);
+  --radius-choice: var(--neui-choice-radius);
 }
 
 @utility bg-surface {
-  background: var(--tn-bg);
+  background: var(--neui-bg);
 }
 
-@utility row-area-* {
+@utility neui-row-area-* {
   grid-area: --value("leading", "content", "trailing");
+}
+
+/* Allow @apply and Tailwind variants to opt a native element into delegation. */
+@utility neui-ripple {
+  --neui-ripple-target: 1;
 }

@@ -12,7 +12,7 @@ export function followExpansion(region: HTMLElement, panel: HTMLElement) {
   const scroller = container ?? document.scrollingElement
   if (!scroller) return () => {}
   const controller = new AbortController()
-  const head = region.querySelector('.tn-head'), foot = region.querySelector('.tn-foot')
+  const head = region.querySelector('.neui-head'), foot = region.querySelector('.neui-foot')
   const topInset = head ? parseFloat(getComputedStyle(head).top) || 0 : 0
   const bottomInset = foot ? parseFloat(getComputedStyle(foot).bottom) || 0 : 0
   function follow() {
