@@ -1,6 +1,14 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
-import { Delivery } from './Delivery'
+import { useState } from 'react'
+import { ChoicePicker } from './form/ChoicePicker'
+import { channels } from './form/options'
+
+function Delivery({ id }: { id: string }) {
+  const [selected, setSelected] = useState(['inbox'])
+  return <ChoicePicker id={id} name="delivery" label="Куда доставлять сводку?" actionLabel="каналы доставки"
+    options={channels} selected={selected} onChange={setSelected} multiple emptyLabel="Доставка выключена" />
+}
 
 // jsdom has no layout. Exercise the real React disclosure, native controls and focus.
 vi.mock('../src/ridge/geometry', () => ({ attachRidge: () => undefined }))

@@ -29,7 +29,7 @@ export function followExpansion(region: HTMLElement, panel: HTMLElement) {
   const stop = () => { controller.abort(); observer.disconnect() }
   observer.observe(region)
   const options = { signal: controller.signal, passive: true, capture: true }
-  for (const event of ['pointerdown', 'touchmove', 'wheel', 'keydown']) window.addEventListener(event, stop, options)
+  for (const event of ['pointerdown', 'touchmove', 'wheel', 'keydown', 'input']) window.addEventListener(event, stop, options)
   follow()
   void Promise.allSettled(revealTransitions(panel).map(animation => animation.finished)).then(() => {
     if (!controller.signal.aborted) { follow(); stop() }

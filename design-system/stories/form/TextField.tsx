@@ -1,17 +1,20 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
-import { Field, Pill, Row, useFocusAnchor } from '../src'
+import { Field, Pill, Row, useFocusAnchor } from '../../src'
+import { Icon } from './Icon'
 
-const initial = 'Доброе утро, команда!\nВот новости проекта за неделю.\n\nВ пятницу покажем обновлённую форму на демо.'
-const limit = 150
 const words = new Intl.PluralRules('ru')
 const endings: Record<string, string> = { one: 'символ', few: 'символа', many: 'символов' }
 
-export function Introduction({ id }: { id: string }) {
-  const [text, setText] = useState(initial)
+type Props = {
+  id: string; name: string; label: string; icon: 'pencil' | 'text' | 'person'; value: string
+  limit?: number; description?: string; placeholder?: string; readOnly?: boolean; onChange?: (value: string) => void
+}
+
+export function TextField({ id, name, label, icon, value, limit, description, placeholder, readOnly, onChange }: Props) {
   const editor = useRef<HTMLTextAreaElement>(null)
   const mirror = useRef<HTMLDivElement>(null)
-  const remaining = limit - text.length
+  const remaining = limit === undefined ? Infinity : limit - value.length
   useFocusAnchor(editor, node => {
     const content = mirror.current?.firstChild
     if (!content) return node.getBoundingClientRect().top + 24
@@ -32,16 +35,15 @@ export function Introduction({ id }: { id: string }) {
     return () => resize.disconnect()
   }, [])
   const word = words.select(remaining)
-  return <Field id={id} label="Вступительный текст" meta={remaining <= 50 &&
+  return <Field id={id} label={label} description={description} meta={remaining <= 50 &&
     <Pill.Status id={id + '-count'} className="tn-count" style={{ '--urgency': (50 - remaining) * 2 + '%' } as CSSProperties}>
       {word === 'one' ? 'Остался' : 'Осталось'} {remaining} {endings[word] ?? 'символа'}
     </Pill.Status>}>
-    <Row className="tn-edit" leading={<svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none"
-      stroke="currentColor"><path d="M2 3.5h12M2 7.5h9M2 11.5h7" /></svg>}>
-      <textarea ref={editor} className="tn-editor" aria-labelledby={id + '-label'}
-        aria-describedby={remaining <= 50 ? id + '-count' : undefined} rows={1} value={text} maxLength={limit}
-        onChange={event => setText(event.target.value)} />
-      <span className="tn-caret-mirror" aria-hidden="true" ref={mirror}>{text + '\u200b'}</span>
+    <Row className="tn-edit" leading={<Icon name={icon} />}>
+      <textarea ref={editor} className="tn-editor" name={name} placeholder={placeholder} readOnly={readOnly} aria-labelledby={id + '-label'}
+        aria-describedby={[description && id + '-description', remaining <= 50 && id + '-count'].filter(Boolean).join(' ') || undefined} rows={1} value={value} maxLength={limit}
+        onChange={event => onChange?.(event.target.value)} />
+      <span className="tn-caret-mirror" aria-hidden="true" ref={mirror}>{value + '\u200b'}</span>
     </Row>
   </Field>
 }

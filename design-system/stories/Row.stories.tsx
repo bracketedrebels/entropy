@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { Row } from '../src'
-import { Mark } from './Delivery'
+import { Mark } from './form/OptionRow'
 
 function Example({ disabled, description }: { disabled: boolean; description: string }) {
   const [checked, setChecked] = useState(false)
