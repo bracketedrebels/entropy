@@ -1,27 +1,35 @@
-.tn-surface {
+:where(.tn-surface) {
+  --tn-font: Ubuntu, system-ui, sans-serif;
+  --tn-hit: 48px; --tn-action-height: 44px; --tn-choice-height: 64px;
+  --tn-inset: 11px; --tn-row-radius: 24px; --tn-choice-radius: 32px;
   --tn-bg: linear-gradient(180deg, #f3f6f8, #e6ecf1 49%, #d4dee7);
   --tn-text: #293944; --tn-muted: #586b78; --tn-channel: #adbcc57a;
   --tn-shadow: #73859368; --tn-lip: #ffffffc7; --tn-copper: #ad4a12;
+  --tn-mark-selected: var(--tn-copper); --tn-mark-shadow: inset 0 1px 1px var(--tn-shadow), 0 1px 0 var(--tn-lip);
   --tn-band: 24px; --tn-core: #b64c10; --tn-halo: #b64c10;
   --tn-wave: #ffffffba; --tn-pill-bg: #72869816; --tn-danger: #a2352a;
   --tn-pin-top: calc(8px + env(safe-area-inset-top)); --tn-pin-bottom: calc(8px + env(safe-area-inset-bottom));
   color-scheme: light; color: var(--tn-text); background: var(--tn-bg);
-  font: 300 1rem/1.5 Ubuntu, system-ui, sans-serif;
+  font: 300 1rem/1.5 var(--tn-font);
 }
-.tn-surface[data-theme="dark"] {
+:where(.tn-surface[data-theme="dark"]) {
   color-scheme: dark; --tn-bg: linear-gradient(180deg,#303740, #252d35 52%, #1f252c);
   --tn-text: #e1eaf1; --tn-muted: #adbcc8; --tn-channel: #283139;
   --tn-shadow: #0b121aab; --tn-lip: #72818c75; --tn-core: #ffdfae; --tn-halo: #bd8960;
+  --tn-mark-selected:#fff4dc; --tn-mark-shadow:0 0 2px 1px #ffc187,0 0 9px 2px #ff994d7d;
   --tn-band: 64px; --tn-wave: #cbe8ff30; --tn-pill-bg: #93aabc16; --tn-danger: #ffa99b;
 }
 .tn-surface *, .tn-surface *::before, .tn-surface *::after { box-sizing: border-box }
 .tn-row {
-  position: relative; isolation: isolate; display: grid; width: 100%; min-height: 48px;
+  position: relative; isolation: isolate; display: grid; width: 100%; min-height: var(--tn-hit,48px);
   grid-template-columns: 6px minmax(0,1fr) auto; align-items: center; column-gap: 18px;
-  padding: 8px 12px 8px 10px; border: 0; border-radius: 24px;
+  padding: 8px 12px 8px 10px; border: 0; border-radius: var(--tn-row-radius,24px);
   font: inherit; text-align: start; color: inherit; background: transparent;
 }
 button.tn-row, label.tn-row, .tn-pill-action { cursor: pointer; touch-action: manipulation }
+.tn-mark { width:6px; height:6px; border-radius:1.5px; background:var(--tn-channel); box-shadow:inset 0 1px 1px var(--tn-shadow),0 1px 0 var(--tn-lip) }
+.tn-mark[data-round] { border-radius:50% }
+.tn-mark[data-selected=true] { background:var(--tn-mark-selected); box-shadow:var(--tn-mark-shadow) }
 .tn-row-leading { grid-column: 1; display: grid; place-content: center }
 .tn-row-copy { grid-column: 2; min-width: 0; overflow-wrap: anywhere }
 .tn-row-copy small, .tn-note { display: block; margin: 1px 0 0; font: inherit; font-size: .875rem; color: var(--tn-muted) }
@@ -38,7 +46,7 @@ button.tn-row, label.tn-row, .tn-pill-action { cursor: pointer; touch-action: ma
 .tn-reveal[data-open=true] { grid-template-rows:1fr }
 .tn-reveal-clip { min-height:0; overflow:clip }
 .tn-reveal[inert] { pointer-events:none }
-.tn-ridge { position:relative; --tn-inset:11px; --tn-row-radius:24px }
+.tn-ridge { position:relative }
 .tn-top-track, .tn-bottom-track { position:absolute; z-index:1; pointer-events:none }
 .tn-top-track { inset:0 0 var(--tn-foot,36px); overflow:clip }
 .tn-head { position:sticky; top:var(--tn-pin-top); height:var(--tn-head,64px) }
@@ -60,7 +68,7 @@ button.tn-row, label.tn-row, .tn-pill-action { cursor: pointer; touch-action: ma
 .tn-light[data-lit] { opacity:1 }
 .tn-surface[data-theme=light] .tn-light { fill:var(--tn-copper) }
 .tn-meta { position:absolute; inset-inline:var(--tn-inset); bottom:0; display:flex; flex-flow:row-reverse wrap-reverse; align-items:end; gap:0 6px }
-.tn-pill { display:inline-flex; align-items:center; min-height:44px; max-width:100%; padding:10px 0; margin:0; color:var(--tn-muted); background:transparent; font:inherit; border:0 }
+.tn-pill { display:inline-flex; align-items:center; min-height:var(--tn-action-height,44px); max-width:100%; padding:10px 0; margin:0; color:var(--tn-muted); background:transparent; font:inherit; border:0 }
 .tn-pill > span { border-radius:999px; padding:2px 12px; background:var(--tn-pill-bg); font-size:.875rem; line-height:20px; overflow-wrap:anywhere }
 .tn-pill-action { pointer-events:auto }
 .tn-pill-action:focus-visible { outline:none }

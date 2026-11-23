@@ -12,7 +12,37 @@ Workflow Component catalog проверяет pull request и прикладыв
 
 ## API
 
-Импортируйте нужные элементы из `src/index.ts` и подключите `src/styles.css` один раз. Оберните пример в элемент с классом `tn-surface` и `data-theme="dark"` или `"light"`. При использовании локального пакета те же точки входа доступны как `@trinet/design-system` и `@trinet/design-system/styles.css`. Пакет содержит исходный TypeScript. Storybook подключает Ubuntu Light из локальной сборки.
+Импортируйте примитивы из `@trinet/design-system`. Оберните их в элемент с классом `tn-surface` и атрибутом `data-theme="dark"` или `data-theme="light"`. В Storybook эту обёртку и Ubuntu Light предоставляет каталог. Кнопка **Show code** под каждым примером показывает тот же TSX, который выполняется в превью, включая импорты, состояние и обработчики. У двух вариантов Row после компонента приведены параметры выбранного сценария.
+
+### CSS API на Tailwind 4
+
+Подключите Tailwind 4 к сборке приложения. В Vite для этого используется плагин `@tailwindcss/vite`. В основном CSS приложения импортируйте:
+
+```css
+@import "tailwindcss";
+@import "@trinet/design-system/tailwind.css";
+```
+
+Примитивы попадают в слой `components`. Утилиты Tailwind можно передавать через `className`. Их значения берутся с текущей поверхности, поэтому один и тот же класс подходит для обеих тем.
+
+| Что оформляем | Примеры утилит | Токены поверхности |
+|---|---|---|
+| Поверхность, шрифт и текст | `bg-surface`, `font-ui`, `text-ink`, `text-muted` | `--tn-bg`, `--tn-font`, `--tn-text`, `--tn-muted` |
+| Жёлоб и фокус | `stroke-groove`, `stroke-lip`, `text-accent`, `bg-focus-core`, `bg-focus-halo`, `h-focus-band` | `--tn-channel`, `--tn-lip`, `--tn-copper`, `--tn-core`, `--tn-halo`, `--tn-band` |
+| Отклик, метаданные и ошибки | `bg-ripple`, `bg-pill`, `text-danger` | `--tn-wave`, `--tn-pill-bg`, `--tn-danger` |
+| Высота целей и скругления | `min-h-hit`, `min-h-action`, `min-h-choice`, `rounded-row`, `rounded-choice` | `--tn-hit`, `--tn-action-height`, `--tn-choice-height`, `--tn-row-radius`, `--tn-choice-radius` |
+
+Например, класс `brand` на светлой поверхности задаёт общий акцент для жёлоба, выбранной точки и собственного текста с `text-accent`:
+
+```css
+.tn-surface.brand[data-theme="light"] {
+  --tn-copper: #86421c;
+}
+```
+
+В графитовой теме источник света и ореол настраиваются через `--tn-core` и `--tn-halo`. Для геометрии жёлоба задавайте радиус и высоту световой полосы в пикселях. Приложение с обычным CSS может подключить только `@trinet/design-system/styles.css` и использовать те же переменные.
+
+### Компоненты
 
 | Компонент | Параметры | Поведение |
 |---|---|---|

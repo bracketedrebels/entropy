@@ -1,0 +1,26 @@
+@import "./styles.css" layer(components);
+
+/* Resolve semantic utilities on the element, including inside nested themed surfaces. */
+@theme inline {
+  --font-ui: var(--tn-font);
+  --color-ink: var(--tn-text);
+  --color-muted: var(--tn-muted);
+  --color-groove: var(--tn-channel);
+  --color-lip: var(--tn-lip);
+  --color-accent: var(--tn-copper);
+  --color-focus-core: var(--tn-core);
+  --color-focus-halo: var(--tn-halo);
+  --color-ripple: var(--tn-wave);
+  --color-pill: var(--tn-pill-bg);
+  --color-danger: var(--tn-danger);
+  --spacing-focus-band: var(--tn-band);
+  --spacing-hit: var(--tn-hit);
+  --spacing-action: var(--tn-action-height);
+  --spacing-choice: var(--tn-choice-height);
+  --radius-row: var(--tn-row-radius);
+  --radius-choice: var(--tn-choice-radius);
+}
+
+@utility bg-surface {
+  background: var(--tn-bg);
+}

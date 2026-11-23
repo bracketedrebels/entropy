@@ -1,18 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useState } from 'react'
-import { Row } from '../src'
-import { Mark } from './form/OptionRow'
+import { RowExample } from './examples/RowExample'
+import source from './examples/RowExample.tsx?raw'
 
-function Example({ disabled, description }: { disabled: boolean; description: string }) {
-  const [checked, setChecked] = useState(false)
-  return <div className="tn-example"><Row as="label" className="tn-choice" description={description} leading={
-    <><input type="checkbox" className="tn-option" checked={checked} disabled={disabled} onChange={e => setChecked(e.target.checked)} />
-      <Mark selected={checked} /></>}>Электронная почта</Row></div>
-}
-const meta = { id: 'trinet-row', title: 'Примитивы/Row', component: Example, tags: ['autodocs'],
-  parameters: { docs: { description: { component: 'Row задаёт сетку и область нажатия. Укажите as="label" для нативной опции, as="button" для действия или оставьте div для редактора. leading, children, description и trailing занимают отдельные места. Ripple принадлежит цели нажатия. Значение и focus остаются у контрола.' } } },
+const meta = {
+  id: 'trinet-row',
+  title: 'Примитивы/Row',
+  component: RowExample,
+  tags: ['autodocs'],
+  parameters: {
+    docs: {
+      source: { code: source },
+      description: {
+        component: 'Row задаёт сетку и область нажатия. Укажите as="label" для нативной опции, as="button" для действия или оставьте div для редактора. leading, children, description и trailing занимают отдельные места. Ripple принадлежит цели нажатия. Значение и focus остаются у контрола.',
+      },
+    },
+  },
   args: { disabled: false, description: 'На адрес из профиля' },
-} satisfies Meta<typeof Example>
+} satisfies Meta<typeof RowExample>
 export default meta
-export const Checkbox: StoryObj<typeof meta> = { name: 'Строка выбора' }
-export const Disabled: StoryObj<typeof meta> = { name: 'Недоступная опция', args: { disabled: true, description: 'Укажите адрес в профиле' } }
+
+function rowStory(name: string, args: Parameters<typeof RowExample>[0]): StoryObj<typeof meta> {
+  const usage = '<RowExample disabled={' + args.disabled + '} description=' + JSON.stringify(args.description) + ' />'
+  return { name, args, parameters: { docs: { source: { code: source.trimEnd() + '\n\n' + usage } } } }
+}
+
+export const Checkbox = rowStory('Строка выбора', meta.args)
+export const Disabled = rowStory('Недоступная опция', { disabled: true, description: 'Укажите адрес в профиле' })
