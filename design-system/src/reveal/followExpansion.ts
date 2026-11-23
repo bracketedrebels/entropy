@@ -1,3 +1,8 @@
+export function revealTransitions(panel: HTMLElement) {
+  return (panel.getAnimations?.({ subtree: true }) ?? []).filter(animation =>
+    'transitionProperty' in animation && animation.transitionProperty === 'grid-template-rows')
+}
+
 /** Only an explicit opening gesture may advance the containing scroller. */
 export function followExpansion(region: HTMLElement, panel: HTMLElement) {
   let container: HTMLElement | null = region.parentElement
@@ -26,9 +31,7 @@ export function followExpansion(region: HTMLElement, panel: HTMLElement) {
   const options = { signal: controller.signal, passive: true, capture: true }
   for (const event of ['pointerdown', 'touchmove', 'wheel', 'keydown']) window.addEventListener(event, stop, options)
   follow()
-  const motions = panel.getAnimations({ subtree: true }).filter(animation =>
-    'transitionProperty' in animation && animation.transitionProperty === 'grid-template-rows')
-  void Promise.allSettled(motions.map(animation => animation.finished)).then(() => {
+  void Promise.allSettled(revealTransitions(panel).map(animation => animation.finished)).then(() => {
     if (!controller.signal.aborted) { follow(); stop() }
   })
   return stop

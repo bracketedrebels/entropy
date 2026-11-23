@@ -28,7 +28,11 @@ button.tn-row, label.tn-row, .tn-pill-action { cursor: pointer; touch-action: ma
 .tn-row-trailing { grid-column: 3 }
 .tn-wave-host { position:absolute; inset:0; border-radius:inherit; pointer-events:none; overflow:hidden; z-index:-1 }
 .tn-wave { position:absolute; border-radius:50%; background:radial-gradient(circle,var(--tn-wave) 25%,transparent 75%) }
-.tn-row:focus-visible, .tn-row:has(input:focus-visible), .tn-row:has(textarea:focus-visible) { outline: 1px solid currentColor; outline-offset:-2px }
+.tn-row:focus-visible, .tn-row:has(:where(input, textarea, button):focus-visible) { outline: 1px solid currentColor; outline-offset:-2px }
+/* Inside a ridge the caret line already has its own focus indicator. */
+@media (forced-colors: none) {
+  .tn-ridge .tn-row:has(textarea:focus-visible) { outline: none }
+}
 .tn-row:disabled,.tn-row:has(:disabled) { color:var(--tn-muted); cursor:default }
 .tn-reveal { display:grid; grid-template-rows:0fr; transition:grid-template-rows 240ms cubic-bezier(.2,.8,.2,1) }
 .tn-reveal[data-open=true] { grid-template-rows:1fr }
