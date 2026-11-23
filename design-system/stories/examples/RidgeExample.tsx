@@ -1,16 +1,15 @@
 import { useId } from 'react'
-import { Ridge, Row } from '@trinet/design-system'
+import { Ridge } from '../../recipes/Ridge'
 
 export function RidgeExample() {
   const id = useId()
-
   return (
     <Ridge id={id} label="Этапы обработки">
       {Array.from({ length: 24 }, (_, index) => (
-        <Row as="label" key={index}>
-          <input type="radio" name={id} defaultChecked={index === 0} />
-          {' Этап ' + (index + 1)}
-        </Row>
+        <label className="tn-row" key={index}>
+          <input className="row-area-leading place-self-center" type="radio" name={id} defaultChecked={index === 0} />
+          <span className="row-area-content">Этап {index + 1}</span>
+        </label>
       ))}
     </Ridge>
   )

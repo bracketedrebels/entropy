@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { Ridge } from '../ridge/Ridge'
-import type { RidgeProps } from '../ridge/Ridge'
+import { Ridge } from './Ridge'
+import type { RidgeProps } from './Ridge'
 
 export interface FieldProps extends RidgeProps {
   id: string

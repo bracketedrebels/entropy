@@ -1,6 +1,5 @@
-import { followExpansion, revealTransitions } from './followExpansion'
-import { useLayoutEffect, useRef } from 'react'
 import type { ReactNode, RefObject } from 'react'
+import { useReveal, useRevealGroup } from '@trinet/design-system/behaviors'
 
 export interface RevealProps {
   open: boolean
@@ -14,16 +13,8 @@ export interface RevealProps {
 }
 
 function Item({ open, children, returnFocusRef }: Pick<RevealProps, 'open' | 'children' | 'returnFocusRef'>) {
-  const ref = useRef<HTMLDivElement>(null)
-  useLayoutEffect(() => {
-    const panel = ref.current
-    if (!panel) return
-    if (!open && panel.contains(panel.ownerDocument.activeElement)) returnFocusRef?.current?.focus({ preventScroll: true })
-    panel.toggleAttribute('inert', !open)
-    if (open) panel.removeAttribute('aria-hidden')
-    else panel.setAttribute('aria-hidden', 'true')
-  }, [open, returnFocusRef])
-  return <div className="tn-reveal" ref={ref} data-open={open}>
+  const panel = useReveal(open, returnFocusRef)
+  return <div className="tn-reveal" {...panel}>
     <div className="tn-reveal-clip">{children}</div>
   </div>
 }
@@ -35,26 +26,7 @@ type GroupProps = Pick<RevealProps, 'open' | 'id' | 'children' | 'followViewport
 }
 
 function Group({ open, id, children, followViewport = false, onCollapsed }: GroupProps) {
-  const host = useRef<HTMLDivElement>(null)
-  const previous = useRef(open)
-  const settled = useRef(onCollapsed)
-  useLayoutEffect(() => { settled.current = onCollapsed }, [onCollapsed])
-  useLayoutEffect(() => {
-    if (!host.current || previous.current === open) return
-    previous.current = open
-    if (open) {
-      if (followViewport) return followExpansion(host.current.closest<HTMLElement>('.tn-ridge') ?? host.current, host.current)
-      return
-    }
-    if (!settled.current) return
-    const motions = revealTransitions(host.current)
-    if (!motions.length) { settled.current(); return }
-    let cancelled = false
-    void Promise.allSettled(motions.map(motion => motion.finished)).then(() => {
-      if (!cancelled) settled.current?.()
-    })
-    return () => { cancelled = true }
-  }, [open, followViewport])
+  const host = useRevealGroup(open, { followViewport, onCollapsed })
   return <div id={id} ref={host}>{children}</div>
 }
 

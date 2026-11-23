@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Row } from '@trinet/design-system'
+import { useRipple } from '@trinet/design-system'
 
 interface RowExampleProps {
   disabled: boolean
@@ -8,26 +8,17 @@ interface RowExampleProps {
 
 export function RowExample({ disabled, description }: RowExampleProps) {
   const [checked, setChecked] = useState(false)
+  const ripple = useRipple()
 
   return (
-    <Row
-      as="label"
-      className="min-h-choice rounded-choice"
-      description={description}
-      leading={
-        <>
-          <input
-            type="checkbox"
-            className="sr-only"
-            checked={checked}
-            disabled={disabled}
-            onChange={event => setChecked(event.target.checked)}
-          />
-          <span aria-hidden="true" className="tn-mark" data-selected={checked} />
-        </>
-      }
-    >
-      Электронная почта
-    </Row>
+    <label ref={ripple} className="tn-row tn-ripple min-h-choice rounded-choice">
+      <input type="checkbox" className="sr-only" checked={checked} disabled={disabled}
+        onChange={event => setChecked(event.target.checked)} />
+      <span className="row-area-leading place-self-center tn-mark" aria-hidden="true" data-selected={checked} />
+      <span className="row-area-content min-w-0">
+        Электронная почта
+        <small className="block text-sm text-muted">{description}</small>
+      </span>
+    </label>
   )
 }

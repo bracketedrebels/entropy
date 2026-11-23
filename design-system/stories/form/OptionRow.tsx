@@ -1,8 +1,9 @@
-import { Field, Row } from '../../src'
+import { useRipple } from '../../src'
+import { Field } from '../../recipes/Field'
 import type { Option } from './options'
 
 export function Mark({ selected, round = false }: { selected: boolean; round?: boolean }) {
-  return <span aria-hidden="true" className="tn-mark" data-selected={selected} data-round={round || undefined} />
+  return <span aria-hidden="true" className="tn-mark row-area-leading place-self-center" data-selected={selected} data-round={round || undefined} />
 }
 
 type Props = {
@@ -16,14 +17,16 @@ type Props = {
 }
 
 export function OptionRow({ option: [key, label, description, disabled], id, name, multiple, selected, onChoose, disclosure }: Props) {
-  return <Row as="label" htmlFor={id} className="tn-choice" description={description} leading={<>
+  const ripple = useRipple()
+  return <label ref={ripple} htmlFor={id} className="tn-row tn-ripple tn-choice">
     {disclosure
       ? <button id={id} type="button" className="tn-option" aria-expanded={false}
           aria-controls={disclosure.controls} onClick={disclosure.expand} />
       : <input id={id} name={multiple ? undefined : name} className="tn-option" type={multiple ? 'checkbox' : 'radio'}
           value={key} disabled={disabled} checked={selected} onChange={onChoose} />}
     <Mark selected={selected} round={!multiple} />
-  </>}>{label}</Row>
+    <span className="tn-row-copy">{label}{description && <small>{description}</small>}</span>
+  </label>
 }
 
 export function RadioField({ id, name, label, options, value, onChange }: {

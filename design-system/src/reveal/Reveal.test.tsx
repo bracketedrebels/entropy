@@ -1,7 +1,7 @@
 import { createRef } from 'react'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, expect, it } from 'vitest'
-import { Reveal } from './Reveal'
+import { Reveal } from '../../recipes/Reveal'
 
 afterEach(cleanup)
 it('keeps the draft, removes the hidden branch from navigation and returns focus on close', () => {

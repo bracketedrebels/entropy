@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { RidgeExample } from './examples/RidgeExample'
 import source from './examples/RidgeExample.tsx?raw'
 
+import recipe from '../recipes/Ridge.tsx?raw'
+
 const meta = {
   id: 'trinet-ridge',
   title: 'Примитивы/Ridge',
@@ -9,9 +11,9 @@ const meta = {
   tags: ['autodocs'],
   parameters: {
     docs: {
-      source: { code: source },
+      source: { code: "// recipes/Ridge.tsx\n" + recipe + "\n// stories/examples/RidgeExample.tsx\n" + source },
       description: {
-        component: 'Прокрутите высокое поле. Заголовок и нижняя дуга закрепляются в одном вертикальном скролле. Фокус подсвечивает жёлоб напротив строки. Для собственной координаты элемента доступен useFocusAnchor.',
+        component: 'useRidge подключает геометрию и фокус к вашей разметке. Ниже доступны оба исходника: открытый рецепт жёлоба с тремя SVG и пример его использования. Прокрутите поле и перемещайте фокус между строками.',
       },
     },
   },

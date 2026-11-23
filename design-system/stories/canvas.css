@@ -17,7 +17,7 @@
   white-space:pre-wrap; overflow-wrap:anywhere; border:0; outline:none; display:block; resize:none; overflow:hidden }
 .tn-caret-mirror { visibility:hidden; pointer-events:none; position:absolute; inset:0 0 auto; }
 .tn-editor::placeholder { color:var(--tn-muted) }
-.tn-count > span { color:color-mix(in srgb,var(--tn-muted), var(--tn-danger) var(--urgency,0%)) }
+.tn-count { color:color-mix(in srgb,var(--tn-muted), var(--tn-danger) var(--urgency,0%)) }
 .tn-example .tn-field-input { font:inherit; width:100%; color:inherit; border:0; background:transparent; margin:0; outline:none }
 .tn-example .tn-field-input::placeholder { color:var(--tn-muted) }
 @media(prefers-reduced-motion:reduce) { .tn-chev { transition:none } }

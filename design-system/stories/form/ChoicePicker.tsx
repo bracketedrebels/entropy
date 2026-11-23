@@ -1,6 +1,8 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode, RefObject } from 'react'
-import { Field, Pill, Reveal, Row } from '../../src'
+import { useRipple } from '../../src'
+import { Field } from '../../recipes/Field'
+import { Reveal } from '../../recipes/Reveal'
 import { Icon } from './Icon'
 import { OptionRow } from './OptionRow'
 import type { Option } from './options'
@@ -37,6 +39,8 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   const search = useRef<HTMLInputElement>(null)
   const localTrigger = useRef<HTMLButtonElement>(null)
   const trigger = triggerRef ?? localTrigger
+  const searchRipple = useRipple()
+  const promptRipple = useRipple()
   const optionsId = id + '-options'
   const searchable = options.length > 6
   const windowed = options.length > 40
@@ -175,23 +179,26 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   flushGap(matches.length)
 
   return <Field id={id} label={label} description={description} header={searchable && <Reveal open={open} returnFocusRef={trigger}>
-    <Row className="tn-entry" leading={<Icon name="search" />} trailing={query && <button className="tn-clear" type="button"
-      aria-label="Очистить поиск" onClick={() => { filter(''); search.current?.focus({ preventScroll: true }) }}>
-      <Icon name="clear" /></button>}>
-      <input ref={search} type="search" className="tn-field-input" aria-label={searchLabel} placeholder={searchLabel}
+    <div ref={searchRipple} className="tn-row tn-ripple tn-entry">
+      <Icon name="search" className="row-area-leading place-self-center" />
+      <input ref={search} type="search" className="tn-field-input row-area-content" aria-label={searchLabel} placeholder={searchLabel}
         disabled={!open} aria-controls={optionsId} value={query} onChange={e => filter(e.target.value)}
         onKeyDown={e => {
           if (e.key === 'Escape') { e.preventDefault(); close() }
           if (matches.length && (e.key === 'ArrowDown' || e.key === 'Enter')) { e.preventDefault(); focusOption(0) }
         }} />
-    </Row>
+      {query && <button className="tn-clear row-area-trailing" type="button"
+        aria-label="Очистить поиск" onClick={() => { filter(''); search.current?.focus({ preventScroll: true }) }}>
+        <Icon name="clear" />
+      </button>}
+    </div>
   </Reveal>} meta={<>
-    <Pill.Action ref={trigger} aria-controls={optionsId} aria-expanded={open}
+    <button type="button" className="tn-pill" ref={trigger} aria-controls={optionsId} aria-expanded={open}
       aria-label={(open ? 'Свернуть' : 'Раскрыть') + ' ' + actionLabel + '. ' + caption}
       onClick={e => open ? close() : expand(e.detail === 0 ? (searchable ? 'search' : order[0]?.[0]) : undefined)}>
       {caption}<svg className="tn-chev" data-open={open} width="12" height="12" viewBox="0 0 16 16" aria-hidden="true">
         <path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
-    </Pill.Action>{recovery}
+    </button>{recovery}
   </>}>
     <Reveal.Group followViewport open={open} id={optionsId} onCollapsed={() => setSettled(true)}>
       <div ref={list} className={windowed ? 'tn-catalog' : undefined}>
@@ -201,8 +208,11 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
       {open && !!terms.length && <p className="tn-note" role="status">{matches.length
         ? 'Найдено: ' + matches.length : 'Совпадений нет. Попробуйте другой запрос.'}</p>}
       <Reveal.Item open={!open && !chosen.length} returnFocusRef={trigger}>
-        <Row as="button" leading={<Icon name={name === 'delivery' ? 'mail' : 'project'} />}
-          onClick={() => expand(searchable ? 'search' : order[0]?.[0])}>{emptyLabel}</Row>
+        <button type="button" ref={promptRipple} className="tn-row tn-ripple"
+          onClick={() => expand(searchable ? 'search' : order[0]?.[0])}>
+          <Icon name={name === 'delivery' ? 'mail' : 'project'} className="row-area-leading place-self-center" />
+          <span className="tn-row-copy">{emptyLabel}</span>
+        </button>
       </Reveal.Item>
     </Reveal.Group>
     {!multiple && !selected.length && <input type="hidden" name={name} value="" />}

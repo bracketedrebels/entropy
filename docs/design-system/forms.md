@@ -63,3 +63,9 @@ A second trial is to open a node’s settings near the edge of the canvas. Check
 ## React components
 
 The component kit includes Row, Reveal, Ridge, Pill and Field. The React notification settings story composes ten reference fields, including the dependent email editor and linked single- and multiple-project pickers. The date assistant and swipeable tags remain in the reference prototype. [Component API and Storybook setup](../../design-system/README.md)
+
+## Implementing the patterns
+
+The application owns the elements, their semantics and their order. Publish layout and material as CSS. Mark row children with named grid areas. A metadata capsule can be a native button or an output with the same class. Attach interaction to those elements through a hook when it needs event coordinates, focus management or measurement. A hook factory can capture static options once outside rendering. Each mounted instance owns its listeners and cleanup.
+
+Publish compound structures such as the ridge as editable recipes. Their sticky tracks, drawing surface and content regions belong to the consuming markup. Keep the choice of renderer independent of the field’s value and accessible name. [CSS API, hooks and recipes](../../design-system/README.md)

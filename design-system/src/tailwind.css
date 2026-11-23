@@ -24,3 +24,7 @@
 @utility bg-surface {
   background: var(--tn-bg);
 }
+
+@utility row-area-* {
+  grid-area: --value("leading", "content", "trailing");
+}

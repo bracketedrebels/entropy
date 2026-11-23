@@ -8,7 +8,7 @@ const paths = {
   project: <path d="M3 7V5h7l2 3h9v12H3V7Z" />,
 } as const
 
-export function Icon({ name }: { name: keyof typeof paths }) {
-  return <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none"
+export function Icon({ name, className }: { name: keyof typeof paths; className?: string }) {
+  return <svg className={className} width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none"
     stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>
 }

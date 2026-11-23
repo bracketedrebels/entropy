@@ -1,4 +1,4 @@
-import { focusCentre } from './focus'
+import { focusCentre } from './focusAnchor'
 
 type TimelineOptions = { subject: HTMLElement; axis: 'block'; inset: string }
 type TimelineConstructor = new (options: TimelineOptions) => AnimationTimeline
@@ -6,8 +6,11 @@ type TimelineConstructor = new (options: TimelineOptions) => AnimationTimeline
 /** Native sticky caps. The matching clips counter-translate the ink, preserving a single scroll. */
 export function attachRidge(shell: HTMLElement) {
   // Select this instance's frame only, including when the consumer nests another Ridge.
-  const find = (part: string) => Array.from(shell.getElementsByClassName('tn-' + part))
-    .find(el => el.closest('.tn-ridge') === shell) as HTMLElement
+  function find(part: string) {
+    const node = Array.from(shell.getElementsByClassName('tn-' + part)).find(el => el.closest('.tn-ridge') === shell)
+    if (!node) throw new Error('Ridge requires a .tn-' + part + ' in its frame.')
+    return node as HTMLElement
+  }
   const caption = find('caption'), baseline = find('baseline'), header = find('header-slot'), meta = find('meta')
   const head = find('head'), foot = find('foot'), body = find('body')
   const topClip = find('top-clip'), bottomClip = find('bottom-clip'), ink = find('ink')
@@ -59,8 +62,9 @@ export function attachRidge(shell: HTMLElement) {
     const height = shell.getBoundingClientRect().height, bottom = height - left
     const maxR = Math.max(0, Math.min((right-left)/2, (bottom-top)/2))
     const radius = Math.min(parseFloat(getComputedStyle(shell).getPropertyValue('--tn-row-radius')) + gap, maxR)
-    const pill = meta.querySelector('.tn-pill > span')
-    const br = pill ? Math.min(pill.getBoundingClientRect().height / 2 + gap, maxR) : radius
+    const pill = meta.querySelector('.tn-pill')
+    const faceHeight = pill ? pill.getBoundingClientRect().height - 2 * parseFloat(getComputedStyle(pill).getPropertyValue('--tn-pill-inset')) : 0
+    const br = faceHeight > 0 ? Math.min(faceHeight / 2 + gap, maxR) : radius
     const depth = Math.max(radius, br, metadata - left)
     const headH = top + radius + band
     join = bottom - depth
@@ -75,7 +79,7 @@ export function attachRidge(shell: HTMLElement) {
     ]
     const heights = [headH, travel, height-join]
     panes.forEach((pane, index) => {
-      pane.querySelectorAll('path').forEach(path => path.setAttribute('d', paths[index]))
+      pane.querySelectorAll('mask path, .tn-cut, .tn-lip, .tn-floor').forEach(path => path.setAttribute('d', paths[index]))
       pane.querySelector('mask')!.setAttribute('height', String(heights[index]+8))
     })
     const inner = Math.max(0, radius-gap), upper = band ? 0 : inner

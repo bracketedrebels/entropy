@@ -1,6 +1,5 @@
-import { useLayoutEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
-import { attachRidge } from './geometry'
+import { useRidge } from '@trinet/design-system/behaviors'
 
 export interface RidgeProps {
   /** Unique HTML id, also used by the label and SVG masks. */
@@ -11,6 +10,7 @@ export interface RidgeProps {
   children: ReactNode
 }
 
+// Decorative SVG belongs to this recipe. The hook measures and updates the marked parts.
 function Groove({ id, part }: { id: string; part: string }) {
   const mask = id + '-' + part + '-mask'
   const gradient = id + '-' + part + '-light'
@@ -37,8 +37,7 @@ function Groove({ id, part }: { id: string; part: string }) {
 }
 
 export function Ridge({ id, label, header, meta, children }: RidgeProps) {
-  const shell = useRef<HTMLDivElement>(null)
-  useLayoutEffect(() => shell.current ? attachRidge(shell.current) : undefined, [id])
+  const shell = useRidge()
   return <div id={id} className="tn-ridge" ref={shell}>
     <div className="tn-top-track"><div className="tn-head">
       <Groove id={id} part="upper" />

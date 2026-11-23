@@ -1,10 +1,17 @@
+export * from './behaviors'
+
+// Existing JSX recipes are kept for applications built against the first catalogue.
+/** @deprecated Use the CSS and behavior APIs for new compositions. */
 export { Row } from './row/Row'
 export type { RowProps } from './row/Row'
-export { Reveal } from './reveal/Reveal'
-export type { RevealProps } from './reveal/Reveal'
-export { Ridge } from './ridge/Ridge'
-export type { RidgeProps } from './ridge/Ridge'
-export { useFocusAnchor } from './ridge/focus'
-export { Field } from './field/Field'
-export type { FieldProps } from './field/Field'
+/** @deprecated Use the CSS and behavior APIs for new compositions. */
+export { Reveal } from '../recipes/Reveal'
+export type { RevealProps } from '../recipes/Reveal'
+/** @deprecated Use the CSS and behavior APIs for new compositions. */
+export { Ridge } from '../recipes/Ridge'
+export type { RidgeProps } from '../recipes/Ridge'
+/** @deprecated Use the CSS and behavior APIs for new compositions. */
+export { Field } from '../recipes/Field'
+export type { FieldProps } from '../recipes/Field'
+/** @deprecated Use the CSS and behavior APIs for new compositions. */
 export { Pill } from './pill/Pill'

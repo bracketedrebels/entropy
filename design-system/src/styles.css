@@ -22,6 +22,7 @@
 .tn-surface *, .tn-surface *::before, .tn-surface *::after { box-sizing: border-box }
 .tn-row {
   position: relative; isolation: isolate; display: grid; width: 100%; min-height: var(--tn-hit,48px);
+  grid-template-areas: "leading content trailing";
   grid-template-columns: 6px minmax(0,1fr) auto; align-items: center; column-gap: 18px;
   padding: 8px 12px 8px 10px; border: 0; border-radius: var(--tn-row-radius,24px);
   font: inherit; text-align: start; color: inherit; background: transparent;
@@ -30,12 +31,18 @@ button.tn-row, label.tn-row, .tn-pill-action { cursor: pointer; touch-action: ma
 .tn-mark { width:6px; height:6px; border-radius:1.5px; background:var(--tn-channel); box-shadow:inset 0 1px 1px var(--tn-shadow),0 1px 0 var(--tn-lip) }
 .tn-mark[data-round] { border-radius:50% }
 .tn-mark[data-selected=true] { background:var(--tn-mark-selected); box-shadow:var(--tn-mark-shadow) }
-.tn-row-leading { grid-column: 1; display: grid; place-content: center }
-.tn-row-copy { grid-column: 2; min-width: 0; overflow-wrap: anywhere }
+.tn-row-leading { grid-area: leading; display: grid; place-content: center }
+.tn-row-copy { grid-area: content; min-width: 0; overflow-wrap: anywhere }
 .tn-row-copy small, .tn-note { display: block; margin: 1px 0 0; font: inherit; font-size: .875rem; color: var(--tn-muted) }
-.tn-row-trailing { grid-column: 3 }
-.tn-wave-host { position:absolute; inset:0; border-radius:inherit; pointer-events:none; overflow:hidden; z-index:-1 }
-.tn-wave { position:absolute; border-radius:50%; background:radial-gradient(circle,var(--tn-wave) 25%,transparent 75%) }
+.tn-row-trailing { grid-area: trailing }
+@property --tn-ripple-size { syntax: "<length>"; inherits: true; initial-value: 0px }
+@property --tn-ripple-alpha { syntax: "<number>"; inherits: true; initial-value: 0 }
+.tn-ripple { position: relative; isolation: isolate; --tn-ripple-size: 0px; --tn-ripple-alpha: 0 }
+.tn-ripple::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+  opacity: var(--tn-ripple-alpha);
+  background: radial-gradient(circle var(--tn-ripple-size) at var(--tn-ripple-x,50%) var(--tn-ripple-y,50%), var(--tn-wave) 25%, transparent 75%);
+}
 .tn-row:focus-visible, .tn-row:has(:where(input, textarea, button):focus-visible) { outline: 1px solid currentColor; outline-offset:-2px }
 /* Inside a ridge the caret line already has its own focus indicator. */
 @media (forced-colors: none) {
@@ -68,17 +75,26 @@ button.tn-row, label.tn-row, .tn-pill-action { cursor: pointer; touch-action: ma
 .tn-light[data-lit] { opacity:1 }
 .tn-surface[data-theme=light] .tn-light { fill:var(--tn-copper) }
 .tn-meta { position:absolute; inset-inline:var(--tn-inset); bottom:0; display:flex; flex-flow:row-reverse wrap-reverse; align-items:end; gap:0 6px }
-.tn-pill { display:inline-flex; align-items:center; min-height:var(--tn-action-height,44px); max-width:100%; padding:10px 0; margin:0; color:var(--tn-muted); background:transparent; font:inherit; border:0 }
-.tn-pill > span { border-radius:999px; padding:2px 12px; background:var(--tn-pill-bg); font-size:.875rem; line-height:20px; overflow-wrap:anywhere }
-.tn-pill-action { pointer-events:auto }
-.tn-pill-action:focus-visible { outline:none }
-.tn-pill-action:focus-visible > span { outline:2px solid currentColor; outline-offset:2px }
-.tn-pill-action:active > span { background:var(--tn-wave) }
+.tn-pill {
+  --tn-pill-inset: 10px;
+  position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--tn-action-height,44px); max-width: 100%; padding: calc(var(--tn-pill-inset) + 2px) 12px;
+  margin: 0; border: 0; color: var(--tn-muted); background: transparent; font: inherit;
+  font-size: .875rem; line-height: 20px; overflow-wrap: anywhere;
+}
+.tn-pill::before {
+  content: ""; position: absolute; inset: var(--tn-pill-inset) 0; border-radius: 999px;
+  z-index: -1; pointer-events: none; background: var(--tn-pill-bg);
+}
+button.tn-pill, .tn-pill-action { pointer-events: auto; cursor: pointer; touch-action: manipulation }
+.tn-pill:focus-visible { outline: none }
+.tn-pill:focus-visible::before { outline: 2px solid currentColor; outline-offset: 2px }
+button.tn-pill:active::before { background: var(--tn-wave) }
 .tn-group { min-width:0; margin:0; border:0; padding:0 }
 .tn-note { padding:4px 10px 4px 34px }
 .tn-error { color:var(--tn-danger) }
 @media(prefers-reduced-motion:reduce) { .tn-reveal,.tn-light { transition:none } }
 @media(forced-colors:active) {
   .tn-floor { stroke:CanvasText }
-  .tn-row:focus-within,.tn-pill-action:focus-visible > span { outline:2px solid Highlight }
+  .tn-row:focus-within,.tn-pill:focus-visible::before { outline:2px solid Highlight }
 }

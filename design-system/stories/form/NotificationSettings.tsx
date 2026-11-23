@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from 'react'
-import { Pill, Reveal } from '../../src'
+import { Reveal } from '../../recipes/Reveal'
 import { ChoicePicker } from './ChoicePicker'
 import { EmailField } from './EmailField'
 import { RadioField } from './OptionRow'
@@ -22,13 +22,13 @@ export function NotificationSettings() {
     setState(old => ({ ...old, primaryProject: key,
       projects: key ? [key, ...old.projects.filter(value => value !== key)] : old.projects }))
   }
-  const recovery = (state.primaryProject || previousProject) && <Pill.Action
+  const recovery = (state.primaryProject || previousProject) && <button type="button" className="tn-pill"
     aria-label={(previousProject ? 'Вернуть' : 'Сбросить') + ' первый проект'}
     onClick={() => {
       priorityTrigger.current?.focus({ preventScroll: true })
       if (previousProject) setPriority(previousProject)
       else { setPreviousProject(state.primaryProject); setState(old => ({ ...old, primaryProject: '' })) }
-    }}>{previousProject ? 'Вернуть' : 'Сбросить'}</Pill.Action>
+    }}>{previousProject ? 'Вернуть' : 'Сбросить'}</button>
 
   return <main className="tn-example" lang="ru"><h1>Настройки сводки</h1>
     <form className="tn-settings" onSubmit={e => e.preventDefault()}>

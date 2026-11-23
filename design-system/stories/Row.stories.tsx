@@ -11,7 +11,7 @@ const meta = {
     docs: {
       source: { code: source },
       description: {
-        component: 'Row задаёт сетку и область нажатия. Укажите as="label" для нативной опции, as="button" для действия или оставьте div для редактора. leading, children, description и trailing занимают отдельные места. Ripple принадлежит цели нажатия. Значение и focus остаются у контрола.',
+        component: 'tn-row задаёт CSS Grid с именованными областями leading, content и trailing. Разместите в них свои элементы классом row-area-*. Нативный label связывает текст и checkbox. useRipple подключает отклик к поверхности строки.',
       },
     },
   },
