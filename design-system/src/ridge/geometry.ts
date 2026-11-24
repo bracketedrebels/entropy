@@ -1,3 +1,4 @@
+import { ridgeLighting } from './lighting'
 import { retain } from './retain'
 
 type TimelineOptions = { subject: HTMLElement; axis: 'block'; inset: string }
@@ -16,6 +17,7 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
   const topClip = find('top-clip'), bottomClip = find('bottom-clip'), ink = find('ink')
   const panes = ['upper', 'walls', 'base'].map(part => find(part))
   const textures = panes.map(pane => pane.querySelector<SVGGElement>('.neui-texture')!)
+  const light = ridgeLighting(shell, head, foot, textures)
   const shift = (y: number) => 'translateY(' + y + 'px)'
   const translate = (y: number) => '0 ' + y + 'px'
   const Timeline = (window as Window & { ViewTimeline?: TimelineConstructor }).ViewTimeline
@@ -23,7 +25,6 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
   let timeline: AnimationTimeline | undefined
   let timelineInset: string | undefined
   let animations: Animation[] = []
-  let join = 0
   let disposed = false
   function fallback() {
     const box = shell.getBoundingClientRect()
@@ -33,8 +34,7 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
     bottomClip.style.translate = translate(-up)
     bottomClip.style.transform = shift(-down)
     ink.style.transform = shift(down)
-    textures[0].style.transform = shift(-up)
-    textures[2].style.transform = shift(down - join)
+    light.scroll(up, down)
   }
   function layout() {
     if (disposed) return
@@ -63,7 +63,7 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
     const br = faceHeight > 0 ? Math.min(faceHeight / 2 + gap, maxR) : radius
     const depth = Math.max(radius, br, metadata - left)
     const headH = top + radius + band
-    join = bottom - depth
+    const join = bottom - depth
     const travel = Math.max(0, join - headH)
     shell.style.setProperty('--neui-head', headH + 'px')
     shell.style.setProperty('--neui-foot', (height - join) + 'px')
@@ -83,9 +83,6 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
     topClip.style.clipPath = `path("M 0 ${headH} H ${inset} V ${start+band} H ${width-inset-upper} a ${upper} ${upper} 0 0 1 ${upper} ${upper} V ${headH} H ${width} V ${height} H 0 Z")`
     bottomClip.style.clipPath = metadata
       ? `inset(0 0 ${metadata}px 0)` : `path("M 0 0 H ${width} V ${join} H ${width-inset} a ${inner} ${inner} 0 0 1 ${-inner} ${inner} H ${inset+inner} a ${inner} ${inner} 0 0 1 ${-inner} ${-inner} H 0 Z")`
-    textures[0].style.transform = shift(0)
-    textures[1].style.transform = shift(-headH)
-    textures[2].style.transform = shift(-join)
     animations.forEach(a => a.cancel())
     animations = []
     if (timeline && travel > 0) {
@@ -96,10 +93,12 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
         bottomClip.animate([{ translate: translate(0) }, { translate: translate(-travel) }], exit),
         bottomClip.animate([{ transform: shift(-travel) }, { transform: shift(0) }], enter),
         ink.animate([{ transform: shift(travel) }, { transform: shift(0) }], enter),
-        textures[0].animate([{ transform: shift(0) }, { transform: shift(-travel) }], exit),
-        textures[2].animate([{ transform: shift(travel-join) }, { transform: shift(-join) }], enter),
       ]
-    } else if (!timeline) fallback()
+      light.layout(headH, join, travel, { enter, exit })
+    } else {
+      light.layout(headH, join, travel)
+      if (!timeline) fallback()
+    }
   }
   const events = new AbortController()
   const listener = { signal: events.signal }
@@ -115,6 +114,7 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
   layout()
   return () => {
     disposed = true
+    light.dispose()
     resize.disconnect()
     events.abort()
     settings.disconnect()

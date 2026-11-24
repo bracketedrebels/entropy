@@ -51,7 +51,7 @@ button.neui-row, label.neui-row, .neui-pill-action { cursor: pointer; touch-acti
 .neui-reveal[data-open=true] { grid-template-rows:1fr }
 .neui-reveal-clip { min-height:0; overflow:clip }
 .neui-reveal[inert] { pointer-events:none }
-.neui-ridge { position:relative }
+.neui-ridge { position:relative; --neui-cap-light-y:initial }
 :where(.neui-ridge,.neui-track-focus) { --neui-focus-active:0; --neui-focus-y:0px }
 .neui-pill {
   --neui-pill-inset: 10px;

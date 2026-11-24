@@ -68,3 +68,45 @@ it('allows a standalone tracker, caret overrides, and changing focus scopes whil
   expect(signal(outer)).toBe('')
   stop()
 })
+
+it('keeps the light in the focused sticky panel’s coordinates across scroll reversals and releases it on blur', async () => {
+  const shell = document.createElement('section')
+  shell.className = 'neui-ridge neui-track-focus'
+  shell.innerHTML = '<div slot="header"><input></div><button>Row</button><div slot="meta"><button>More</button></div>'
+  document.body.append(shell)
+  await settle()
+  const frame = shell.shadowRoot!
+  const head = frame.querySelector<HTMLElement>('.neui-head')!
+  const foot = frame.querySelector<HTMLElement>('.neui-foot')!
+  const pill = shell.querySelector<HTMLElement>('[slot="meta"] button')!
+  const search = shell.querySelector('input')!
+  let panelTop = 350
+  let shellTop = 100
+  const geometry = (node: Element, top: () => number, height: number) =>
+    vi.spyOn(node, 'getBoundingClientRect').mockImplementation(() => DOMRect.fromRect({ y: top(), height }))
+  geometry(shell, () => shellTop, 1200)
+  geometry(foot, () => panelTop, 60)
+  geometry(pill, () => panelTop + 10, 28)
+  geometry(head, () => 8, 90)
+  geometry(search, () => 38, 32)
+  const local = () => shell.style.getPropertyValue('--neui-cap-light-y')
+  pill.focus()
+  expect(local()).toBe('24px')
+  for (const [field, panel] of [[-450, 350], [-850, 290], [-300, 350]]) {
+    shellTop = field
+    panelTop = panel
+    window.dispatchEvent(new Event('scroll'))
+    expect(local()).toBe('24px')
+    expect(shell.style.getPropertyValue('--neui-focus-y')).toBe(panel - field + 24 + 'px')
+    expect(frame.querySelector<SVGGElement>('.neui-base .neui-texture')!.style.transform).toBe('translateY(0px)')
+  }
+  search.focus()
+  expect(local()).toBe('46px')
+  expect(frame.querySelector<SVGGElement>('.neui-upper .neui-texture')!.style.transform).toBe('translateY(0px)')
+  shell.querySelector('button')!.focus()
+  expect(local()).toBe('')
+  pill.focus()
+  pill.blur()
+  await settle()
+  expect(local()).toBe('')
+})

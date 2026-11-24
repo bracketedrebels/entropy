@@ -15,7 +15,7 @@
 .neui-cut { stroke:var(--neui-shadow);stroke-width:2.2px }
 .neui-lip { stroke:var(--neui-lip);stroke-width:2.2px }
 .neui-floor { stroke:var(--neui-channel);stroke-width:1.7px }
-.neui-light { height:var(--neui-band,24px); y:calc(var(--neui-focus-y,0px) - var(--neui-band,24px) / 2); opacity:var(--neui-focus-active,0); transition:opacity 140ms }
+.neui-light { height:var(--neui-band,24px); y:calc(var(--neui-cap-light-y,var(--neui-focus-y,0px)) - var(--neui-band,24px) / 2); opacity:var(--neui-focus-active,0); transition:opacity 140ms }
 .neui-meta { position:absolute; inset-inline:var(--neui-inset,11px); bottom:0; display:flex; flex-flow:row-reverse wrap-reverse; align-items:end; gap:0 6px }
 
 @media(prefers-reduced-motion:reduce) { .neui-light { transition:none } }

@@ -3,6 +3,16 @@ import { focusCentre } from './focusAnchor'
 
 const scopes = new WeakMap<Element, () => void>()
 
+// A renderer can project the same measurement into its own moving coordinate space.
+type FocusSample = (target: Element | null, viewportY: number) => void
+const projections = new WeakMap<HTMLElement, FocusSample>()
+
+export function projectFocus(scope: HTMLElement, sample: FocusSample) {
+  projections.set(scope, sample)
+  scopes.get(scope)?.()
+  return () => { projections.delete(scope) }
+}
+
 function nearestScope(element: Element | null) {
   while (element && !scopes.has(element)) element = element.parentElement
   return element
@@ -21,8 +31,11 @@ export const trackFocus = retain((scope: HTMLElement) => {
 
   function measure() {
     if (!target) return
-    const y = focusCentre(target, scope) - scope.getBoundingClientRect().top
-    if (Number.isFinite(y)) scope.style.setProperty('--neui-focus-y', y + 'px')
+    const centre = focusCentre(target, scope)
+    if (!Number.isFinite(centre)) return
+    const y = centre - scope.getBoundingClientRect().top
+    scope.style.setProperty('--neui-focus-y', y + 'px')
+    projections.get(scope)?.(target, centre)
   }
   function release() {
     watching?.abort()
@@ -49,7 +62,8 @@ export const trackFocus = retain((scope: HTMLElement) => {
         scope.style.setProperty('--neui-focus-active', '1')
       }
     }
-    measure()
+    if (target) measure()
+    else projections.get(scope)?.(null, 0)
   }
   scope.addEventListener('focusin', sync, options)
   scope.addEventListener('focusout', () => queueMicrotask(sync), options)
@@ -63,6 +77,7 @@ export const trackFocus = retain((scope: HTMLElement) => {
     events.abort()
     scopes.delete(scope)
     release()
+    projections.get(scope)?.(null, 0)
     const owner = nearestScope(doc.activeElement)
     if (owner) scopes.get(owner)?.()
   }
