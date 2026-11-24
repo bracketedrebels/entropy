@@ -19,9 +19,10 @@
   },
   "scripts": {
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build --disable-telemetry",
+    "build-storybook": "storybook build --disable-telemetry && npm run bench:ridge",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "bench:ridge": "node bench/ridge/build.mjs"
   },
   "peerDependencies": {
     "react": "^17 || ^18 || ^19",
@@ -45,7 +46,9 @@
     "typescript": "~5.9.3",
     "vite": "^7.2.0",
     "vitest": "^3.2.7",
-    "@neui/icon": "0.1.0"
+    "@neui/icon": "0.1.0",
+    "@babel/parser": "7.29.15",
+    "magic-string": "1.4.5"
   },
   "peerDependenciesMeta": {
     "react": {

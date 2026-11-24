@@ -4,5 +4,5 @@
     "moduleResolution": "Bundler", "jsx": "react-jsx", "strict": true, "skipLibCheck": true,
     "noEmit": true, "verbatimModuleSyntax": true
   },
-  "include": ["src", "stories", ".storybook"]
+  "include": ["src", "stories", ".storybook", "bench/ridge"]
 }
