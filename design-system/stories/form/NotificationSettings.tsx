@@ -12,7 +12,6 @@ export function NotificationSettings() {
   const { state, setState, saved } = useSettings()
   const [previousProject, setPreviousProject] = useState('')
   const deliveryTrigger = useRef<HTMLButtonElement>(null)
-  const priorityTrigger = useRef<HTMLButtonElement>(null)
   const emailEnabled = state.delivery.includes('email')
   function setText(key: 'frequency' | 'format' | 'emptyDigest' | 'subject' | 'introText', value: string) {
     setState(old => ({ ...old, [key]: value }))
@@ -25,7 +24,6 @@ export function NotificationSettings() {
   const recovery = (state.primaryProject || previousProject) && <button type="button" className="neui-pill"
     aria-label={(previousProject ? 'Вернуть' : 'Сбросить') + ' первый проект'}
     onClick={() => {
-      priorityTrigger.current?.focus({ preventScroll: true })
       if (previousProject) setPriority(previousProject)
       else { setPreviousProject(state.primaryProject); setState(old => ({ ...old, primaryProject: '' })) }
     }}>{previousProject ? 'Вернуть' : 'Сбросить'}</button>
@@ -51,7 +49,7 @@ export function NotificationSettings() {
           })
         }} />
       <ChoicePicker id={id + '-priority'} name="primaryProject" label="Первым в сводке" options={projects}
-        description="Выбранный проект включается в сводку и показывается первым." triggerRef={priorityTrigger}
+        description="Выбранный проект включается в сводку и показывается первым."
         searchLabel="Поиск первого проекта" emptyLabel="Выбрать первый проект" recovery={recovery}
         selected={state.primaryProject ? [state.primaryProject] : []} onChange={values => setPriority(values[0] ?? '')} />
       <RadioField id={id + '-empty'} name="emptyDigest" label="Если событий нет" options={emptyDigest}

@@ -38,9 +38,10 @@ button.neui-row, label.neui-row, .neui-pill-action { cursor: pointer; touch-acti
 .neui-row-copy small, .neui-note { display: block; margin: 1px 0 0; font: inherit; font-size: .875rem; color: var(--neui-muted) }
 .neui-row-trailing { grid-area: trailing }
 .neui-row:focus-visible, .neui-row:has(:where(input, textarea, button):focus-visible) { outline: 1px solid currentColor; outline-offset:-2px }
-/* Inside a ridge the caret line already has its own focus indicator. */
+/* The ridge already locates the focused row, including the sticky search input. */
 @media (forced-colors: none) {
-  .neui-ridge .neui-row:has(textarea:focus-visible) { outline: none }
+  .neui-ridge .neui-row:focus-within,
+  .neui-ridge .neui-row :is(input, textarea):focus { outline: none }
 }
 .neui-row:disabled,.neui-row:has(:disabled) { color:var(--neui-muted); cursor:default }
 .neui-reveal { display:grid; grid-template-rows:0fr; transition:grid-template-rows 240ms cubic-bezier(.2,.8,.2,1) }

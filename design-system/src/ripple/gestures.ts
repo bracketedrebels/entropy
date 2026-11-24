@@ -39,7 +39,6 @@ export function listenForRipple(doc: Document) {
     const target = wave.target
     if (active.get(target) !== wave) return
     active.delete(target)
-    reset(target)
     target.removeAttribute('data-neui-press')
     target.style.removeProperty('--neui-press-x')
     target.style.removeProperty('--neui-press-y')

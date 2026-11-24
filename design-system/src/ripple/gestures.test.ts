@@ -65,6 +65,25 @@ it('lets a quick release finish growing and ignores stale completions after anot
   expect(target.dataset.neuiPress).toBeUndefined()
 })
 
+it('finishes the outward motion before fading and clears only after opacity settles', async () => {
+  const target = button()
+  let finishGrowth!: () => void, finishFade!: () => void
+  const growth = new Promise<void>(resolve => { finishGrowth = resolve })
+  const fade = new Promise<void>(resolve => { finishFade = resolve })
+  Object.defineProperty(target, 'getAnimations', { value: () => target.dataset.neuiPress === 'held'
+    ? [{ transitionProperty: '--neui-ripple-progress', effect: { target }, finished: growth }]
+    : [{ transitionProperty: 'opacity', effect: { target }, finished: fade }] })
+  pointer(target, 'pointerdown')
+  pointer(window, 'pointerup')
+  expect(target.dataset.neuiPress).toBe('held')
+  finishGrowth()
+  await vi.waitFor(() => expect(target.dataset.neuiPress).toBe('fading'))
+  expect(target.style.getPropertyValue('--neui-press-x')).toBe('25%')
+  finishFade()
+  await vi.waitFor(() => expect(target.dataset.neuiPress).toBeUndefined())
+  expect(target.style.getPropertyValue('--neui-press-x')).toBe('')
+})
+
 it('handles keyboard activation, window blur, disabled labels and prevented presses', async () => {
   const target = button()
   target.click()

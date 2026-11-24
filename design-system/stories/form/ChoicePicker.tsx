@@ -3,7 +3,7 @@ import type { KeyboardEvent, ReactNode, RefObject } from 'react'
 import { Field } from '../../recipes/Field'
 import { Reveal } from '../../recipes/Reveal'
 import { Icon } from './Icon'
-import { OptionRow } from './OptionRow'
+import { Mark, OptionRow } from './OptionRow'
 import type { Option } from './options'
 import { useChoiceWindow } from './useChoiceWindow'
 
@@ -49,6 +49,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   const matches = open && terms.length
     ? order.filter(([, title, detail]) => terms.every(term => fold(title + ' ' + (detail ?? '')).includes(term))) : order
   const { list, probe, range } = useChoiceWindow(windowed, open, matches.length)
+  const rowCount = open ? matches.length : multiple ? preview.length : 1
   const beforeResize = useRef<number | null>(null)
   const motion = useRef<Animation | null>(null)
   function captureHeight() {
@@ -65,13 +66,13 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
     if (before === null || !host || !pitch || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const limit = window.innerHeight + 2 * pitch
     const from = Math.min(before, limit)
-    const to = Math.min((open ? matches.length : preview.length) * pitch, limit)
+    const to = Math.min(rowCount * pitch, limit)
     if (Math.abs(from - to) < 1) return
     const animation = host.animate([{ height: from + 'px' }, { height: to + 'px' }],
       { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' })
     motion.current = animation
     return () => animation.cancel()
-  }, [open, query, matches.length, preview.length, list, probe])
+  }, [open, query, rowCount, list, probe])
   function filter(value: string) {
     returnToStart()
     captureHeight()
@@ -158,19 +159,37 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
     </Reveal.Item>)
     gap = 0
   }
-  for (const [index, option] of matches.entries()) {
-    const key = option[0], inPreview = preview.includes(option)
+  function optionRow(option: Option, index: number) {
+    const key = option[0]
+    if (open && !multiple) visibleControls.add(key)
+    return <div onKeyDown={event => navigate(event, index)} onFocus={() => { if (windowed && open) setFocusKey(key) }}>
+      <OptionRow id={id + '-' + key} name={name} option={option} multiple={multiple} selected={selected.includes(key)}
+        onChoose={() => choose(key)} disclosure={open ? undefined : { controls: optionsId, expand: () => expand(key) }} />
+    </div>
+  }
+  // A single-value summary owns one row of permanent height, even when its value is empty.
+  // On expansion the first result occupies that slot; only the remaining rows unfold.
+  if (!multiple) {
+    const value = chosen[0]
+    rows.push(<div key="single-summary">
+      {open ? matches[0] && optionRow(matches[0], 0) :
+        <button type="button" className="neui-row neui-ripple neui-choice" aria-controls={optionsId} aria-expanded={false}
+          onClick={() => expand(value?.[0] ?? (searchable ? 'search' : order[0]?.[0]))}>
+          {value ? <Mark selected round /> : <Icon name="project" className="neui-row-area-leading place-self-center" />}
+          <span className="neui-row-copy">{value?.[1] ?? emptyLabel}{value?.[2] && <small>{value[2]}</small>}</span>
+        </button>}
+    </div>)
+  }
+  for (let index = multiple ? 0 : 1; index < matches.length; index++) {
+    const option = matches[index]
+    const key = option[0], inPreview = multiple && preview.includes(option)
     if (windowed && !inPreview && key !== focusKey && (index < range.first || index >= range.end)) {
       gap++
       continue
     }
     flushGap(index)
-    if (open && !multiple) visibleControls.add(key)
     rows.push(<Reveal.Item key={key} open={open || inPreview} returnFocusRef={trigger}>
-      <div onKeyDown={event => navigate(event, index)} onFocus={() => { if (windowed && open) setFocusKey(key) }}>
-        <OptionRow id={id + '-' + key} name={name} option={option} multiple={multiple} selected={selected.includes(key)}
-          onChoose={() => choose(key)} disclosure={open ? undefined : { controls: optionsId, expand: () => expand(key) }} />
-      </div>
+      {optionRow(option, index)}
     </Reveal.Item>)
   }
   flushGap(matches.length)
@@ -204,13 +223,13 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
       </div>
       {open && !!terms.length && <p className="neui-note" role="status">{matches.length
         ? 'Найдено: ' + matches.length : 'Совпадений нет. Попробуйте другой запрос.'}</p>}
-      <Reveal.Item open={!open && !chosen.length} returnFocusRef={trigger}>
+      {multiple && <Reveal.Item open={!open && !chosen.length} returnFocusRef={trigger}>
         <button type="button" className="neui-row neui-ripple"
           onClick={() => expand(searchable ? 'search' : order[0]?.[0])}>
           <Icon name={name === 'delivery' ? 'mail' : 'project'} className="neui-row-area-leading place-self-center" />
           <span className="neui-row-copy">{emptyLabel}</span>
         </button>
-      </Reveal.Item>
+      </Reveal.Item>}
     </Reveal.Group>
     {!multiple && !selected.length && <input type="hidden" name={name} value="" />}
     {selected.filter(key => !visibleControls.has(key)).map(key => <input key={key} type="hidden" name={name} value={key} />)}

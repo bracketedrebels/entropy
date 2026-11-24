@@ -10,9 +10,11 @@ registerPaint('neui-ripple', class {
     const y = size.height * properties.get('--neui-ripple-y').value / 100
     const radius = progress * Math.hypot(Math.max(x, size.width - x), Math.max(y, size.height - y))
     if (!(radius > 0)) return
-    const mask = ctx.createRadialGradient(x, y, 0, x, y, radius)
-    mask.addColorStop(.25, 'black')
-    mask.addColorStop(.75, 'transparent')
+    // At progress 1 the crest reaches the farthest corner. Match the CSS fallback.
+    const mask = ctx.createRadialGradient(x, y, 0, x, y, radius * 1.125)
+    mask.addColorStop(.64, 'rgba(0,0,0,.18)')
+    mask.addColorStop(1 / 1.125, 'black')
+    mask.addColorStop(1, 'transparent')
     ctx.fillStyle = mask
     ctx.fillRect(0, 0, size.width, size.height)
   }
