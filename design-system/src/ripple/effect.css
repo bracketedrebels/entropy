@@ -16,7 +16,11 @@
   z-index: -1;
   border-radius: inherit;
   pointer-events: none;
-  background-color: var(--neui-wave, #cbe8ff30);
+  /* Illuminate the radial mask from twelve o’clock, relative to the actual press. */
+  --neui-crest-light: var(--neui-wave, #cbe8ff30);
+  background-image: conic-gradient(at var(--neui-ripple-x) var(--neui-ripple-y),
+    var(--neui-crest-light), color-mix(in srgb, var(--neui-crest-light) 28%, transparent) .5turn,
+    var(--neui-crest-light));
   --neui-front: clamp(0, var(--neui-ripple-progress), 1);
   mask-image: var(--neui-ripple-painter, radial-gradient(circle farthest-corner at var(--neui-ripple-x) var(--neui-ripple-y),
     rgb(0 0 0 / 18%) calc(var(--neui-front) * 72%), black calc(var(--neui-front) * 100%),
@@ -30,7 +34,7 @@
   --neui-ripple-y: var(--neui-press-y);
 }
 [data-neui-press="held"]::after, [data-neui-press="fading"]::after { --neui-ripple-progress: 1 }
-[data-neui-press="held"]::after { transition: --neui-ripple-progress var(--neui-ripple-duration, 240ms) cubic-bezier(.16,1,.3,1) }
+[data-neui-press="held"]::after { transition: --neui-ripple-progress var(--neui-utility-duration, var(--neui-ripple-duration, 1s)) ease-out }
 [data-neui-press="fading"]::after { opacity: 0; transition: opacity var(--neui-ripple-fade, 170ms) ease-out }
 [data-neui-press="reset"]::after { --neui-ripple-progress: 0; opacity: 0; transition: none }
 @media (prefers-reduced-motion: reduce) {

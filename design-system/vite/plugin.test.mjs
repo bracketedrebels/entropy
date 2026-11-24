@@ -21,7 +21,7 @@ beforeEach(async () => {
   await writeFile(join(root, 'client.tsx'), `import './app.css'
     const h = (tag: string, props: object) => Object.assign(document.createElement(tag), props)
     document.body.append(<button className={location.hash ? 'neui-ripple' : 'neui-pill'} />)`)
-  await writeFile(join(root, 'app.css'), '@import "tailwindcss"; @import "@neui/kit/tailwind.css"; .action { @apply neui-ripple; }')
+  await writeFile(join(root, 'app.css'), '@import "tailwindcss"; @import "@neui/kit/tailwind.css"; .action { @apply neui-ripple duration-500; }')
 })
 afterEach(() => rm(root, { recursive: true, force: true }))
 
@@ -41,7 +41,11 @@ it('bundles one runtime and its worklet for an HTML app with Tailwind and no Rea
   expect(modules.some(id => id.includes('/node_modules/react/'))).toBe(false)
   expect(output.some(file => /ripple\.paint-.+\.js$/.test(file.fileName))).toBe(true)
   const css = output.find(file => file.fileName.endsWith('.css')).source
-  expect(css).toMatch(/\.action\s*\{\s*--neui-ripple-target:\s*1/)
+  const action = css.match(/\.action\s*\{([^}]+)\}/)?.[1]
+  expect(action).toMatch(/--neui-ripple-target:\s*1/)
+  // The NEUI bridge reads this non-inheriting value on the target, before styling ::after.
+  expect(action).toMatch(/--tw-duration:\s*(?:500ms|0?\.5s);/)
+  expect(css).toMatch(/--neui-utility-duration:\s*var\(--tw-duration\)/)
 })
 
 it('injects into the custom TSX client entry and leaves the SSR entry free of browser behavior', async () => {

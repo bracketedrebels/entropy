@@ -29,6 +29,12 @@
   grid-area: --value("leading", "content", "trailing");
 }
 
+/* Tailwind 4 registers --tw-duration without inheritance. Resolve it on the press target
+   so the painted pseudo-element receives the duration chosen by the active utility. */
+@layer components {
+  :where(.neui-ripple, [data-neui-press]) { --neui-utility-duration: var(--tw-duration); }
+}
+
 /* Allow @apply and Tailwind variants to opt a native element into delegation. */
 @utility neui-ripple {
   --neui-ripple-target: 1;
