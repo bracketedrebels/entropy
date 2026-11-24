@@ -8,6 +8,9 @@
 .neui-ripple, [data-neui-press] {
   position: relative;
   isolation: isolate;
+  /* Both the live gradient stack and the worklet sample these colours. */
+  --neui-highlight: var(--neui-wave-highlight, var(--neui-wave, #ffdfa624));
+  --neui-shade: var(--neui-wave-shadow, #0b121a40);
   --neui-live-waves: initial;
   --neui-live-gradients: initial;
   --neui-ripple-progress: 0;
@@ -34,13 +37,17 @@
   --neui-energy: calc(var(--neui-strength) * (1 - var(--neui-front) * var(--neui-front)) * (1 - var(--neui-front) * var(--neui-front)));
   --neui-distance: calc(var(--neui-front) * 100%);
   --neui-waves: var(--neui-live-waves, var(--neui-ripple-x) var(--neui-ripple-y) var(--neui-front) var(--neui-energy));
-  --neui-highlight: var(--neui-wave, #cbe8ff30);
-  --neui-shade: var(--neui-wave-shadow, #0b121a55);
   background-image: var(--neui-ripple-painter, var(--neui-live-gradients,
     radial-gradient(circle farthest-corner at var(--neui-ripple-x) calc(var(--neui-ripple-y) - 3px),
-      transparent calc(var(--neui-distance) - 6px), color-mix(in srgb, var(--neui-highlight) calc(100% * var(--neui-energy)), transparent) var(--neui-distance), transparent calc(var(--neui-distance) + 6px)),
+      transparent calc(var(--neui-distance) - 10px),
+      color-mix(in srgb, var(--neui-highlight) calc(25% * var(--neui-energy)), transparent) calc(var(--neui-distance) - 6px),
+      color-mix(in srgb, var(--neui-highlight) calc(100% * var(--neui-energy)), transparent) var(--neui-distance),
+      color-mix(in srgb, var(--neui-highlight) calc(25% * var(--neui-energy)), transparent) calc(var(--neui-distance) + 6px), transparent calc(var(--neui-distance) + 10px)),
     radial-gradient(circle farthest-corner at var(--neui-ripple-x) calc(var(--neui-ripple-y) + 3px),
-      transparent calc(var(--neui-distance) - 6px), color-mix(in srgb, var(--neui-shade) calc(100% * var(--neui-energy)), transparent) var(--neui-distance), transparent calc(var(--neui-distance) + 6px))));
+      transparent calc(var(--neui-distance) - 10px),
+      color-mix(in srgb, var(--neui-shade) calc(25% * var(--neui-energy)), transparent) calc(var(--neui-distance) - 6px),
+      color-mix(in srgb, var(--neui-shade) calc(100% * var(--neui-energy)), transparent) var(--neui-distance),
+      color-mix(in srgb, var(--neui-shade) calc(25% * var(--neui-energy)), transparent) calc(var(--neui-distance) + 6px), transparent calc(var(--neui-distance) + 10px))));
 }
 @media (prefers-reduced-motion: reduce) {
   .neui-ripple::after, [data-neui-press]::after { transition-duration: 0s, 0s }

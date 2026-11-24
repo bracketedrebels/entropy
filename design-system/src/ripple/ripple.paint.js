@@ -13,7 +13,7 @@ registerPaint('neui-ripple', class {
       const x = size.width * px / 100, y = size.height * py / 100
       const reach = Math.hypot(Math.max(x, size.width - x), Math.max(y, size.height - y))
       const radius = progress * reach
-      const width = Math.min(8, radius * .85)
+      const width = Math.min(12, radius * .85)
       const slope = (north, south) => {
         const gradient = ctx.createLinearGradient(x, y - radius, x, y + radius)
         gradient.addColorStop(0, north)
@@ -22,13 +22,14 @@ registerPaint('neui-ripple', class {
         return gradient
       }
       const outer = slope(light, shadow), inner = slope(shadow, light)
-      // Sample the derivative of a smooth bump across its width. The inner and
-      // outer slopes face opposite directions; the undisturbed surface stays clear.
+      // The slope of (1 - t²)⁴ joins the flat surface with zero contrast and
+      // zero contrast gradient at either edge. Its peak stays near the crest.
       const steps = Math.ceil(width)
       ctx.lineWidth = width / steps
       for (let i = -steps; i < steps; i++) {
         const offset = (i + .5) / steps
-        ctx.globalAlpha = energy * Math.abs(Math.sin(Math.PI * offset))
+        const slopeWeight = 4.2 * Math.abs(offset) * (1 - offset * offset) ** 3
+        ctx.globalAlpha = energy * slopeWeight
         ctx.strokeStyle = offset > 0 ? outer : inner
         ctx.beginPath()
         ctx.arc(x, y, radius + width * offset, 0, 2 * Math.PI)

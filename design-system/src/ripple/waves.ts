@@ -29,9 +29,14 @@ export function compose(target: HTMLElement, waves: Iterable<Wave>) {
   for (const { x, y, progress, energy } of waves) {
     samples.push(`${x}% ${y}% var(${progress}) var(${energy})`)
     const radius = `calc(var(${progress}) * 100%)`
-    const ring = (offset: number, tone: string) =>
-      `radial-gradient(circle farthest-corner at ${x}% calc(${y}% + ${offset}px), transparent calc(${radius} - 6px), color-mix(in srgb, ${tone} calc(var(${energy}) * 100%), transparent) ${radius}, transparent calc(${radius} + 6px))`
-    layers.push(ring(3, 'var(--neui-wave-shadow, #0b121a55)'), ring(-3, 'var(--neui-wave, #cbe8ff30)'))
+    const ring = (offset: number, tone: string) => {
+      const edge = `color-mix(in srgb, ${tone} calc(var(${energy}) * 25%), transparent)`
+      const peak = `color-mix(in srgb, ${tone} calc(var(${energy}) * 100%), transparent)`
+      return `radial-gradient(circle farthest-corner at ${x}% calc(${y}% + ${offset}px),
+        transparent calc(${radius} - 10px), ${edge} calc(${radius} - 6px), ${peak} ${radius},
+        ${edge} calc(${radius} + 6px), transparent calc(${radius} + 10px))`
+    }
+    layers.push(ring(3, 'var(--neui-shade)'), ring(-3, 'var(--neui-highlight)'))
   }
   target.style.setProperty('--neui-live-waves', samples.join(','))
   target.style.setProperty('--neui-live-gradients', layers.reverse().join(','))

@@ -28,7 +28,7 @@ For keyboard activation, the ripple starts at the indicator. Keep the marker sma
 
 ## 4. Expansion makes room and preserves orientation
 
-Reveal choices, search and assistants in the reading flow. The next field moves down as the current one opens. The press registers immediately, then the movement slows towards its end. The ripple expands for 1000 ms with ease-out by default. A Tailwind duration utility on the target controls expansion. Light from above reveals the north-facing slope of the crest and casts a soft shadow on its opposite slope. The relief fades continuously to zero during the last 80% of the travel time. Repeated presses can overlap. With reduced motion, the control still acknowledges the action and exposes the resulting state.
+Reveal choices, search and assistants in the reading flow. The next field moves down as the current one opens. The press registers immediately, then the movement slows towards its end. The ripple expands for 1000 ms with ease-out by default. A Tailwind duration utility on the target controls expansion. Warm light from above catches the north-facing slope of the crest. A subdued neutral shadow on the opposite slope feathers into the surrounding material. The relief fades continuously to zero during the last 80% of the travel time. Repeated presses can overlap. With reduced motion, the control still acknowledges the action and exposes the resulting state.
 
 Use one vertical scroll for the form and its open choices. On expansion, move the page just far enough to show the whole field if it fits. For a taller field, stop when its top reaches the top of the available viewport. The user takes the next scroll.
 
