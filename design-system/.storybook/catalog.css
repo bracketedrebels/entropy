@@ -4,3 +4,4 @@
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 @source "../stories";
 @source "./preview.tsx";
+@neuicon;

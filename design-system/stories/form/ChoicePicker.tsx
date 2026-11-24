@@ -174,7 +174,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
       {open ? matches[0] && optionRow(matches[0], 0) :
         <button type="button" className="neui-row neui-ripple neui-choice" aria-controls={optionsId} aria-expanded={false}
           onClick={() => expand(value?.[0] ?? (searchable ? 'search' : order[0]?.[0]))}>
-          {value ? <Mark selected round /> : <span aria-hidden="true" className="neui-icon-project neui-row-area-leading place-self-center" />}
+          {value ? <Mark selected round /> : <span aria-hidden="true" className="neuicon-project neui-row-area-leading place-self-center" />}
           <span className="neui-row-copy">{value?.[1] ?? emptyLabel}{value?.[2] && <small>{value[2]}</small>}</span>
         </button>}
     </div>)
@@ -195,7 +195,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
 
   return <Field id={id} label={label} description={description} header={searchable && <Reveal open={open} returnFocusRef={trigger}>
     <div className="neui-row neui-ripple neui-entry">
-      <span aria-hidden="true" className="neui-icon-search neui-row-area-leading place-self-center" />
+      <span aria-hidden="true" className="neuicon-search neui-row-area-leading place-self-center" />
       <input ref={search} type="search" className="neui-field-input neui-row-area-content" aria-label={searchLabel} placeholder={searchLabel}
         disabled={!open} aria-controls={optionsId} value={query} onChange={e => filter(e.target.value)}
         onKeyDown={e => {
@@ -204,7 +204,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
         }} />
       {query && <button className="neui-clear neui-row-area-trailing" type="button"
         aria-label="Очистить поиск" onClick={() => { filter(''); search.current?.focus({ preventScroll: true }) }}>
-        <span aria-hidden="true" className="neui-icon-clear" />
+        <span aria-hidden="true" className="neuicon-clear" />
       </button>}
     </div>
   </Reveal>} meta={<>
@@ -225,7 +225,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
       {multiple && <Reveal.Item open={!open && !chosen.length} returnFocusRef={trigger}>
         <button type="button" className="neui-row neui-ripple"
           onClick={() => expand(searchable ? 'search' : order[0]?.[0])}>
-          <span aria-hidden="true" className={`neui-row-area-leading place-self-center ${name === 'delivery' ? 'neui-icon-mail' : 'neui-icon-project'}`} />
+          <span aria-hidden="true" className={`neui-row-area-leading place-self-center ${name === 'delivery' ? 'neuicon-mail' : 'neuicon-project'}`} />
           <span className="neui-row-copy">{emptyLabel}</span>
         </button>
       </Reveal.Item>}

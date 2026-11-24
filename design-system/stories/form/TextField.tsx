@@ -3,7 +3,7 @@ import type { CSSProperties } from 'react'
 import { useFocusAnchor } from '@neui/kit/react'
 import { Field } from '../../recipes/Field'
 
-const icons = { pencil: 'neui-icon-pencil', text: 'neui-icon-text', person: 'neui-icon-person' } as const
+const icons = { pencil: 'neuicon-pencil', text: 'neuicon-text', person: 'neuicon-person' } as const
 const words = new Intl.PluralRules('ru')
 const endings: Record<string, string> = { one: 'символ', few: 'символа', many: 'символов' }
 

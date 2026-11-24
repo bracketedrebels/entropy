@@ -1,5 +1,3 @@
-import { prepareIcons } from './prepare.mjs'
-
 const svg = body => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${body}</svg>`
 const outline = body => `<g fill="none" stroke="black" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${body}</g>`
 
@@ -40,4 +38,4 @@ const icons = Object.fromEntries(Object.entries(shapes).map(([name, body]) => [n
 icons.tag = svg(tagToTrash(0))
 icons.trash = svg(tagToTrash(1))
 
-export default prepareIcons({ icons, pairs: [{ from: 'tag', to: 'trash', draw: tagToTrash }] })
+export const catalog = { icons, pairs: [{ from: 'tag', to: 'trash', draw: tagToTrash }] }

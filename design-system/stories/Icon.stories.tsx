@@ -8,7 +8,7 @@ const meta = {
   component: IconExample,
   tags: ['autodocs'],
   parameters: { docs: { source: { code: source }, description: {
-    component: 'Ползунок задаёт положение иконок. Кнопка запускает тот же переход за 500 мс в любую сторону.',
+    component: 'Ползунок управляет масками на элементе, в ::before и ::after. У бирки и корзины 120 положений. Кнопка проигрывает переход за 500 мс в любую сторону.',
   } } },
 } satisfies Meta<typeof IconExample>
 

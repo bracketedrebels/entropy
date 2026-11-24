@@ -12,7 +12,7 @@ export function EmailField({ id, enabled, value, applied, onChange }: {
     ? 'Проверьте адрес, например name@example.com. Пока используется ' + (applied || 'адрес из профиля') + '.' : undefined
   return <Field id={id} label="Адрес для сводки" error={error}>
     <div className="neui-row neui-ripple neui-entry">
-      <span aria-hidden="true" className="neui-icon-mail neui-row-area-leading place-self-center" />
+      <span aria-hidden="true" className="neuicon-mail neui-row-area-leading place-self-center" />
       <input type="email" ref={input} className="neui-field-input neui-row-area-content" autoComplete="email" placeholder="Адрес из профиля"
         disabled={!enabled} aria-labelledby={id + '-label'} aria-invalid={Boolean(error)} aria-describedby={error ? id + '-error' : undefined}
         value={value} onBlur={() => setReviewed(true)} onChange={e => {

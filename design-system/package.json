@@ -14,8 +14,7 @@
     "./dom": "./src/dom.ts",
     "./behaviors": "./src/behaviors.ts",
     "./styles.css": "./src/styles.css",
-    "./tailwind.css": "./src/tailwind.css",
-    "./icons/prepare": "./src/icons/prepare.mjs"
+    "./tailwind.css": "./src/tailwind.css"
   },
   "scripts": {
     "storybook": "storybook dev -p 6006",
@@ -44,7 +43,8 @@
     "tailwindcss": "^4.3.5",
     "typescript": "~5.9.3",
     "vite": "^7.2.0",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "@neui/icon": "0.1.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -56,5 +56,8 @@
     "tailwindcss": {
       "optional": true
     }
-  }
+  },
+  "workspaces": [
+    "neuicon"
+  ]
 }

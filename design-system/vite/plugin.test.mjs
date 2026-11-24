@@ -87,21 +87,3 @@ it('connects a custom client module in dev while preserving its raw source and H
     await server.close()
   }
 })
-
-it('emits icon masks on pseudo-elements and prepares both directions of a registered morph', async () => {
-  await writeFile(join(root, 'index.html'), `
-    <button class="before:neui-icon-star after:neui-icon-person">Profile</button>
-    <i class="neui-icon-transition neui-icon-from-star neui-icon-to-person"></i>
-    <i class="neui-icon-transition neui-icon-from-tag neui-icon-to-trash"></i>
-    <i class="neui-icon-transition neui-icon-from-trash neui-icon-to-tag"></i>
-    <script type="module" src="./client.tsx"></script>`)
-  const { output } = await build({ ...config(), build: { write: false, cssMinify: false } })
-  const css = output.find(file => file.fileName.endsWith('.css')).source
-  expect(css).toContain('before\\:neui-icon-star')
-  expect(css).toContain('after\\:neui-icon-person')
-  expect(css).toMatch(/\.neui-icon-from-tag\.neui-icon-to-trash\s*\{[^}]+--neui-icon-phase:\s*var\(--neui-icon-p\)/)
-  expect(css).toMatch(/\.neui-icon-from-trash\.neui-icon-to-tag\s*\{[^}]+--neui-icon-phase:\s*calc\(1 - var\(--neui-icon-p\)\)/)
-  expect(css).not.toContain('.neui-icon-from-star.neui-icon-to-person')
-  expect(output.filter(file => file.type === 'chunk').flatMap(file => Object.keys(file.modules))
-    .some(id => id.includes('/src/icons/'))).toBe(false)
-})

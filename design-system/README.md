@@ -87,41 +87,7 @@ React-хуки доступны отдельно через `@neui/kit/react`. �
 
 ### Иконки и переходы
 
-`neui-icon-search`, `neui-icon-person` и остальные классы каталога рисуют одноцветную SVG-маску размером в `1em`. Цвет берётся из `currentColor`. Для отдельной заливки можно задать `bg-*`. Декоративная иконка может жить прямо в `::before` или `::after` кнопки с подписью.
-
-```html
-<button class="inline-flex items-center gap-2 before:neui-icon-search">Найти</button>
-<span aria-hidden="true" class="neui-icon-person bg-accent"></span>
-```
-
-Для перехода выделите один пустой элемент. Два его псевдоэлемента рисуют исходную и конечную маски. Доступное имя задаёт сама кнопка. Например, при наведении или клавиатурном фокусе звезда растворится и соберётся в профиль.
-
-```html
-<button aria-label="Профиль" class="group">
-  <span aria-hidden="true"
-    class="neui-icon-transition neui-icon-from-star neui-icon-to-person duration-500 ease-out
-           group-hover:[--neui-icon-progress:1] group-focus-visible:[--neui-icon-progress:1]"></span>
-</button>
-```
-
-`--neui-icon-progress` принимает число от 0 до 1 в обоих направлениях. В крайних положениях маски чёткие. В середине они смешиваются с мягким размытием. Для прямого управления жестом задайте `duration-0` и записывайте долю пройденного расстояния в это же свойство. При `prefers-reduced-motion: reduce` переключение состояния происходит сразу.
-
-У пары `neui-icon-from-tag neui-icon-to-trash` своё движение. Корпус бирки превращается в корзину и в конце приподнимается крышка. Чтобы проиграть это движение обратно, уменьшайте прогресс или поменяйте имена иконок местами. Для каждой зарегистрированной пары Tailwind готовит два CSS-селектора и SVG-атлас из 49 положений. Браузер показывает ближайшее положение. Для остальных сочетаний действует общее растворение.
-
-Свои иконки и переходы можно подключить в файле проекта:
-
-```js
-// project-icons.mjs
-import { prepareIcons } from '@neui/kit/icons/prepare'
-import { icons, drawFold } from './glyphs.mjs'
-
-export default prepareIcons({
-  icons,
-  pairs: [{ from: 'sheet', to: 'folded-sheet', size: 24, draw: drawFold }],
-})
-```
-
-`icons` сопоставляет имени полный SVG. `draw(progress)` возвращает внутреннюю SVG-разметку для квадратного `viewBox` указанного размера. Крайние положения должны совпадать с соответствующими масками. Подключите файл через `@plugin "./project-icons.mjs";` рядом с импортом Tailwind и указывайте полные имена классов в шаблоне. В Storybook откройте «Примитивы → Icon», чтобы проверить позы ползунком.
+Каталог подключает самостоятельный пакет NEUIcon. Утилиты `neuicon-*` рисуют SVG-маски на элементе, в `::before` и в `::after`. Обычным растворением и специальным переходом бирки в корзину управляет `--neuicon-progress`. В Storybook откройте «Примитивы → Icon» и потяните ползунок. Подключение Vite, Tailwind и настройка числа кадров описаны в [NEUIcon](./neuicon/README.md).
 
 ### Ripple
 

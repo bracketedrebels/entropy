@@ -1,0 +1,26 @@
+{
+  "name": "@neui/icon",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./prepare.mjs",
+    "./catalog": "./catalog.mjs",
+    "./vite": "./vite.mjs",
+    "./tailwind": "./tailwind.mjs"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4.0.0",
+    "vite": "^7.2.0"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    },
+    "tailwindcss": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "postcss": "^8.5.0"
+  }
+}

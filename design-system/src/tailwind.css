@@ -1,5 +1,4 @@
 @import "./styles.css" layer(components);
-@plugin "./icons/catalog.mjs";
 
 /* Resolve semantic utilities on the element, including inside nested themed surfaces. */
 @theme inline {
