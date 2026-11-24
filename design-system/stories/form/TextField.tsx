@@ -2,8 +2,8 @@ import { useLayoutEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
 import { useFocusAnchor } from '@neui/kit/react'
 import { Field } from '../../recipes/Field'
-import { Icon } from './Icon'
 
+const icons = { pencil: 'neui-icon-pencil', text: 'neui-icon-text', person: 'neui-icon-person' } as const
 const words = new Intl.PluralRules('ru')
 const endings: Record<string, string> = { one: 'символ', few: 'символа', many: 'символов' }
 
@@ -41,7 +41,7 @@ export function TextField({ id, name, label, icon, value, limit, description, pl
       {word === 'one' ? 'Остался' : 'Осталось'} {remaining} {endings[word] ?? 'символа'}
     </span>}>
     <div className="neui-row neui-ripple neui-edit">
-      <Icon name={icon} className="neui-row-leading" />
+      <span aria-hidden="true" className={`neui-row-leading ${icons[icon]}`} />
       <textarea ref={editor} className="neui-editor" name={name} placeholder={placeholder} readOnly={readOnly} aria-labelledby={id + '-label'}
         aria-describedby={[description && id + '-description', remaining <= 50 && id + '-count'].filter(Boolean).join(' ') || undefined} rows={1} value={value} maxLength={limit}
         onChange={event => onChange?.(event.target.value)} />

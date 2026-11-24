@@ -15,7 +15,7 @@ const preview: Preview = {
   parameters: {
     layout: 'fullscreen',
     docs: { codePanel: true, source: { type: 'code', language: 'tsx' } },
-    options: { storySort: { order: ['Форма', 'Примитивы', ['Row', 'Ripple', 'Reveal', 'Ridge', 'Field', 'Pill']] } },
+    options: { storySort: { order: ['Форма', 'Примитивы', ['Row', 'Icon', 'Ripple', 'Reveal', 'Ridge', 'Field', 'Pill']] } },
   },
 }
 export default preview

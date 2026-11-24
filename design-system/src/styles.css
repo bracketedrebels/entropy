@@ -1,3 +1,4 @@
+@import "./icons/effect.css";
 @import "./ripple/effect.css";
 
 :where(.neui-surface) {

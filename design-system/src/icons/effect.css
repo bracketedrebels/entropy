@@ -1,0 +1,41 @@
+@property --neui-icon-progress { syntax: "<number>"; inherits: true; initial-value: 0 }
+
+.neui-icon-transition {
+  display: inline-block;
+  position: relative;
+  inline-size: 1em;
+  block-size: 1em;
+  flex: none;
+  /* An empty glyph box supplies both layers with currentColor or a bg-* fill. */
+  background-color: currentColor;
+  background-clip: text;
+  --neui-icon-atlas: initial;
+  --neui-icon-steps: 0;
+  --neui-icon-p: clamp(0, var(--neui-icon-progress), 1);
+  --neui-icon-phase: var(--neui-icon-p);
+  --neui-icon-custom: min(1, var(--neui-icon-steps));
+  filter: blur(calc(.36em * var(--neui-icon-p) * (1 - var(--neui-icon-p)) * (1 - var(--neui-icon-custom))));
+  transition: --neui-icon-progress 240ms ease-out;
+}
+.neui-icon-transition::before, .neui-icon-transition::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: inherit;
+  mask: var(--neui-icon-to, none) center / contain no-repeat;
+  pointer-events: none;
+}
+.neui-icon-transition::before {
+  mask-image: var(--neui-icon-atlas, var(--neui-icon-from, none));
+  mask-size: 100% calc(100% * (1 + var(--neui-icon-steps)));
+  mask-position: center calc(round(nearest, var(--neui-icon-phase) * var(--neui-icon-steps), 1) * 100% / max(1, var(--neui-icon-steps)));
+  opacity: calc(1 - var(--neui-icon-p) * (1 - var(--neui-icon-custom)));
+}
+.neui-icon-transition::after { opacity: calc(var(--neui-icon-p) * (1 - var(--neui-icon-custom))) }
+@supports not (top: round(nearest, 0px, 1px)) {
+  .neui-icon-transition { --neui-icon-custom: 0 }
+  .neui-icon-transition::before { mask: var(--neui-icon-from, none) center / contain no-repeat }
+}
+@media (prefers-reduced-motion: reduce) {
+  .neui-icon-transition { transition-property: none; filter: none }
+}
