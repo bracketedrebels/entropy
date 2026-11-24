@@ -13,7 +13,9 @@ registerPaint('neui-ripple', class {
       const x = size.width * px / 100, y = size.height * py / 100
       const reach = Math.hypot(Math.max(x, size.width - x), Math.max(y, size.height - y))
       const radius = progress * reach
-      const width = Math.min(12, radius * .85)
+      // As the amplitude falls, both slopes broaden around the moving peak.
+      const spread = 2 - energy
+      const width = Math.min(12 * spread, radius * .85)
       const slope = (north, south) => {
         const gradient = ctx.createLinearGradient(x, y - radius, x, y + radius)
         gradient.addColorStop(0, north)
@@ -24,7 +26,7 @@ registerPaint('neui-ripple', class {
       const outer = slope(light, shadow), inner = slope(shadow, light)
       // The slope of (1 - t²)⁴ joins the flat surface with zero contrast and
       // zero contrast gradient at either edge. Its peak stays near the crest.
-      const steps = Math.ceil(width)
+      const steps = Math.min(12, Math.ceil(width))
       ctx.lineWidth = width / steps
       for (let i = -steps; i < steps; i++) {
         const offset = (i + .5) / steps

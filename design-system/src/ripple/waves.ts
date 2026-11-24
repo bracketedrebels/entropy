@@ -29,12 +29,13 @@ export function compose(target: HTMLElement, waves: Iterable<Wave>) {
   for (const { x, y, progress, energy } of waves) {
     samples.push(`${x}% ${y}% var(${progress}) var(${energy})`)
     const radius = `calc(var(${progress}) * 100%)`
+    const spread = `(2 - var(${energy}))`
     const ring = (offset: number, tone: string) => {
       const edge = `color-mix(in srgb, ${tone} calc(var(${energy}) * 25%), transparent)`
       const peak = `color-mix(in srgb, ${tone} calc(var(${energy}) * 100%), transparent)`
-      return `radial-gradient(circle farthest-corner at ${x}% calc(${y}% + ${offset}px),
-        transparent calc(${radius} - 10px), ${edge} calc(${radius} - 6px), ${peak} ${radius},
-        ${edge} calc(${radius} + 6px), transparent calc(${radius} + 10px))`
+      return `radial-gradient(circle farthest-corner at ${x}% calc(${y}% + ${offset}px * ${spread}),
+        transparent calc(${radius} - 10px * ${spread}), ${edge} calc(${radius} - 6px * ${spread}), ${peak} ${radius},
+        ${edge} calc(${radius} + 6px * ${spread}), transparent calc(${radius} + 10px * ${spread}))`
     }
     layers.push(ring(3, 'var(--neui-shade)'), ring(-3, 'var(--neui-highlight)'))
   }
