@@ -36,3 +36,34 @@
 .neui-entry:has(.neui-clear) { padding-block:0 }
 .neui-editor[readonly] { color:var(--neui-muted) }
 .neui-settings .neui-option { scroll-margin-block:100px 64px }
+
+.neui-settings > .neui-date-field { margin-top:30px }
+.neui-date-entry { grid-template-columns:6px minmax(0,1fr) auto; column-gap:12px; padding-block:0 }
+.neui-date-segments { display:flex; align-items:center; width:max-content; font-variant-numeric:tabular-nums }
+.neui-date-entry > .neui-pill { grid-area:trailing }
+.neui-date-cell,.neui-date-page,.neui-date-segment {
+  position:relative; isolation:isolate; border:0; border-radius:999px; background:transparent; color:inherit;
+  font:inherit; cursor:pointer; padding:2px; min-width:0; min-height:44px;
+}
+.neui-date-segment { padding-inline:4px }
+.neui-date-segment[aria-expanded=true] { background:var(--neui-pill-bg) }
+.neui-date-segment[aria-invalid=true] { text-decoration:underline dotted var(--neui-danger) }
+.neui-date-screens { position:relative; overflow:clip; transition:height 240ms ease-out }
+.neui-date-screen { position:absolute; inset:0 0 auto; transition:transform 240ms ease-out,visibility 0s; font-variant-numeric:tabular-nums }
+.neui-date-screen[data-direction="-1"],.neui-date-screen[data-direction="1"] { visibility:hidden; transition-delay:0s,240ms }
+.neui-date-screen[data-direction="-1"] { transform:translateX(-100%) }
+.neui-date-screen[data-direction="1"] { transform:translateX(100%) }
+.neui-date-nav { display:grid; grid-template-columns:minmax(0,1fr) 44px 44px; align-items:center; color:var(--neui-muted) }
+.neui-date-nav small { padding-inline-start:28px }
+.neui-date-page { font-size:1.4rem }
+.neui-date-page:disabled { opacity:.35 }
+.neui-date-week { text-align:center; font-size:.8125rem; color:var(--neui-muted) }
+.neui-date-cell { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; line-height:1.2 }
+.neui-date-cell[aria-checked=true] { --neui-check-level:1 }
+.neui-date-cell[aria-current=date] > :first-child { text-decoration:underline; text-underline-offset:3px }
+.neui-date-years { position:relative; display:flex; overflow-x:auto; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:none; overflow-anchor:none }
+.neui-date-years > * { flex:0 0 100%; scroll-snap-align:start; scroll-snap-stop:always; align-content:start; grid-auto-rows:minmax(44px,auto) }
+@media(prefers-reduced-motion:reduce) { .neui-date-screens,.neui-date-screen { transition:none } }
+.neui-date-week [data-weekend] { font-style:italic }
+.neui-date-years { user-select:none }
+.neui-date-years[data-dragging] { scroll-snap-type:none; cursor:grabbing }

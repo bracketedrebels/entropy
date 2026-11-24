@@ -24,6 +24,10 @@
     "test": "vitest run",
     "bench:ridge": "node bench/ridge/build.mjs"
   },
+  "dependencies": {
+    "@date-fns/utc": "2.1.1",
+    "date-fns": "4.1.0"
+  },
   "peerDependencies": {
     "react": "^17 || ^18 || ^19",
     "vite": "^7.2.0",

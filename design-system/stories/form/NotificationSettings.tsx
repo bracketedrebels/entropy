@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from 'react'
 import { Reveal } from '../../recipes/Reveal'
+import { CalendarField } from './CalendarField'
 import { ChoicePicker } from './ChoicePicker'
 import { EmailField } from './EmailField'
 import { RadioField } from './OptionRow'
@@ -32,6 +33,8 @@ export function NotificationSettings() {
     <form className="neui-settings" onSubmit={e => e.preventDefault()}>
       <RadioField id={id + '-frequency'} name="frequency" label="Как часто присылать сводку?" options={frequency}
         value={state.frequency} onChange={value => setText('frequency', value)} />
+      <CalendarField id={id + '-date'} name="firstDigestDate" label="Дата первой сводки" draft={state.dateDraft}
+        onChange={dateDraft => setState(old => ({ ...old, dateDraft }))} />
       <RadioField id={id + '-format'} name="format" label="В каком формате?" options={format}
         value={state.format} onChange={value => setText('format', value)} />
       <ChoicePicker id={id + '-delivery'} name="delivery" label="Куда доставлять сводку?" actionLabel="каналы доставки"

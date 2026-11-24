@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
+import { calendarDraft, calendarValue } from '@neui/kit/react'
+import type { CalendarDraft, CalendarPart } from '@neui/kit/react'
 import { channels, emptyDigest, format, frequency, initialIntro, projects } from './options'
 import type { Option } from './options'
 
 const storageKey = 'trinet:storybook:notification-settings:v1'
 const defaults = {
-  frequency: 'daily', format: 'brief', delivery: ['inbox'], emailText: '', emailAddress: '',
+  dateDraft: {} as CalendarDraft, frequency: 'daily', format: 'brief', delivery: ['inbox'], emailText: '', emailAddress: '',
   projects: ['trinet-design', 'entropy-automation'], primaryProject: '', emptyDigest: 'skip',
   subject: '', introText: initialIntro,
 }
@@ -22,8 +24,15 @@ function load(): Settings {
       ? [...new Set(value.filter((key): key is string => options.some(([id]) => id === key)))] : fallback
     const primary = single(projects, values.primaryProject, '')
     const included = many(projects, values.projects, defaults.projects)
+    const dateDraft = calendarDraft(values.firstDigestDate)
+    if (!calendarValue(dateDraft) && record.dateDraft && typeof record.dateDraft === 'object') {
+      for (const part of ['year', 'month', 'day'] as CalendarPart[]) {
+        const raw = record.dateDraft[part]
+        if (typeof raw === 'string' && /^\d+$/.test(raw) && raw.length <= (part === 'year' ? 4 : 2)) dateDraft[part] = raw
+      }
+    }
     return {
-      frequency: single(frequency, values.frequency, defaults.frequency),
+      dateDraft, frequency: single(frequency, values.frequency, defaults.frequency),
       format: single(format, values.format, defaults.format),
       emptyDigest: single(emptyDigest, values.emptyDigest, defaults.emptyDigest),
       delivery: many(channels, values.delivery, defaults.delivery),
@@ -39,10 +48,11 @@ export function useSettings() {
   const [state, setState] = useState(load)
   const [saved, setSaved] = useState(true)
   useEffect(() => {
-    const { emailText, emailAddress, ...fields } = state
-    const values = { ...fields, senderName: 'Trinet', ...(fields.delivery.includes('email') ? { emailAddress } : {}) }
+    const { emailText, emailAddress, dateDraft, ...fields } = state
+    const iso = calendarValue(dateDraft)
+    const values = { ...fields, ...(iso ? { firstDigestDate: iso } : {}), senderName: 'Trinet', ...(fields.delivery.includes('email') ? { emailAddress } : {}) }
     try {
-      localStorage.setItem(storageKey, JSON.stringify({ values, emailDraft: { text: emailText, applied: emailAddress } }))
+      localStorage.setItem(storageKey, JSON.stringify({ values, ...(!iso ? { dateDraft } : {}), emailDraft: { text: emailText, applied: emailAddress } }))
       setSaved(true)
     } catch { setSaved(false) }
   }, [state])

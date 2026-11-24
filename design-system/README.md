@@ -1,6 +1,6 @@
 # NEUI · CSS и поведение
 
-NEUI объединяет неоморфизм и UI. По-русски «не UI» подчёркивает внимание к UX. Форма уведомлений Trinet служит примером использования кита. В Storybook есть рабочая композиция «Настройки сводки», отдельные сценарии примитивов и переключатель светлой и графитовой тем. В истории «Настройки уведомлений» десять полей прототипа используют общий жёлоб, строки выбора, раскрытие и мета-действия. [Принципы взаимодействия](../docs/design-system/forms.md)
+NEUI объединяет неоморфизм и UI. По-русски «не UI» подчёркивает внимание к UX. Форма уведомлений Trinet служит примером использования кита. В Storybook есть рабочая композиция «Настройки сводки», отдельные сценарии примитивов и переключатель светлой и графитовой тем. В истории «Настройки уведомлений» поля прототипа используют общий жёлоб, строки выбора, раскрытие и мета-действия. [Принципы взаимодействия](../docs/design-system/forms.md)
 
 ## Запуск
 
@@ -78,6 +78,33 @@ React-хуки доступны отдельно через `@neui/kit/react`. �
 ```
 
 Цвет источника берётся из `currentColor`. Для своей палитры задайте `--color-brand` в Tailwind-теме приложения и примените `text-brand` непосредственно к индикатору, `before:text-brand` или `after:text-brand` — к соответствующему псевдоэлементу.
+
+### Календарь
+
+`useCalendar({ draft, onChange, locale, today? })` и `useCalendarGrid(calendar)` доступны через `@neui/kit/react`. Первый хук отвечает за редактирование, открытый сегмент, выбор, навигацию, сброс и отмену сброса. Второй возвращает данные для собственной разметки. `current.cells` содержит значение, подписи, признак выбора, сегодняшний день и стартовый столбец. `current.weekdays` задаёт порядок подписей. Для годов `pages` содержит текущую страницу и доступных соседей по 35 лет. Порядок ячеек хронологический.
+
+```tsx
+import { useState } from 'react'
+import { ru } from 'date-fns/locale/ru'
+import { calendarDraft, useCalendar, useCalendarGrid } from '@neui/kit/react'
+
+function Days() {
+  const [draft, onChange] = useState(() => calendarDraft('2024-02-29'))
+  const cal = useCalendar({ draft, onChange, locale: ru })
+  const { current } = useCalendarGrid({ ...cal, part: 'day' })
+  return <div className="neui-calendar-grid neui-calendar-days">
+    {current.cells.map(cell => <button type="button" key={cell.value}
+      style={{ gridColumnStart: cell.column }} aria-label={cell.accessibleLabel}
+      aria-pressed={cell.selected} onClick={() => cal.choose('day', cell.value)}>
+      {cell.label}
+    </button>)}
+  </div>
+}
+```
+
+`neui-calendar-days`, `neui-calendar-months` и `neui-calendar-years` задают 7, 3 и 5 столбцов для `neui-calendar-grid`. Число столбцов можно изменить через `--neui-calendar-columns`. Роли, подписи, фокус, разметку и подсветку задаёт приложение. Рабочий пример находится в `stories/form/CalendarField.tsx` и `CalendarPanel.tsx`.
+
+Календарная арифметика и названия дат используют `date-fns`. Локаль передаётся объектом, например `ru` или `enUS`. Порядок сегментов и разделители берутся из `Intl.DateTimeFormat`. Значение `cal.value` содержит дату без времени в формате `YYYY-MM-DD` либо `null`. Незавершённые сегменты доступны в `draft`. После выбора года открываются месяцы, после месяца — дни. Выбранный день остаётся виден до ручного сворачивания. В примере стрелки перемещают фокус, Page Up и Page Down листают страницы, Escape сворачивает поле.
 
 ### Кто владеет разметкой
 

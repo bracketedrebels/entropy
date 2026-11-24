@@ -1,0 +1,7 @@
+@utility neui-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--neui-calendar-columns, 7), minmax(0, 1fr));
+}
+@utility neui-calendar-days { --neui-calendar-columns: 7; }
+@utility neui-calendar-months { --neui-calendar-columns: 3; }
+@utility neui-calendar-years { --neui-calendar-columns: 5; }
