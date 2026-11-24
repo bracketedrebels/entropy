@@ -1,5 +1,5 @@
 import { prepareBehavior } from './prepareBehavior'
-import { attachRidge } from './ridge/geometry'
+import { attachRidge } from './ridge/legacy'
 
 export { prepareBehavior }
 export { useReveal, useRevealGroup } from './reveal/useReveal'

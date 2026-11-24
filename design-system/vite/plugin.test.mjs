@@ -17,7 +17,7 @@ beforeEach(async () => {
   await mkdir(join(root, 'node_modules/@neui'), { recursive: true })
   await symlink(kit, join(root, 'node_modules/@neui/kit'), 'dir')
   await symlink(join(kit, 'node_modules/tailwindcss'), join(root, 'node_modules/tailwindcss'), 'dir')
-  await writeFile(join(root, 'index.html'), '<button class="action">Press</button><script type="module" src="./client.tsx"></script>')
+  await writeFile(join(root, 'index.html'), '<section class="neui-ridge neui-track-focus neui-ridge-radius-[1.5rem] neui-ridge-inset-[12px] neui-focus-band-[32px]"><button class="action">Press</button></section><script type="module" src="./client.tsx"></script>')
   await writeFile(join(root, 'client.tsx'), `import './app.css'
     const h = (tag: string, props: object) => Object.assign(document.createElement(tag), props)
     document.body.append(<button className={location.hash ? 'neui-ripple' : 'neui-pill'} />)`)
@@ -38,9 +38,13 @@ it('bundles one runtime and its worklet for an HTML app with Tailwind and no Rea
   const { output } = await build({ ...config(), build: { write: false, minify: false, cssMinify: false } })
   const modules = output.filter(file => file.type === 'chunk').flatMap(chunk => Object.keys(chunk.modules))
   expect(modules.filter(id => id.endsWith(runtime))).toHaveLength(1)
+  expect(modules.filter(id => id.endsWith('/src/ridge/index.ts'))).toHaveLength(1)
   expect(modules.some(id => id.includes('/node_modules/react/'))).toBe(false)
   expect(output.some(file => /ripple\.paint-.+\.js$/.test(file.fileName))).toBe(true)
   const css = output.find(file => file.fileName.endsWith('.css')).source
+  expect(css).toMatch(/--neui-row-radius:\s*1.5rem/)
+  expect(css).toMatch(/--neui-inset:\s*12px/)
+  expect(css).toMatch(/--neui-band:\s*32px/)
   const action = css.match(/\.action\s*\{([^}]+)\}/)?.[1]
   expect(action).toMatch(/--neui-ripple-target:\s*1/)
   // The NEUI bridge reads this non-inheriting value on the target, before styling ::after.
@@ -56,6 +60,7 @@ it('injects into the custom TSX client entry and leaves the SSR entry free of br
   expect(client.output.some(file => file.type === 'chunk' && Object.keys(file.modules).some(id => id.endsWith(runtime)))).toBe(true)
   const server = await build({ ...config({ clientEntry }), build: { write: false, ssr: input } })
   expect(server.output.filter(file => file.type === 'chunk').map(file => file.code).join('')).not.toMatch(/@neui\/kit\/ripple|neui\.ripple\.installed/)
+  expect(server.output.every(file => file.type !== 'chunk' || !Object.keys(file.modules).some(id => id.endsWith('/src/ridge/index.ts')))).toBe(true)
   expect(server.output.some(file => file.fileName.includes('ripple.paint'))).toBe(false)
 })
 
@@ -68,6 +73,7 @@ it('resolves the injected HTML import in the Vite dev server', async () => {
     expect(bootstrapUrls).toHaveLength(1)
     const bootstrap = await server.transformRequest(bootstrapUrls[0])
     expect(bootstrap.code).toContain('/src/ripple/index.ts')
+    expect(bootstrap.code).toContain('/src/ridge/index.ts')
   } finally {
     await server.close()
   }

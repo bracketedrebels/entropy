@@ -121,7 +121,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
     const pitch = probe.current?.getBoundingClientRect().height ?? 0
     if (windowed && list.current && pitch) {
       const top = list.current.getBoundingClientRect().top + index * pitch
-      const ceiling = Math.max(0, search.current?.closest('.neui-header-slot')?.getBoundingClientRect().bottom ?? 0)
+      const ceiling = Math.max(0, search.current?.closest('[slot="header"]')?.getBoundingClientRect().bottom ?? 0)
       const floor = Math.min(window.innerHeight, trigger.current?.getBoundingClientRect().top ?? window.innerHeight)
       if (top < ceiling) window.scrollBy(0, top - ceiling)
       else if (top + pitch > floor) window.scrollBy(0, top + pitch - floor)

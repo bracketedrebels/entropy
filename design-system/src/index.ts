@@ -8,10 +8,10 @@ export type { RowProps } from './row/Row'
 export { Reveal } from '../recipes/Reveal'
 export type { RevealProps } from '../recipes/Reveal'
 /** @deprecated Use the CSS and behavior APIs for new compositions. */
-export { Ridge } from '../recipes/Ridge'
+export { Ridge } from '../recipes/LegacyRidge'
 export type { RidgeProps } from '../recipes/Ridge'
 /** @deprecated Use the CSS and behavior APIs for new compositions. */
-export { Field } from '../recipes/Field'
+export { Field } from '../recipes/LegacyField'
 export type { FieldProps } from '../recipes/Field'
 /** @deprecated Use the CSS and behavior APIs for new compositions. */
 export { Pill } from './pill/Pill'

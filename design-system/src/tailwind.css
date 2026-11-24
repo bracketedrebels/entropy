@@ -39,3 +39,16 @@
 @utility neui-ripple {
   --neui-ripple-target: 1;
 }
+
+/* Structural behaviors use literal class names. Sizing and paint remain CSS-owned. */
+@utility neui-ridge {
+  position: relative;
+}
+@utility neui-track-focus {
+  --neui-focus-active: 0;
+  --neui-focus-y: 0px;
+}
+
+@utility neui-ridge-radius-* { --neui-row-radius: --value([length]); }
+@utility neui-ridge-inset-* { --neui-inset: --value([length]); }
+@utility neui-focus-band-* { --neui-band: --value([length]); }

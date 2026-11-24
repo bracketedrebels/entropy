@@ -1,0 +1,69 @@
+import { retain } from './retain'
+import { focusCentre } from './focusAnchor'
+
+const scopes = new WeakMap<Element, () => void>()
+
+function nearestScope(element: Element | null) {
+  while (element && !scopes.has(element)) element = element.parentElement
+  return element
+}
+
+/** Publish the focused anchor's centre in local CSS pixels. Any CSS consumer can use the signal. */
+export const trackFocus = retain((scope: HTMLElement) => {
+  const doc = scope.ownerDocument
+  const win = doc.defaultView!
+  const events = new AbortController()
+  const options = { signal: events.signal }
+  let watching: AbortController | undefined
+  let size: ResizeObserver | undefined
+  let target: Element | null = null
+  let stopped = false
+
+  function measure() {
+    if (!target) return
+    const y = focusCentre(target, scope) - scope.getBoundingClientRect().top
+    if (Number.isFinite(y)) scope.style.setProperty('--neui-focus-y', y + 'px')
+  }
+  function release() {
+    watching?.abort()
+    size?.disconnect()
+    target = null
+    scope.style.removeProperty('--neui-focus-y')
+    scope.style.removeProperty('--neui-focus-active')
+  }
+  function sync() {
+    if (stopped) return
+    const active = doc.activeElement
+    const next = nearestScope(active) === scope ? active : null
+    if (target !== next) {
+      release()
+      target = next
+      if (next) {
+        watching = new AbortController()
+        const listen = { signal: watching.signal }
+        doc.addEventListener('selectionchange', measure, listen)
+        win.addEventListener('scroll', measure, { ...listen, passive: true, capture: true })
+        size = new ResizeObserver(measure)
+        size.observe(scope)
+        size.observe(next.closest('.neui-focus-anchor,.neui-row,.neui-pill') ?? next)
+        scope.style.setProperty('--neui-focus-active', '1')
+      }
+    }
+    measure()
+  }
+  scope.addEventListener('focusin', sync, options)
+  scope.addEventListener('focusout', () => queueMicrotask(sync), options)
+  for (const type of ['input', 'keyup', 'pointerup', 'selectionchange']) scope.addEventListener(type, measure, options)
+  const parent = nearestScope(scope.parentElement)
+  scopes.set(scope, sync)
+  if (parent) scopes.get(parent)?.()
+  sync()
+  return () => {
+    stopped = true
+    events.abort()
+    scopes.delete(scope)
+    release()
+    const owner = nearestScope(doc.activeElement)
+    if (owner) scopes.get(owner)?.()
+  }
+})

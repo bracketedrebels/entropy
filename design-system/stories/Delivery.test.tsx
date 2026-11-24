@@ -1,5 +1,5 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, expect, it, vi } from 'vitest'
+import { afterEach, expect, it } from 'vitest'
 import { useState } from 'react'
 import { ChoicePicker } from './form/ChoicePicker'
 import { channels } from './form/options'
@@ -11,7 +11,6 @@ function Delivery({ id }: { id: string }) {
 }
 
 // jsdom has no layout. Exercise the real React disclosure, native controls and focus.
-vi.mock('../src/ridge/geometry', () => ({ attachRidge: () => undefined }))
 afterEach(cleanup)
 
 const disclosure = () => screen.getByRole('button', { name: /каналы доставки/ })

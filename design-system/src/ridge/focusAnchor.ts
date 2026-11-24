@@ -7,11 +7,10 @@ export function attachFocusAnchor(node: Element, measure: () => number) {
   }
 }
 
-export function focusCentre(shell: HTMLElement) {
-  const active = shell.ownerDocument.activeElement
-  if (!active || active.closest('.neui-ridge') !== shell) return null
+export function focusCentre(active: Element, scope: HTMLElement) {
   const measure = anchors.get(active)
   if (measure) return measure()
-  const rect = (active.closest('.neui-row,.neui-pill') ?? active).getBoundingClientRect()
+  const anchor = active.closest('.neui-focus-anchor,.neui-row,.neui-pill')
+  const rect = (anchor && scope.contains(anchor) ? anchor : active).getBoundingClientRect()
   return rect.top + rect.height / 2
 }

@@ -2,7 +2,6 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { NotificationSettings } from './NotificationSettings'
 
-vi.mock('../../src/ridge/geometry', () => ({ attachRidge: () => undefined }))
 beforeEach(() => {
   localStorage.clear()
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} })

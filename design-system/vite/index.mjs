@@ -1,8 +1,8 @@
 import { resolve } from 'node:path'
 import { normalizePath } from 'vite'
 
-const runtime = '@neui/kit/ripple'
-const bootstrap = `import '${runtime}';`
+const runtimes = ['@neui/kit/ripple', '@neui/kit/ridge']
+const bootstrap = runtimes.map(runtime => `import '${runtime}';`).join('\n')
 
 /** @type {typeof import('./index.d.mts').neui} */
 export function neui({ clientEntry } = {}) {
@@ -11,7 +11,7 @@ export function neui({ clientEntry } = {}) {
   return {
     name: 'neui:client',
     // The worklet URL is relative to its module. Let Vite process it as an asset in dev as in build.
-    config: () => ({ optimizeDeps: { exclude: [runtime] } }),
+    config: () => ({ optimizeDeps: { exclude: runtimes } }),
     configResolved(config) {
       if (clientEntry) entry = normalizePath(resolve(config.root, clientEntry))
     },

@@ -1,13 +1,13 @@
-import { focusCentre } from './focusAnchor'
+import { retain } from './retain'
 
 type TimelineOptions = { subject: HTMLElement; axis: 'block'; inset: string }
 type TimelineConstructor = new (options: TimelineOptions) => AnimationTimeline
 
 /** Native sticky caps. The matching clips counter-translate the ink, preserving a single scroll. */
-export function attachRidge(shell: HTMLElement) {
+export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot = shell) {
   // Select this instance's frame only, including when the consumer nests another Ridge.
   function find(part: string) {
-    const node = Array.from(shell.getElementsByClassName('neui-' + part)).find(el => el.closest('.neui-ridge') === shell)
+    const node = Array.from(frame.querySelectorAll('.neui-' + part)).find(el => frame !== shell || el.closest('.neui-ridge') === shell)
     if (!node) throw new Error('Ridge requires a .neui-' + part + ' in its frame.')
     return node as HTMLElement
   }
@@ -16,27 +16,15 @@ export function attachRidge(shell: HTMLElement) {
   const topClip = find('top-clip'), bottomClip = find('bottom-clip'), ink = find('ink')
   const panes = ['upper', 'walls', 'base'].map(part => find(part))
   const textures = panes.map(pane => pane.querySelector<SVGGElement>('.neui-texture')!)
-  const lights = panes.map(pane => pane.querySelector('rect')!)
   const shift = (y: number) => 'translateY(' + y + 'px)'
   const translate = (y: number) => '0 ' + y + 'px'
   const Timeline = (window as Window & { ViewTimeline?: TimelineConstructor }).ViewTimeline
-  const timeline = Timeline && CSS.supports('animation-range:exit-crossing 1px')
-    ? new Timeline({ subject: shell, axis: 'block', inset: getComputedStyle(head).top + ' ' + getComputedStyle(foot).bottom })
-    : undefined
+  const nativeTimeline = Timeline && CSS.supports('animation-range:exit-crossing 1px')
+  let timeline: AnimationTimeline | undefined
+  let timelineInset: string | undefined
   let animations: Animation[] = []
   let join = 0
   let disposed = false
-  function paintLight() {
-    const centre = focusCentre(shell)
-    for (const light of lights) light.toggleAttribute('data-lit', centre !== null)
-    if (centre === null) return
-    const height = parseFloat(getComputedStyle(shell).getPropertyValue('--neui-band'))
-    const y = centre - shell.getBoundingClientRect().top - height / 2
-    for (const light of lights) {
-      light.setAttribute('y', String(y))
-      light.setAttribute('height', String(height))
-    }
-  }
   function fallback() {
     const box = shell.getBoundingClientRect()
     const up = head.getBoundingClientRect().top - box.top
@@ -52,17 +40,25 @@ export function attachRidge(shell: HTMLElement) {
     if (disposed) return
     const width = shell.clientWidth, inset = parseFloat(getComputedStyle(body).paddingLeft)
     if (!width) return
+    if (nativeTimeline) {
+      const inset = getComputedStyle(head).top + ' ' + getComputedStyle(foot).bottom
+      if (timelineInset !== inset) {
+        timeline = new Timeline({ subject: shell, axis: 'block', inset })
+        timelineInset = inset
+      }
+    }
     const left = 1.5, right = width - left, gap = inset - left
     const label = caption.getBoundingClientRect(), base = baseline.getBoundingClientRect()
-    const top = base.top - label.top
-    const start = Math.max(top + gap, label.height + 2)
+    const hasLabel = frame === shell || Boolean(shell.querySelector(':scope > [slot="label"]'))
+    const top = hasLabel ? base.top - label.top : left
+    const start = hasLabel ? Math.max(top + gap, label.height + 2) : inset
     const band = header.offsetHeight, metadata = meta.offsetHeight
     shell.style.setProperty('--neui-start', (start + band) + 'px')
     shell.style.setProperty('--neui-foot-pad', Math.max(inset, metadata) + 'px')
     const height = shell.getBoundingClientRect().height, bottom = height - left
     const maxR = Math.max(0, Math.min((right-left)/2, (bottom-top)/2))
     const radius = Math.min(parseFloat(getComputedStyle(shell).getPropertyValue('--neui-row-radius')) + gap, maxR)
-    const pill = meta.querySelector('.neui-pill')
+    const pill = frame === shell ? meta.querySelector('.neui-pill') : shell.querySelector(':scope > [slot="meta"].neui-pill, :scope > [slot="meta"] .neui-pill')
     const faceHeight = pill ? pill.getBoundingClientRect().height - 2 * parseFloat(getComputedStyle(pill).getPropertyValue('--neui-pill-inset')) : 0
     const br = faceHeight > 0 ? Math.min(faceHeight / 2 + gap, maxR) : radius
     const depth = Math.max(radius, br, metadata - left)
@@ -71,9 +67,10 @@ export function attachRidge(shell: HTMLElement) {
     const travel = Math.max(0, join - headH)
     shell.style.setProperty('--neui-head', headH + 'px')
     shell.style.setProperty('--neui-foot', (height - join) + 'px')
-    const x = Math.min(right - radius, base.left - shell.getBoundingClientRect().left + 8)
+    const x = hasLabel ? Math.min(right - radius, base.left - shell.getBoundingClientRect().left + 8) : left + radius
+    const leftCap = hasLabel ? `V ${start+1.65}` : `V ${top+radius} a ${radius} ${radius} 0 0 1 ${radius} ${-radius}`
     const paths = [
-      `M ${x} ${top} H ${right-radius} a ${radius} ${radius} 0 0 1 ${radius} ${radius} V ${headH+4} M ${left} ${headH+4} V ${start+1.65}`,
+      `M ${x} ${top} H ${right-radius} a ${radius} ${radius} 0 0 1 ${radius} ${radius} V ${headH+4} M ${left} ${headH+4} ${leftCap}`,
       `M ${left} -4 V ${travel+4} M ${right} -4 V ${travel+4}`,
       `M ${right} -4 V ${depth-br} a ${br} ${br} 0 0 1 ${-br} ${br} H ${left+radius} a ${radius} ${radius} 0 0 1 ${-radius} ${-radius} V -4`,
     ]
@@ -103,26 +100,26 @@ export function attachRidge(shell: HTMLElement) {
         textures[2].animate([{ transform: shift(travel-join) }, { transform: shift(-join) }], enter),
       ]
     } else if (!timeline) fallback()
-    paintLight()
   }
   const events = new AbortController()
   const listener = { signal: events.signal }
   const resize = new ResizeObserver(layout)
   for (const element of [shell, caption, header, meta]) resize.observe(element)
-  if (!timeline) window.addEventListener('scroll', fallback, { ...listener, capture: true, passive: true })
-  const afterBlur = () => queueMicrotask(() => { if (!disposed) paintLight() })
-  shell.addEventListener('focusout', afterBlur, listener)
-  for (const type of ['focusin', 'input', 'keyup', 'pointerup', 'selectionchange']) shell.addEventListener(type, paintLight, listener)
-  document.addEventListener('selectionchange', paintLight, listener)
-  const theme = new MutationObserver(paintLight)
-  for (let el: HTMLElement | null = shell; el; el = el.parentElement) theme.observe(el, { attributes: true, attributeFilter: ['data-theme'] })
-  void document.fonts.ready.then(layout)
+  for (const probe of frame.querySelectorAll('.neui-metrics, .neui-pins')) resize.observe(probe)
+  if (!nativeTimeline) window.addEventListener('scroll', fallback, { ...listener, capture: true, passive: true })
+  frame.addEventListener('slotchange', layout, listener)
+  const settings = new MutationObserver(layout)
+  for (let el: HTMLElement | null = shell; el; el = el.parentElement)
+    settings.observe(el, { attributes: true, attributeFilter: ['class', 'data-theme'] })
+  void shell.ownerDocument.fonts?.ready.then(layout)
   layout()
   return () => {
     disposed = true
     resize.disconnect()
     events.abort()
-    theme.disconnect()
+    settings.disconnect()
     animations.forEach(a => a.cancel())
   }
 }
+
+export const layoutAuthoredRidge = retain((shell: HTMLElement) => layoutRidge(shell))
