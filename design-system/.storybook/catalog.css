@@ -4,4 +4,6 @@
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 @source "../stories";
 @source "./preview.tsx";
+/* Example application brand used by the Check story. */
+@theme { --color-brand: #48a6ce; }
 @neuicon;

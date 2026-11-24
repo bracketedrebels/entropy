@@ -6,7 +6,7 @@ export function RidgeExample({ track = true }: { track?: boolean }) {
     <span slot="label" id={id}>Этапы обработки</span>
     {Array.from({ length: 24 }, (_, index) => (
       <label className="neui-row" key={index}>
-        <input className="neui-row-area-leading place-self-center" type="radio" name={id} defaultChecked={index === 0} />
+        <input className="neui-row-area-leading neui-check-radio m-0 place-self-center appearance-none checked:[--neui-check-level:1]" type="radio" name={id} defaultChecked={index === 0} />
         <span className="neui-row-area-content">Этап {index + 1}</span>
       </label>
     ))}

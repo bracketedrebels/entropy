@@ -1,0 +1,46 @@
+/* An inherited number also lets a host drive either pseudo-element. */
+@property --neui-check-level {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@utility neui-check-box {
+  --_check-on: clamp(0, var(--neui-check-level), 1);
+  --_check-boost: max(0, calc(var(--neui-check-level) - 1));
+  /* The light surface keeps its engraved lip up to level 1. Both materials can be overdriven. */
+  --_check-emission: calc(var(--_check-on) * var(--neui-check-emission, 0));
+  --_check-gain: calc(var(--_check-emission) + var(--_check-boost));
+  --_check-recess: calc(100% - var(--_check-emission) * 100%);
+  --_check-tint: min(100%, calc(var(--neui-check-tint, 0%) + var(--_check-boost) * 18%));
+  --_check-core: color-mix(in srgb, currentColor, #fffeec var(--_check-tint));
+  --_check-rim: color-mix(in srgb, currentColor 60%, #fffdde);
+
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 1.5px;
+  color: var(--neui-check-color, #ad4a12);
+  background-color: color-mix(in srgb, var(--neui-channel, #adbcc57a), var(--_check-core) calc(var(--_check-on) * 100%));
+  box-shadow:
+    inset 0 1px 1px color-mix(in srgb, var(--neui-shadow, #73859368) var(--_check-recess), transparent),
+    0 1px 0 color-mix(in srgb, var(--neui-lip, #ffffffc7) var(--_check-recess), transparent),
+    0 0 calc(2px * var(--_check-gain)) calc(1px * var(--_check-gain))
+      color-mix(in srgb, var(--_check-rim) min(100%, calc(var(--_check-gain) * 100%)), transparent),
+    0 0 calc(9px * var(--_check-gain)) calc(2px * var(--_check-gain))
+      color-mix(in srgb, currentColor min(100%, calc(var(--_check-gain) * 49%)), transparent);
+  transition-property: --neui-check-level;
+  transition-duration: var(--tw-duration, 180ms);
+  transition-timing-function: ease-out;
+  @media (prefers-reduced-motion: reduce) { transition-duration: 0s; }
+  @media (forced-colors: active) {
+    forced-color-adjust: none;
+    outline: 1px solid CanvasText;
+    background-color: color-mix(in srgb, Canvas, Highlight calc(var(--_check-on) * 100%));
+    box-shadow: none;
+  }
+}
+@utility neui-check-radio {
+  @apply neui-check-box;
+  border-radius: 50%;
+}

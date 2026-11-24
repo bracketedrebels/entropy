@@ -2,7 +2,8 @@ import { Field } from '../../recipes/Field'
 import type { Option } from './options'
 
 export function Mark({ selected, round = false }: { selected: boolean; round?: boolean }) {
-  return <span aria-hidden="true" className="neui-mark neui-row-area-leading place-self-center" data-selected={selected} data-round={round || undefined} />
+  const shape = round ? 'neui-check-radio' : 'neui-check-box'
+  return <span aria-hidden="true" className={`neui-row-area-leading place-self-center ${shape} ${selected ? '[--neui-check-level:1]' : ''}`} />
 }
 
 type Props = {
