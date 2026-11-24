@@ -69,11 +69,12 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
     shell.style.setProperty('--neui-foot', (height - join) + 'px')
     const x = hasLabel ? Math.min(right - radius, base.left - shell.getBoundingClientRect().left + 8) : left + radius
     const leftCap = hasLabel ? `V ${start+1.65}` : `V ${top+radius} a ${radius} ${radius} 0 0 1 ${radius} ${-radius}`
-    const paths = [
-      `M ${x} ${top} H ${right-radius} a ${radius} ${radius} 0 0 1 ${radius} ${radius} V ${headH+4} M ${left} ${headH+4} ${leftCap}`,
-      `M ${left} -4 V ${travel+4} M ${right} -4 V ${travel+4}`,
-      `M ${right} -4 V ${depth-br} a ${br} ${br} 0 0 1 ${-br} ${br} H ${left+radius} a ${radius} ${radius} 0 0 1 ${-radius} ${-radius} V -4`,
-    ]
+    const upperOutline = (end: number) =>
+      `M ${x} ${top} H ${right-radius} a ${radius} ${radius} 0 0 1 ${radius} ${radius} V ${end} M ${left} ${end} ${leftCap}`
+    const baseOutline = (start: number) =>
+      `M ${right} ${start} V ${depth-br} a ${br} ${br} 0 0 1 ${-br} ${br} H ${left+radius} a ${radius} ${radius} 0 0 1 ${-radius} ${-radius} V ${start}`
+    const contour = { height, headHeight: headH, footTop: join, upper: upperOutline, base: baseOutline }
+    const paths = [upperOutline(headH+4), `M ${left} -4 V ${travel+4} M ${right} -4 V ${travel+4}`, baseOutline(-4)]
     const heights = [headH, travel, height-join]
     panes.forEach((pane, index) => {
       pane.querySelectorAll('mask path, .neui-cut, .neui-lip, .neui-floor').forEach(path => path.setAttribute('d', paths[index]))
@@ -94,9 +95,9 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
         bottomClip.animate([{ transform: shift(-travel) }, { transform: shift(0) }], enter),
         ink.animate([{ transform: shift(travel) }, { transform: shift(0) }], enter),
       ]
-      light.layout(headH, join, travel, { enter, exit })
+      light.layout(contour, { enter, exit })
     } else {
-      light.layout(headH, join, travel)
+      light.layout(contour)
       if (!timeline) fallback()
     }
   }

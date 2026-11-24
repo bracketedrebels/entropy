@@ -1,5 +1,6 @@
 .neui-top-track, .neui-bottom-track { position:absolute; z-index:1; pointer-events:none }
 .neui-top-track { inset:0 0 var(--neui-foot,36px); overflow:clip }
+.neui-top-track:has(.neui-cap-lamp) { overflow:visible; z-index:2 }
 .neui-head { position:sticky; top:var(--neui-pin-top,8px); height:var(--neui-head,64px) }
 .neui-bottom-track { inset:var(--neui-head,64px) 0 0; display:flex; flex-direction:column; justify-content:flex-end }
 .neui-foot { position:sticky; bottom:var(--neui-pin-bottom,8px); height:var(--neui-foot,36px); flex:none }
@@ -11,6 +12,7 @@
 .neui-body { padding:var(--neui-start,32px) var(--neui-inset,11px) var(--neui-foot-pad,11px) }
 .neui-rails { position:absolute; inset:var(--neui-head) 0 var(--neui-foot); pointer-events:none }
 .neui-groove { width:100%; height:100%; position:absolute; inset:0; overflow:hidden; pointer-events:none }
+.neui-cap-lamp { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none }
 .neui-cut,.neui-lip,.neui-floor { fill:none; stroke-linecap:round; stroke-linejoin:round }
 .neui-cut { stroke:var(--neui-shadow);stroke-width:2.2px }
 .neui-lip { stroke:var(--neui-lip);stroke-width:2.2px }
