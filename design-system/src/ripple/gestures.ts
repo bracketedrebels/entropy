@@ -1,8 +1,4 @@
-// Only active gestures retain targets. Newly mounted rows need no registration.
-interface Wave {
-  target: HTMLElement
-  pointerId?: number
-}
+import { compose, play, type Wave } from './waves'
 
 function targetOf(event: Event) {
   if (event.defaultPrevented) return
@@ -16,56 +12,41 @@ function targetOf(event: Event) {
   }
 }
 
-function reset(target: HTMLElement) {
-  target.dataset.neuiPress = 'reset'
-  // Commit the zero frame so a second press restarts even during the fade.
-  getComputedStyle(target, '::after').getPropertyValue('--neui-ripple-progress')
-}
-
-function transitions(target: HTMLElement, property: string) {
-  // getAnimations flushes styles, including a press and release in the same frame.
-  return (target.getAnimations?.({ subtree: true }) ?? []).filter(animation =>
-    'transitionProperty' in animation && animation.transitionProperty === property &&
-    (animation.effect as KeyframeEffect | null)?.target === target)
-}
-
 export function listenForRipple(doc: Document) {
   const win = doc.defaultView!
   const events = new AbortController()
-  const active = new Map<HTMLElement, Wave>()
+  const active = new Map<HTMLElement, Map<number, Wave>>()
+  const pointers = new Map<number, () => void>()
   const options = { signal: events.signal }
-
-  function clear(wave: Wave) {
-    const target = wave.target
-    if (active.get(target) !== wave) return
-    active.delete(target)
-    target.removeAttribute('data-neui-press')
-    target.style.removeProperty('--neui-press-x')
-    target.style.removeProperty('--neui-press-y')
-  }
+  const forwarded = new WeakSet<HTMLLabelElement>()
 
   function start(target: HTMLElement, x: number, y: number, pointerId?: number) {
-    const wave = { target, pointerId }
-    active.set(target, wave)
-    target.style.setProperty('--neui-press-x', x + '%')
-    target.style.setProperty('--neui-press-y', y + '%')
-    reset(target)
-    target.dataset.neuiPress = 'held'
-    return wave
-  }
+    const waves = active.get(target) ?? new Map<number, Wave>()
+    let slot = 0
+    while (waves.has(slot)) slot++
+    const wave: Wave = { x, y, progress: '--neui-front-' + slot, energy: '--neui-energy-' + slot, cancel: () => {} }
+    const clear = () => {
+      if (waves.get(slot) !== wave) return
+      waves.delete(slot)
+      wave.cancel()
+      if (pointerId !== undefined && pointers.get(pointerId) === clear) pointers.delete(pointerId)
+      compose(target, waves.values())
+      if (!waves.size) {
+        active.delete(target)
+        target.removeAttribute('data-neui-press')
+      }
+    }
 
-  async function release(wave: Wave) {
-    const target = wave.target
-    wave.pointerId = undefined
-    await Promise.allSettled(transitions(target, '--neui-ripple-progress').map(animation => animation.finished))
-    if (active.get(target) !== wave) return
-    target.dataset.neuiPress = 'fading'
-    await Promise.allSettled(transitions(target, 'opacity').map(animation => animation.finished))
-    clear(wave)
+    waves.set(slot, wave)
+    active.set(target, waves)
+    if (pointerId !== undefined) pointers.set(pointerId, clear)
+    target.dataset.neuiPress = 'active'
+    compose(target, waves.values())
+    play(target, wave, clear)
   }
 
   function press(event: PointerEvent) {
-    if (event.button !== 0 || !event.isPrimary) return
+    if (event.button !== 0) return
     const target = targetOf(event)
     if (!target) return
     const rect = target.getBoundingClientRect()
@@ -74,23 +55,38 @@ export function listenForRipple(doc: Document) {
   }
 
   function keyboardClick(event: MouseEvent) {
-    if (event.detail !== 0) return
     const target = targetOf(event)
-    if (!target || active.has(target)) return
+    if (!target) return
+    // A label forwards its click to its control, sometimes with detail zero.
+    if (target instanceof HTMLLabelElement && event.target !== target.control) {
+      forwarded.add(target)
+      win.setTimeout(() => forwarded.delete(target), 0)
+    } else if (target instanceof HTMLLabelElement && forwarded.has(target)) return
+    if (event.detail !== 0) return
     const rect = target.getBoundingClientRect()
     const marker = target.querySelector(':scope > :is(.neui-row-leading,.neui-row-area-leading,.neui-mark)')?.getBoundingClientRect()
     const x = rect.width && marker ? (marker.left + marker.width / 2 - rect.left) * 100 / rect.width : 50
-    void release(start(target, x, 50))
+    start(target, x, 50)
   }
 
   function finish(event: PointerEvent) {
-    for (const wave of active.values()) {
-      if (wave.pointerId !== event.pointerId) continue
-      if (event.type === 'pointerup') void release(wave)
-      else clear(wave)
-    }
+    if (event.type === 'pointercancel') pointers.get(event.pointerId)?.()
+    pointers.delete(event.pointerId)
   }
-  const clearAll = () => { for (const wave of active.values()) clear(wave) }
+
+  function clearAll() {
+    pointers.clear()
+    for (const [target, waves] of active) {
+      for (const wave of waves.values()) wave.cancel()
+      waves.clear()
+      target.removeAttribute('data-neui-press')
+      compose(target, waves.values())
+    }
+    active.clear()
+  }
+  win.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
+    if (event.matches) clearAll()
+  }, options)
   doc.addEventListener('pointerdown', press, options)
   doc.addEventListener('click', keyboardClick, options)
   win.addEventListener('pointerup', finish, { ...options, capture: true })

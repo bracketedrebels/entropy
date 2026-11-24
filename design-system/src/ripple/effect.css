@@ -1,12 +1,18 @@
 @property --neui-ripple-progress { syntax: "<number>"; inherits: true; initial-value: 0 }
 @property --neui-ripple-x { syntax: "<percentage>"; inherits: true; initial-value: 50% }
 @property --neui-ripple-y { syntax: "<percentage>"; inherits: true; initial-value: 50% }
+@property --neui-front { syntax: "<number>"; inherits: false; initial-value: 0 }
+@property --neui-energy { syntax: "<number>"; inherits: false; initial-value: 0 }
 @property --neui-ripple-target { syntax: "<integer>"; inherits: false; initial-value: 0 }
 
 .neui-ripple, [data-neui-press] {
   position: relative;
   isolation: isolate;
+  --neui-live-waves: initial;
+  --neui-live-gradients: initial;
   --neui-ripple-progress: 0;
+  --neui-ripple-x: 50%;
+  --neui-ripple-y: 50%;
 }
 
 .neui-ripple::after, [data-neui-press]::after {
@@ -16,27 +22,26 @@
   z-index: -1;
   border-radius: inherit;
   pointer-events: none;
-  /* Illuminate the radial mask from twelve o’clock, relative to the actual press. */
-  --neui-crest-light: var(--neui-wave, #cbe8ff30);
-  background-image: conic-gradient(at var(--neui-ripple-x) var(--neui-ripple-y),
-    var(--neui-crest-light), color-mix(in srgb, var(--neui-crest-light) 28%, transparent) .5turn,
-    var(--neui-crest-light));
+  --neui-growth: var(--neui-utility-duration, var(--neui-ripple-duration, 1s));
+  /* Resolve duration utilities, calc() and reduced motion here. Each live wave
+     samples these timings when it starts, independently of its neighbours. */
+  transition-property: none;
+  transition-duration: var(--neui-growth), var(--neui-ripple-fade, calc(var(--neui-growth) * .8));
+  transition-timing-function: ease-out;
+  /* The static CSS API also works with a hand-set progress and no gesture runtime. */
   --neui-front: clamp(0, var(--neui-ripple-progress), 1);
-  mask-image: var(--neui-ripple-painter, radial-gradient(circle farthest-corner at var(--neui-ripple-x) var(--neui-ripple-y),
-    rgb(0 0 0 / 18%) calc(var(--neui-front) * 72%), black calc(var(--neui-front) * 100%),
-    transparent calc(var(--neui-front) * 112.5%)));
-  /* Restoring the idle frame must never interpolate the radius back to zero. */
-  transition: none;
+  --neui-strength: clamp(0, calc(30 * var(--neui-front)), 1);
+  --neui-energy: calc(var(--neui-strength) * (1 - var(--neui-front) * var(--neui-front)) * (1 - var(--neui-front) * var(--neui-front)));
+  --neui-distance: calc(var(--neui-front) * 100%);
+  --neui-waves: var(--neui-live-waves, var(--neui-ripple-x) var(--neui-ripple-y) var(--neui-front) var(--neui-energy));
+  --neui-highlight: var(--neui-wave, #cbe8ff30);
+  --neui-shade: var(--neui-wave-shadow, #0b121a55);
+  background-image: var(--neui-ripple-painter, var(--neui-live-gradients,
+    radial-gradient(circle farthest-corner at var(--neui-ripple-x) calc(var(--neui-ripple-y) - 3px),
+      transparent calc(var(--neui-distance) - 6px), color-mix(in srgb, var(--neui-highlight) calc(100% * var(--neui-energy)), transparent) var(--neui-distance), transparent calc(var(--neui-distance) + 6px)),
+    radial-gradient(circle farthest-corner at var(--neui-ripple-x) calc(var(--neui-ripple-y) + 3px),
+      transparent calc(var(--neui-distance) - 6px), color-mix(in srgb, var(--neui-shade) calc(100% * var(--neui-energy)), transparent) var(--neui-distance), transparent calc(var(--neui-distance) + 6px))));
 }
-
-[data-neui-press]::after {
-  --neui-ripple-x: var(--neui-press-x);
-  --neui-ripple-y: var(--neui-press-y);
-}
-[data-neui-press="held"]::after, [data-neui-press="fading"]::after { --neui-ripple-progress: 1 }
-[data-neui-press="held"]::after { transition: --neui-ripple-progress var(--neui-utility-duration, var(--neui-ripple-duration, 1s)) ease-out }
-[data-neui-press="fading"]::after { opacity: 0; transition: opacity var(--neui-ripple-fade, 170ms) ease-out }
-[data-neui-press="reset"]::after { --neui-ripple-progress: 0; opacity: 0; transition: none }
 @media (prefers-reduced-motion: reduce) {
-  .neui-ripple::after, [data-neui-press]::after { transition: none }
+  .neui-ripple::after, [data-neui-press]::after { transition-duration: 0s, 0s }
 }

@@ -18,7 +18,7 @@ Choose each corner from the shape beside it. Where a groove surrounds the rounde
 
 | Signal | What the user sees | How long it lasts |
 | --- | --- | --- |
-| Press | A soft lightening ripple starts under the finger and spreads to the rounded bounds of the hit area. The whole option row responds, including its label. | Appears on contact and holds under the finger. On release the wave finishes and fades. Cancellation clears it. |
+| Press | A shallow wave starts under the finger and travels across the material to the rounded bounds of the hit area. The whole option row responds, including its label. | Each contact starts an independent wave. Its relief decays as it travels, including during a long press. A cancelled gesture clears its own wave. |
 | Focus | Two short accents in the side grooves sit opposite the active row. In a multiline editor they track the visual line of the caret, including soft wraps. | Follows the current place of work. |
 | Selection | A small recessed point marks a single choice. A square marks membership in a multiple choice. | Persists when focus moves elsewhere and after the ripple fades. |
 
@@ -28,7 +28,7 @@ For keyboard activation, the ripple starts at the indicator. Keep the marker sma
 
 ## 4. Expansion makes room and preserves orientation
 
-Reveal choices, search and assistants in the reading flow. The next field moves down as the current one opens. The press registers immediately, then the movement slows towards its end. The ripple expands for 1000 ms with ease-out by default. A Tailwind duration utility on the target controls expansion. The north-facing crest catches more light than the south-facing crest, and the wave fades in place over 170 ms. With reduced motion, the control still acknowledges the action and exposes the resulting state.
+Reveal choices, search and assistants in the reading flow. The next field moves down as the current one opens. The press registers immediately, then the movement slows towards its end. The ripple expands for 1000 ms with ease-out by default. A Tailwind duration utility on the target controls expansion. Light from above reveals the north-facing slope of the crest and casts a soft shadow on its opposite slope. The relief fades continuously to zero during the last 80% of the travel time. Repeated presses can overlap. With reduced motion, the control still acknowledges the action and exposes the resulting state.
 
 Use one vertical scroll for the form and its open choices. On expansion, move the page just far enough to show the whole field if it fits. For a taller field, stop when its top reaches the top of the available viewport. The user takes the next scroll.
 
@@ -66,6 +66,6 @@ The component kit includes Row, Reveal, Ridge, Pill and Field. The React notific
 
 ## Implementing the patterns
 
-The application owns the elements, their semantics and their order. Publish layout and material as CSS. Mark row children with named grid areas. A metadata capsule can be a native button or an output with the same class. The NEUI Vite adapter connects delegated press feedback once per client document. A native element opts in with `neui-ripple` or a Tailwind utility that applies it. Other bundlers can import `@neui/kit/ripple` in their client entry. CSS transitions drive the progress supplied to the paint worklet or gradient. Attach hooks to individual elements for focus management and measurement. A hook factory can capture static options once outside rendering. Each mounted instance owns its listeners and cleanup.
+The application owns the elements, their semantics and their order. Publish layout and material as CSS. Mark row children with named grid areas. A metadata capsule can be a native button or an output with the same class. The NEUI Vite adapter connects delegated press feedback once per client document. A native element opts in with `neui-ripple` or a Tailwind utility that applies it. Other bundlers can import `@neui/kit/ripple` in their client entry. Each ripple uses its CSS timing for independent progress and amplitude. A single pseudo-element paints the live waves. Attach hooks to individual elements for focus management and measurement. A hook factory can capture static options once outside rendering. Each mounted instance owns its listeners and cleanup.
 
 Publish compound structures such as the ridge as editable recipes. Their sticky tracks, drawing surface and content regions belong to the consuming markup. Keep the choice of renderer independent of the field’s value and accessible name. [CSS API, hooks and recipes](../../design-system/README.md)

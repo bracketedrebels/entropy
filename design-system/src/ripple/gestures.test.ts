@@ -2,15 +2,21 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { listenForRipple } from './gestures'
 
 let detach: () => void
+let duration: string
+const tracks: { finish: () => void; cancel: ReturnType<typeof vi.fn>; frames: Keyframe[]; options: KeyframeAnimationOptions }[] = []
 beforeEach(() => {
-  // jsdom has no pseudo-element styles or CSS transitions.
+  duration = '1s, 0.8s'
+  tracks.length = 0
   const computed = window.getComputedStyle.bind(window)
-  vi.spyOn(window, 'getComputedStyle').mockImplementation(element => computed(element))
+  vi.spyOn(window, 'getComputedStyle').mockImplementation((element, pseudo) => pseudo
+    ? { transitionDuration: duration } as CSSStyleDeclaration : computed(element))
+  vi.stubGlobal('CSS', { registerProperty: vi.fn() })
   detach = listenForRipple(document)
 })
 afterEach(() => {
   detach()
   document.body.replaceChildren()
+  vi.unstubAllGlobals()
   vi.restoreAllMocks()
 })
 
@@ -19,80 +25,88 @@ function button(parent: HTMLElement = document.body) {
   target.className = 'neui-ripple'
   parent.append(target)
   vi.spyOn(target, 'getBoundingClientRect').mockReturnValue(new DOMRect(10, 20, 200, 40))
+  Object.defineProperty(target, 'animate', { value: (frames: Keyframe[], options: KeyframeAnimationOptions) => {
+    let finish!: () => void
+    const finished = new Promise<void>(resolve => { finish = resolve })
+    const cancel = vi.fn(finish)
+    tracks.push({ finish, cancel, frames, options })
+    return { finished, cancel }
+  } })
   return target
 }
 
-function pointer(target: EventTarget, type: string, id = 1) {
-  const event = new MouseEvent(type, { bubbles: true, composed: true, clientX: 60, clientY: 30 })
-  Object.assign(event, { isPrimary: true, pointerId: id })
+function pointer(target: EventTarget, type: string, id = 1, x = 60) {
+  const event = new MouseEvent(type, { bubbles: true, composed: true, clientX: x, clientY: 30 })
+  Object.assign(event, { pointerId: id })
   target.dispatchEvent(event)
 }
+const samples = (target: HTMLElement) => target.style.getPropertyValue('--neui-live-waves')
 
-it('delegates to new nested targets and clears a cancelled touch outside the target', () => {
-  const outer = document.createElement('section')
-  outer.className = 'neui-ripple'
-  document.body.append(outer)
+it('delegates to nested targets, cancels just the touched wave and never adds DOM', () => {
+  const outer = button()
   const inner = button(outer)
   pointer(inner, 'pointerdown')
-  expect(inner.dataset.neuiPress).toBe('held')
-  expect(inner.style.getPropertyValue('--neui-press-x')).toBe('25%')
-  expect(inner.style.getPropertyValue('--neui-press-y')).toBe('25%')
-  expect(outer.dataset.neuiPress).toBeUndefined()
+  pointer(inner, 'pointerdown', 2, 160)
+  expect(samples(inner)).toContain('25% 25%')
+  expect(samples(inner)).toContain('75% 25%')
+  expect(samples(outer)).toBe('')
   expect(inner.childNodes).toHaveLength(0)
   pointer(window, 'pointercancel', 2)
-  expect(inner.dataset.neuiPress).toBe('held')
+  expect(samples(inner)).toContain('25% 25%')
+  expect(samples(inner)).not.toContain('75% 25%')
+  expect(tracks[0].cancel).not.toHaveBeenCalled()
   pointer(window, 'pointercancel')
-  expect(inner.dataset.neuiPress).toBeUndefined()
-  expect(inner.style.getPropertyValue('--neui-press-x')).toBe('')
+  expect(samples(inner)).toBe('')
 })
 
-it('lets a quick release finish growing and ignores stale completions after another press', async () => {
+it('retains overlapping taps and releases each track independently, including a reused slot', async () => {
   const target = button()
-  let finish!: () => void
-  const finished = new Promise<void>(resolve => { finish = resolve })
-  Object.defineProperty(target, 'getAnimations', { value: () => [
-    { transitionProperty: '--neui-ripple-progress', effect: { target }, finished },
-  ] })
   pointer(target, 'pointerdown')
   pointer(window, 'pointerup')
-  expect(target.dataset.neuiPress).toBe('held')
-  pointer(target, 'pointerdown', 2)
-  finish()
-  await new Promise(resolve => setTimeout(resolve, 0))
-  expect(target.dataset.neuiPress).toBe('held')
-  pointer(window, 'pointerup', 2)
-  await new Promise(resolve => setTimeout(resolve, 0))
+  pointer(target, 'pointerdown', 1, 160)
+  pointer(window, 'pointerup')
+  expect(samples(target).split(',')).toHaveLength(2)
+  expect(tracks[0].cancel).not.toHaveBeenCalled()
+  tracks[0].finish()
+  await Promise.resolve()
+  expect(samples(target)).toMatch(/^75% 25% var\(--neui-front-1\)/)
+  pointer(target, 'pointerdown', 1, 110)
+  tracks[1].finish()
+  await Promise.resolve()
+  expect(samples(target)).toMatch(/^50% 25% var\(--neui-front-0\)/)
+  tracks[2].finish()
+  await Promise.resolve()
   expect(target.dataset.neuiPress).toBeUndefined()
+  expect(samples(target)).toBe('')
 })
 
-it('finishes the outward motion before fading and clears only after opacity settles', async () => {
+it('uses the CSS duration and fades the crest during travel, even when the finger stays down', async () => {
   const target = button()
-  let finishGrowth!: () => void, finishFade!: () => void
-  const growth = new Promise<void>(resolve => { finishGrowth = resolve })
-  const fade = new Promise<void>(resolve => { finishFade = resolve })
-  Object.defineProperty(target, 'getAnimations', { value: () => target.dataset.neuiPress === 'held'
-    ? [{ transitionProperty: '--neui-ripple-progress', effect: { target }, finished: growth }]
-    : [{ transitionProperty: 'opacity', effect: { target }, finished: fade }] })
+  duration = '0.5s, 400ms'
   pointer(target, 'pointerdown')
-  pointer(window, 'pointerup')
-  expect(target.dataset.neuiPress).toBe('held')
-  finishGrowth()
-  await vi.waitFor(() => expect(target.dataset.neuiPress).toBe('fading'))
-  expect(target.style.getPropertyValue('--neui-press-x')).toBe('25%')
-  finishFade()
-  await vi.waitFor(() => expect(target.dataset.neuiPress).toBeUndefined())
-  expect(target.style.getPropertyValue('--neui-press-x')).toBe('')
+  const { frames, options, finish } = tracks[0]
+  expect(options.duration).toBe(500)
+  expect(frames[0]).toMatchObject({ '--neui-front-0': 0, easing: 'ease-out' })
+  expect(Number(frames[1].offset)).toBeCloseTo(.2)
+  expect(frames[2]).toMatchObject({ '--neui-front-0': 1, '--neui-energy-0': 0 })
+  finish()
+  await Promise.resolve()
+  expect(samples(target)).toBe('')
+  duration = '0s, 0s'
+  pointer(target, 'pointerdown')
+  expect(samples(target)).toBe('')
+  expect(tracks).toHaveLength(1)
 })
 
-it('handles keyboard activation, window blur, disabled labels and prevented presses', async () => {
+it('supports successive keyboard activations, blur, disabled labels and prevented presses', () => {
   const target = button()
   target.click()
-  expect(target.style.getPropertyValue('--neui-press-x')).toBe('50%')
-  await new Promise(resolve => setTimeout(resolve, 0))
-  expect(target.dataset.neuiPress).toBeUndefined()
-  pointer(target, 'pointerdown')
+  target.click()
+  expect(samples(target).split(',')).toHaveLength(2)
+  expect(samples(target)).toContain('50% 50%')
   window.dispatchEvent(new Event('blur'))
-  expect(target.dataset.neuiPress).toBeUndefined()
+  expect(samples(target)).toBe('')
+  expect(tracks.every(track => track.cancel.mock.calls.length === 1)).toBe(true)
   const label = document.createElement('label')
   label.className = 'neui-ripple'
   label.innerHTML = '<input type="checkbox" disabled>'
@@ -101,5 +115,28 @@ it('handles keyboard activation, window blur, disabled labels and prevented pres
   expect(label.dataset.neuiPress).toBeUndefined()
   target.addEventListener('click', event => event.preventDefault())
   target.click()
-  expect(target.dataset.neuiPress).toBeUndefined()
+  expect(samples(target)).toBe('')
+})
+
+it('keeps gradients valid while a browser without registered properties adds or cancels a wave', () => {
+  vi.stubGlobal('CSS', {})
+  const pending = new Map<number, FrameRequestCallback>()
+  let next = 0
+  vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+    pending.set(++next, callback)
+    return next
+  })
+  vi.stubGlobal('cancelAnimationFrame', (id: number) => pending.delete(id))
+  const target = button()
+  pointer(target, 'pointerdown')
+  pointer(target, 'pointerdown', 2, 160)
+  expect(pending.size).toBe(2)
+  expect(target.style.getPropertyValue('--neui-front-1')).toBe('0')
+  expect(target.style.getPropertyValue('--neui-energy-1')).toBe('1')
+  pointer(window, 'pointercancel', 2)
+  expect(pending.size).toBe(1)
+  expect(target.style.getPropertyValue('--neui-energy-1')).toBe('')
+  window.dispatchEvent(new Event('blur'))
+  expect(pending.size).toBe(0)
+  expect(samples(target)).toBe('')
 })
