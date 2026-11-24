@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
-import { useFocusAnchor } from '../../src'
+import { useFocusAnchor } from '@neui/kit/react'
 import { Field } from '../../recipes/Field'
 import { Icon } from './Icon'
 

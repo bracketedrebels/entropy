@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useRidge } from '@neui/kit/behaviors'
+import { useRidge } from '@neui/kit/react'
 
 export interface RidgeProps {
   /** Unique HTML id, also used by the label and SVG masks. */

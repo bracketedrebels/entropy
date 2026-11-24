@@ -1,6 +1,5 @@
 import { useId, useState } from 'react'
 import type { CSSProperties } from 'react'
-import '@neui/kit/ripple'
 
 export function RippleExample() {
   const id = useId()

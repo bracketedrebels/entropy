@@ -1,5 +1,5 @@
 import type { ReactNode, RefObject } from 'react'
-import { useReveal, useRevealGroup } from '@neui/kit/behaviors'
+import { useReveal, useRevealGroup } from '@neui/kit/react'
 
 export interface RevealProps {
   open: boolean

@@ -1,6 +1,5 @@
 import type { Preview } from '@storybook/react-vite'
 import '@fontsource/ubuntu/300.css'
-import '@neui/kit/ripple'
 import './catalog.css'
 import '../stories/canvas.css'
 

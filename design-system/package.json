@@ -5,6 +5,11 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./vite": {
+      "types": "./vite/index.d.mts",
+      "import": "./vite/index.mjs"
+    },
+    "./react": "./src/behaviors.ts",
     "./ripple": "./src/ripple/index.ts",
     "./dom": "./src/dom.ts",
     "./behaviors": "./src/behaviors.ts",
@@ -18,7 +23,8 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "react": "^17 || ^18 || ^19"
+    "react": "^17 || ^18 || ^19",
+    "vite": "^7.2.0"
   },
   "devDependencies": {
     "@fontsource/ubuntu": "^5.3.0",
@@ -37,5 +43,13 @@
     "typescript": "~5.9.3",
     "vite": "^7.2.0",
     "vitest": "^3.2.7"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    }
   }
 }

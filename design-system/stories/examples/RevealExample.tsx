@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from 'react'
-import { useReveal } from '@neui/kit'
+import { useReveal } from '@neui/kit/react'
 
 export function RevealExample() {
   const id = useId()

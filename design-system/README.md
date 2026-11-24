@@ -16,12 +16,29 @@ Workflow Component catalog проверяет pull request и прикладыв
 
 ### CSS API на Tailwind 4
 
-Подключите Tailwind 4 к сборке приложения. В Vite для этого используется плагин `@tailwindcss/vite`. В основном CSS приложения импортируйте:
+В Vite 7 подключите адаптер NEUI рядом с Tailwind. Так настроен и этот Storybook.
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+import { neui } from '@neui/kit/vite'
+
+export default defineConfig({ plugins: [tailwindcss(), neui()] })
+```
+
+В основном CSS приложения подключите тему, утилиты и стили NEUI:
 
 ```css
 @import "tailwindcss";
 @import "@neui/kit/tailwind.css";
 ```
+
+Плагин добавляет импорт поведения ripple в каждую клиентскую HTML-точку входа Vite. Один делегированный обработчик на документ обслуживает и статическую разметку, и условные классы, и элементы из ленивых модулей. Частные классы с `@apply neui-ripple` используют тот же механизм. Исходные JSX и HTML-элементы остаются под контролем приложения.
+
+Если HTML формирует сервер, укажите в конфигурации `neui({ clientEntry: 'src/entry-client.tsx' })`. Путь отсчитывается от Vite `root`. В этом режиме плагин дописывает статический импорт в указанный клиентский JS, TS, JSX или TSX модуль. Серверная сборка и исходники, запрошенные через `?raw`, сохраняют исходное содержимое. Этот же режим подходит для клиентского виджета с собственной точкой входа.
+
+React-хуки доступны отдельно через `@neui/kit/react`. Для приложения на обычном DOM достаточно CSS и Vite-адаптера.
 
 Примитивы попадают в слой `components`. Утилиты Tailwind можно передавать через `className`. Их значения берутся с текущей поверхности, поэтому один и тот же класс подходит для обеих тем.
 
@@ -48,7 +65,7 @@ Workflow Component catalog проверяет pull request и прикладыв
 
 | Примитив | Разметка и CSS | Подключаемое поведение |
 |---|---|---|
-| Row | `neui-row` на label, button или другом контейнере. Прямые дети занимают именованные области `neui-row-area-leading`, `neui-row-area-content`, `neui-row-area-trailing`. Описание можно поместить рядом с текстом внутри content. | Нативный контрол управляет выбором. Для волны добавьте `neui-ripple` на саму цель после однократного импорта `@neui/kit/ripple` в приложение. |
+| Row | `neui-row` на label, button или другом контейнере. Прямые дети занимают именованные области `neui-row-area-leading`, `neui-row-area-content`, `neui-row-area-trailing`. Описание можно поместить рядом с текстом внутри content. | Нативный контрол управляет выбором. Для волны добавьте `neui-ripple` на саму цель с подключённым Vite-адаптером. |
 | Pill | `neui-pill` на одном элементе. Для действия подойдёт `button type="button"`, для вычисленного статуса — `output`. CSS рисует фон внутри области нажатия. | Нативная активация и обработчик приложения. |
 | Field | `fieldset` и `legend` группируют контролы. При отдельной видимой подписи укажите её ID через `aria-labelledby`, пояснения свяжите через `aria-describedby`. | Валидация и выбор момента показа ошибок принадлежат форме. |
 | Reveal | `neui-reveal` задаёт переход между высотами, `neui-reveal-clip` ограничивает содержимое. Потомки остаются смонтированными. | `useReveal(open, triggerRef?)` возвращает props панели, управляет inert, aria-hidden и возвратом фокуса. `useRevealGroup(open, { followViewport, onCollapsed })` возвращает ref группы для сопровождения раскрытия и завершения сворачивания. |
@@ -66,15 +83,11 @@ Workflow Component catalog проверяет pull request и прикладыв
 
 `prepareBehavior(attach)` вызывается один раз на уровне модуля. Он возвращает React-хук со стабильным callback-ref. Каждый экземпляр хука подключает поведение к своему узлу и вызывает cleanup при замене узла или размонтировании. Статическую конфигурацию можно замкнуть в `attach`. Изменяемое состояние передавайте в обычный хук, как `open` в `useReveal`.
 
-В обычном DOM функции `attachRidge` и `attachFocusAnchor` доступны через `@neui/kit/dom`. Для ripple достаточно одного импорта на документ.
+В обычном DOM функции `attachRidge` и `attachFocusAnchor` доступны через `@neui/kit/dom`.
 
 ### Ripple
 
-В точке входа приложения или в Storybook preview подключите:
-
-```ts
-import '@neui/kit/ripple'
-```
+С Vite-адаптером достаточно указать класс на интерактивном элементе. При интеграции с другим сборщиком доступен явный импорт `@neui/kit/ripple` из клиентской точки входа.
 
 ```html
 <button type="button" class="neui-row neui-ripple">

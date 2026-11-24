@@ -10,7 +10,7 @@ const meta = {
   parameters: {
     docs: {
       source: { code: source },
-      description: { component: 'Один импорт @neui/kit/ripple на приложение. Любая цель с классом neui-ripple получает волну из точки нажатия. Ползунок задаёт тот же CSS-прогресс вручную.' },
+      description: { component: 'Vite подключает поведение один раз для всего документа. Любая цель с классом neui-ripple получает волну из точки нажатия. Ползунок задаёт тот же CSS-прогресс вручную.' },
     },
   },
 } satisfies Meta<typeof RippleExample>
