@@ -4,10 +4,12 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
-import { build } from 'vite'
+import postcss from 'postcss'
+import { build, createServer } from 'vite'
 import { it, expect, vi } from 'vitest'
 import { prepareIcons } from '@neui/icon'
 import { neuicon } from '@neui/icon/vite'
+import { catalog } from '@neui/icon/catalog'
 
 const glyph = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>'
 const icons = { a: glyph, b: glyph, c: glyph }
@@ -39,13 +41,37 @@ it('accepts a two-pose transition and rejects invalid frame counts during prepar
   }
 })
 
-it.each(['vite', 'tailwind'])('builds host and pseudo-element utilities independently of the kit using %s', async adapter => {
+async function withProject(run) {
   const root = await mkdtemp(join(tmpdir(), 'neuicon-'))
   try {
     await mkdir(join(root, 'node_modules/@neui'), { recursive: true })
     for (const [name, path] of [['@neui/icon', '../neuicon'], ['tailwindcss', '../node_modules/tailwindcss']]) {
       await symlink(fileURLToPath(new URL(path, import.meta.url)), join(root, 'node_modules', name), 'dir')
     }
+    await run(root)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+}
+
+function unpack(css) {
+  const declarations = []
+  const sprites = new Set()
+  const root = postcss.parse(css)
+  root.walkDecls(decl => {
+    if (decl.prop === '--neuicon-sprite' ||
+        (decl.prop === 'initial-value' && decl.parent.params?.startsWith('--neuicon-sprite-'))) {
+      const data = decl.value.match(/^url\(["']?data:image\/svg\+xml,(.*?)["']?\)$/)
+      sprites.add(decodeURIComponent(data[1]))
+      declarations.push(decl)
+    }
+  })
+  expect(css).not.toContain('--neuicon-pending-')
+  return { sprites: [...sprites], declarations }
+}
+
+it.each(['vite', 'tailwind'])('builds host and pseudo-element utilities independently of the kit using %s', async adapter => {
+  await withProject(async root => {
     await writeFile(join(root, 'index.html'), `<link rel="stylesheet" href="./ui.css">
       <i class="neuicon-search"></i><button class="before:neuicon-transition before:neuicon-from-star before:neuicon-to-person
         after:neuicon-transition after:neuicon-from-tag after:neuicon-to-trash after:duration-500">Test</button>`)
@@ -64,7 +90,48 @@ it.each(['vite', 'tailwind'])('builds host and pseudo-element utilities independ
     expect(css).toContain(adapter === 'vite' ? '6000%' : '4900%')
     expect(css).not.toContain('.neuicon-clear')
     expect(output.some(file => file.type === 'chunk' && file.code.trim())).toBe(false)
-  } finally {
-    await rm(root, { recursive: true, force: true })
-  }
+    const { sprites, declarations } = unpack(css)
+    expect(sprites).toHaveLength(1)
+    const [sprite] = sprites
+    expect(sprite.match(/<use href="#row"/g)).toHaveLength(48)
+    expect(sprite.match(/<feGaussianBlur /g)).toHaveLength(24)
+    const names = adapter === 'vite' ? ['person', 'star', 'tag', 'trash'] : Object.keys(catalog.icons)
+    expect(sprite.match(/<image /g)).toHaveLength(names.length)
+    for (const name of names) expect(sprite).toContain(encodeURIComponent(catalog.icons[name]))
+    if (adapter === 'vite') {
+      expect(declarations).toHaveLength(1)
+      expect(sprite).not.toContain(encodeURIComponent(catalog.icons.search))
+      expect(css).toContain('700% 4900%')
+    }
+  })
+})
+
+it('prunes static-only entries and packs @apply per stylesheet in development', async () => {
+  await withProject(async root => {
+    const styles = {
+      'static.css': '.find { @apply neuicon-search; }',
+      'one.css': '.marker::after { @apply neuicon-transition neuicon-from-star neuicon-to-star; }',
+      'two.css': '@source inline("before:neuicon-from-star before:neuicon-to-person");',
+    }
+    for (const [file, body] of Object.entries(styles))
+      await writeFile(join(root, file), '@import "tailwindcss" source(none); @neuicon; ' + body)
+    const server = await createServer({ root, configFile: false, logLevel: 'silent',
+      plugins: [neuicon(), tailwindcss()], css: { postcss: { plugins: [] } }, server: { middlewareMode: true, hmr: false } })
+    try {
+      const style = async file => (await server.transformRequest('/' + file + '?direct')).code
+      const plain = await style('static.css')
+      expect(plain).toContain('mask:')
+      expect(unpack(plain).sprites).toHaveLength(0)
+      const one = await style('one.css')
+      const two = await style('two.css')
+      const a = unpack(one), b = unpack(two)
+      expect(a.sprites[0].match(/<image /g)).toHaveLength(1)
+      expect(one).toContain('100% 4900%')
+      expect(b.sprites[0].match(/<image /g)).toHaveLength(2)
+      expect(two).toContain('300% 4900%')
+      expect(a.declarations[0].parent.params).not.toBe(b.declarations[0].parent.params)
+    } finally {
+      await server.close()
+    }
+  })
 })
