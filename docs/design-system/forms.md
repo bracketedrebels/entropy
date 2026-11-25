@@ -62,7 +62,7 @@ A second trial is to open a node’s settings near the edge of the canvas. Check
 
 ## React components
 
-The component kit includes Row, Reveal, Ridge, Pill and Field. The React notification settings story composes ten reference fields, including the dependent email editor and linked single- and multiple-project pickers. The date assistant and swipeable tags remain in the reference prototype. [Component API and Storybook setup](../../design-system/README.md)
+The component kit includes Row, Reveal, Ridge, Pill and Field. The React notification settings story composes the reference fields, including the dependent email editor and linked single- and multiple-project pickers. The date assistant and swipeable tag input are also available in the React form. [Component API and Storybook setup](../../design-system/README.md)
 
 ## Implementing the patterns
 

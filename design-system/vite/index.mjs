@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import { normalizePath } from 'vite'
 
-const runtimes = ['@neui/kit/ripple', '@neui/kit/ridge']
+const runtimes = ['@neui/kit/ripple', '@neui/kit/ridge', '@neui/kit/swipe']
 const bootstrap = runtimes.map(runtime => `import '${runtime}';`).join('\n')
 
 /** @type {typeof import('./index.d.mts').neui} */

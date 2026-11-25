@@ -38,6 +38,7 @@ it('bundles one runtime and its worklet for an HTML app with Tailwind and no Rea
   const { output } = await build({ ...config(), build: { write: false, minify: false, cssMinify: false } })
   const modules = output.filter(file => file.type === 'chunk').flatMap(chunk => Object.keys(chunk.modules))
   expect(modules.filter(id => id.endsWith(runtime))).toHaveLength(1)
+  expect(modules.filter(id => id.endsWith('/src/swipe/index.ts'))).toHaveLength(1)
   expect(modules.filter(id => id.endsWith('/src/ridge/index.ts'))).toHaveLength(1)
   expect(modules.some(id => id.includes('/node_modules/react/'))).toBe(false)
   expect(output.some(file => /ripple\.paint-.+\.js$/.test(file.fileName))).toBe(true)

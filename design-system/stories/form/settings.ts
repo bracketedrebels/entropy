@@ -8,7 +8,7 @@ const storageKey = 'trinet:storybook:notification-settings:v1'
 const defaults = {
   dateDraft: {} as CalendarDraft, frequency: 'daily', format: 'brief', delivery: ['inbox'], emailText: '', emailAddress: '',
   projects: ['trinet-design', 'entropy-automation'], primaryProject: '', emptyDigest: 'skip',
-  subject: '', introText: initialIntro,
+  subject: '', introText: initialIntro, tags: ['potential', 'frequently_used'], tagDraft: '',
 }
 export type Settings = typeof defaults
 
@@ -32,6 +32,9 @@ function load(): Settings {
       }
     }
     return {
+      tags: Array.isArray(values.tags) ? [...new Set<string>(values.tags.filter((t: unknown): t is string =>
+        typeof t === 'string' && !!t.trim()).map((t: string) => t.trim()))] : defaults.tags,
+      tagDraft: text(record.tagDraft, ''),
       dateDraft, frequency: single(frequency, values.frequency, defaults.frequency),
       format: single(format, values.format, defaults.format),
       emptyDigest: single(emptyDigest, values.emptyDigest, defaults.emptyDigest),
@@ -48,11 +51,11 @@ export function useSettings() {
   const [state, setState] = useState(load)
   const [saved, setSaved] = useState(true)
   useEffect(() => {
-    const { emailText, emailAddress, dateDraft, ...fields } = state
+    const { emailText, emailAddress, dateDraft, tagDraft, ...fields } = state
     const iso = calendarValue(dateDraft)
     const values = { ...fields, ...(iso ? { firstDigestDate: iso } : {}), senderName: 'Trinet', ...(fields.delivery.includes('email') ? { emailAddress } : {}) }
     try {
-      localStorage.setItem(storageKey, JSON.stringify({ values, ...(!iso ? { dateDraft } : {}), emailDraft: { text: emailText, applied: emailAddress } }))
+      localStorage.setItem(storageKey, JSON.stringify({ values, tagDraft, ...(!iso ? { dateDraft } : {}), emailDraft: { text: emailText, applied: emailAddress } }))
       setSaved(true)
     } catch { setSaved(false) }
   }, [state])

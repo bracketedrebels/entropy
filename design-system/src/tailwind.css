@@ -45,6 +45,8 @@
   --neui-ripple-target: 1;
 }
 
+@utility neui-swipe-right { touch-action: pan-y pinch-zoom; }
+
 @utility neui-focus { --neui-focus-target: 1; }
 
 /* Structural behaviors use literal class names. Sizing and paint remain CSS-owned. */

@@ -11,6 +11,7 @@
     },
     "./react": "./src/behaviors.ts",
     "./ridge": "./src/ridge/index.ts",
+    "./swipe": "./src/swipe/index.ts",
     "./ripple": "./src/ripple/index.ts",
     "./dom": "./src/dom.ts",
     "./behaviors": "./src/behaviors.ts",

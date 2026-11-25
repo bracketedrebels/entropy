@@ -1,0 +1,29 @@
+.neui-tags { list-style:none; padding:0; margin:0 }
+.neui-tags .neui-reveal-clip { overflow:hidden }
+@starting-style { .neui-tags .neui-reveal[data-open=true] { grid-template-rows:0fr } }
+.neui-tag {
+  min-height:var(--neui-hit); border-radius:var(--neui-row-radius);
+  --neui-swipe-fill:color-mix(in srgb, var(--neui-danger) 18%, transparent);
+}
+.neui-tag-name {
+  display:block; min-height:var(--neui-hit); width:100%; padding:8px 12px 8px 34px;
+  font:inherit; color:inherit; text-align:start; border:0; background:transparent; cursor:pointer; overflow-wrap:anywhere;
+}
+.neui-tag-name:focus { outline:none }
+.neui-tag-icon {
+  position:absolute; left:calc(6px + var(--neui-swipe-progress) * var(--neui-swipe-inset)); top:50%;
+  translate:0 -50%; z-index:2; pointer-events:none;
+  --neuicon-progress:calc(var(--neui-swipe-progress) * .89 + var(--neui-swipe-tension) * .11);
+}
+.neui-tag .neui-swipe-action { padding-left:29px }
+.neui-tag-word { display:block; overflow:clip; translate:calc(var(--neui-swipe-stretch) / 2) 0 }
+.neui-tag-word > span { display:block; translate:calc((var(--neui-swipe-progress) - 1) * 100%) 0 }
+.neui-tag[data-guide]:not([data-neui-swiping]) { animation:neui-tag-guide 2.2s ease-in-out infinite }
+@keyframes neui-tag-guide {
+  0%,15%,90%,100% { --neui-swipe-progress:0 }
+  48%,58% { --neui-swipe-progress:.6 }
+}
+@media (prefers-reduced-motion:reduce) {
+  .neui-tag[data-guide]:not([data-neui-swiping]) { animation:none; --neui-swipe-progress:.6 }
+}
+@media (forced-colors:active) { .neui-tag[data-neui-swipe-open=true] .neui-swipe-action { outline:1px solid ButtonText; outline-offset:-1px } }

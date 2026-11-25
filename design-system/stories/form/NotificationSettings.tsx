@@ -4,6 +4,7 @@ import { CalendarField } from './CalendarField'
 import { ChoicePicker } from './ChoicePicker'
 import { EmailField } from './EmailField'
 import { RadioField } from './OptionRow'
+import { TagField } from './TagField'
 import { TextField } from './TextField'
 import { channels, emptyDigest, format, frequency, projects } from './options'
 import { useSettings } from './settings'
@@ -59,6 +60,8 @@ export function NotificationSettings() {
         value={state.emptyDigest} onChange={value => setText('emptyDigest', value)} />
       <TextField id={id + '-subject'} name="subject" label="Тема сводки" icon="pencil" value={state.subject}
         placeholder="Введите тему" limit={120} onChange={value => setText('subject', value)} />
+      <TagField id={id + '-tags'} name="tags" label="Теги сводки" tags={state.tags} draft={state.tagDraft}
+        onChange={(tags, tagDraft) => setState(old => ({ ...old, tags, tagDraft }))} />
       <TextField id={id + '-intro'} name="introText" label="Вступительный текст" icon="text" value={state.introText}
         limit={300} onChange={value => setText('introText', value)} />
       <TextField id={id + '-sender'} name="senderName" label="Имя отправителя" icon="person" value="Trinet"

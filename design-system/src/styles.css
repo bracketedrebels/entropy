@@ -1,6 +1,7 @@
 @import "./ripple/effect.css";
 @import "./ripple/focus.css";
 @import "./ridge/frame.css";
+@import "./swipe/swipe.css";
 
 @property --neui-row-radius { syntax:"<length>"; inherits:true; initial-value:24px }
 
