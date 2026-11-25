@@ -8,6 +8,7 @@
 .neui-ripple, [data-neui-press] {
   position: relative;
   isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
   /* Both the live gradient stack and the worklet sample these colours. */
   --neui-highlight: var(--neui-wave-highlight, var(--neui-wave, #ffdfa624));
   --neui-shade: var(--neui-wave-shadow, #0b121a29);

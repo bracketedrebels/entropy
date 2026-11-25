@@ -27,7 +27,8 @@ function strip(mask, frames, phase) {
 
 const iconBox = { display: 'inline-block', width: '1em', height: '1em', flex: 'none', 'background-color': 'currentColor' }
 const emptyProperty = { syntax: '"*"', inherits: 'false' }
-const blend = 'var(--neuicon-dissolve-from), var(--neuicon-dissolve-to)'
+const clear = 'linear-gradient(transparent, transparent)'
+const blend = `var(--neuicon-dissolve-from, ${clear}), var(--neuicon-dissolve-to, ${clear})`
 
 export function prepareIcons(options = {}) {
   const icons = options.icons ?? catalog.icons
@@ -44,10 +45,11 @@ export function prepareIcons(options = {}) {
 export function prepareRules({ icons = catalog.icons, pairs = icons === catalog.icons ? catalog.pairs : [], frames = defaultFrames }, layer) {
   validateFrames(frames)
   const properties = { '--neuicon-progress': { syntax: '"<number>"', inherits: 'true', 'initial-value': '0' } }
+  for (const name of ['--neuicon-mask', '--neuicon-dissolve-from', '--neuicon-dissolve-to']) properties[name] = emptyProperty
   const utilities = {
     'neuicon-transition': {
       ...iconBox,
-      mask: 'var(--neuicon-mask)',
+      mask: `var(--neuicon-mask, ${blend})`,
       'transition-property': '--neuicon-progress',
       'transition-duration': 'var(--tw-duration, 240ms)',
       'transition-timing-function': 'var(--tw-ease, ease-out)',

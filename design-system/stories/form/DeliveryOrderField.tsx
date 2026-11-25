@@ -3,9 +3,20 @@ import { Field } from '../../recipes/Field'
 import { Reveal } from '../../recipes/Reveal'
 import { channels } from './options'
 import type { DeliveryStep } from './retries'
+import './tags.css'
 
 const titles = new Map(channels.map(([key, title]) => [key, title]))
 type Props = { id: string; steps: DeliveryStep[]; onChange: (steps: DeliveryStep[]) => void }
+
+type RemovedStep = { step: DeliveryStep; next?: string; index: number }
+
+function restoreStep(steps: DeliveryStep[], removed: RemovedStep) {
+  if (steps.some(item => item.id === removed.step.id)) return steps
+  const next = steps.slice()
+  const anchor = next.findIndex(item => item.id === removed.next)
+  next.splice(anchor < 0 ? Math.min(removed.index, next.length) : anchor, 0, removed.step)
+  return next
+}
 
 function ChannelButtons({ onChoose }: { onChoose: (channel: string) => void }) {
   return channels.map(([key, title]) => <button type="button" key={key} className="neui-row neui-ripple neui-focus"
@@ -15,8 +26,10 @@ function ChannelButtons({ onChoose }: { onChoose: (channel: string) => void }) {
 
 export function DeliveryOrderField({ id, steps, onChange }: Props) {
   const [panel, setPanel] = useState<string | null>(null)
-  const [replacing, setReplacing] = useState(false)
-  const [removed, setRemoved] = useState<{ step: DeliveryStep; next?: string; index: number }>()
+  const [removed, setRemoved] = useState<RemovedStep>()
+  const [leaving, setLeaving] = useState<RemovedStep[]>([])
+  const visible = leaving.reduceRight(restoreStep, steps)
+  const positions = leaving.length ? new Map(steps.map((step, index) => [step.id, index])) : undefined
   const [status, setStatus] = useState('')
   const addButton = useRef<HTMLButtonElement>(null)
   const rows = useRef(new Map<string, HTMLButtonElement>())
@@ -27,7 +40,6 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
     pendingFocus.current = null
   }, [steps])
   function toggle(target: string) {
-    setReplacing(false)
     setPanel(panel === target ? null : target)
   }
   function move(index: number, offset: number) {
@@ -43,7 +55,9 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
   }
   function remove(index: number) {
     const step = steps[index]
-    setRemoved({ step, index, next: steps[index + 1]?.id })
+    const deletion = { step, index, next: steps[index + 1]?.id }
+    setRemoved(deletion)
+    setLeaving(old => [...old, deletion])
     pendingFocus.current = steps[index + 1]?.id ?? steps[index - 1]?.id ?? 'add'
     setPanel(null)
     onChange(steps.filter(item => item.id !== step.id))
@@ -51,11 +65,9 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
   }
   function restore() {
     if (!removed) return
-    const next = steps.slice()
-    const anchor = next.findIndex(item => item.id === removed.next)
-    next.splice(anchor < 0 ? Math.min(removed.index, next.length) : anchor, 0, removed.step)
+    setLeaving(old => old.filter(entry => entry.step.id !== removed.step.id))
     pendingFocus.current = removed.step.id
-    onChange(next)
+    onChange(restoreStep(steps, removed))
     setRemoved(undefined)
     setStatus('Шаг восстановлен.')
   }
@@ -66,36 +78,48 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
       <button ref={addButton} type="button" className="neui-pill" aria-expanded={panel === 'add'}
         aria-controls={id + '-add'} onClick={() => toggle('add')}>{panel === 'add' ? 'Свернуть каналы' : 'Добавить шаг'}</button>
     </>}>
-    <ol className="m-0 list-none p-0" aria-label="Попытки доставки">
-      {steps.map((step, index) => {
-        const open = panel === step.id
+    <span className="sr-only" id={id + '-help'}>Нажмите на шаг для изменения порядка. Для удаления потяните вправо или нажмите Delete.</span>
+    <ol className="neui-tags" aria-label="Попытки доставки">
+      {visible.map((step, position) => {
+        const index = positions ? positions.get(step.id) ?? -1 : position
+        const present = index >= 0
+        const ordinal = (present ? index : position) + 1
+        const open = panel === step.id && present
         const actions = id + '-' + step.id
-        return <li key={step.id}>
-          <input type="hidden" name="retryRoute" value={step.channel} />
-          <button type="button" className="neui-row neui-ripple neui-focus" aria-expanded={open} aria-controls={actions}
-            ref={element => { if (element) rows.current.set(step.id, element); else rows.current.delete(step.id) }}
-            onClick={() => toggle(step.id)}>
-            <span className="neui-row-area-leading place-self-center text-muted tabular-nums">{index + 1}.</span>
-            <span className="neui-row-copy">{titles.get(step.channel)}</span>
-          </button>
-          <Reveal id={actions} open={open}>
-            <div className="neui-step-actions">
-              <button type="button" className="neui-pill" disabled={index === 0} onClick={() => move(index, -1)}>Раньше</button>
-              <button type="button" className="neui-pill" disabled={index === steps.length - 1} onClick={() => move(index, 1)}>Позже</button>
-              <button type="button" className="neui-pill" aria-expanded={open && replacing} aria-controls={actions + '-choices'}
-                onClick={() => setReplacing(!replacing)}>Заменить</button>
-              <button type="button" className="neui-pill text-danger" onClick={() => remove(index)}>Удалить</button>
+        return <li key={step.id}><Reveal.Group open={present}
+          onCollapsed={() => setLeaving(old => old.filter(entry => entry.step.id !== step.id))}>
+          <Reveal.Item open={present}>
+            <div className="neui-swipe-right neui-tag neui-focus-anchor neui-focus neui-ripple" data-neui-swipe-open={open}>
+              <button type="button" className="neui-swipe-content neui-tag-name" aria-expanded={open} aria-controls={actions}
+                ref={el => { if (el) rows.current.set(step.id, el); else rows.current.delete(step.id) }}
+                aria-label={ordinal + '. ' + titles.get(step.channel)} aria-describedby={id + '-help'}
+                aria-keyshortcuts="Delete Backspace" onClick={() => toggle(step.id)}
+                onKeyDown={e => {
+                  if (e.key === 'Delete' || e.key === 'Backspace') {
+                    e.preventDefault()
+                    if (!e.repeat && present) remove(index)
+                  } else if (e.key === 'Escape') setPanel(null)
+                }}>{titles.get(step.channel)}</button>
+              <button type="button" className="neui-swipe-action" aria-label={'Удалить попытку ' + ordinal}
+                aria-hidden={!open} tabIndex={open ? 0 : -1} disabled={!present} onClick={() => remove(index)}>
+                <span className="neui-tag-word"><span>Удалить</span></span>
+              </button>
+              <span className="neui-tag-icon neui-step-icon" aria-hidden="true">
+                <span className="neui-step-number">{ordinal}.</span>
+                <span className="neuicon-transition neuicon-to-trash duration-0" />
+              </span>
             </div>
-            <div id={actions + '-choices'}>{open && replacing && <ChannelButtons onChoose={channel => {
-              pendingFocus.current = step.id
-              onChange(steps.map(item => item.id === step.id ? { ...item, channel } : item))
-              setPanel(null)
-              setStatus(`Шаг ${index + 1}. ${titles.get(channel)}.`)
-            }} />}</div>
-          </Reveal>
-        </li>
+            <Reveal id={actions} open={open}>
+              <div className="neui-step-actions">
+                <button type="button" className="neui-pill" disabled={index <= 0} onClick={() => move(index, -1)}>Вверх</button>
+                <button type="button" className="neui-pill" disabled={!present || index === steps.length - 1} onClick={() => move(index, 1)}>Вниз</button>
+              </div>
+            </Reveal>
+          </Reveal.Item>
+        </Reveal.Group></li>
       })}
     </ol>
+    {steps.map(step => <input key={step.id} type="hidden" name="retryRoute" value={step.channel} />)}
     {!steps.length && <p className="neui-note">Повторных попыток пока нет.</p>}
     <Reveal id={id + '-add'} open={panel === 'add'} returnFocusRef={addButton} followViewport>
       <ChannelButtons onChoose={channel => {

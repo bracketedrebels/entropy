@@ -65,6 +65,13 @@ export const trackFocus = retain((scope: HTMLElement) => {
     if (target) measure()
     else projections.get(scope)?.(null, 0)
   }
+  // Touch engines can drag a native range without focusing its input.
+  scope.addEventListener('pointerdown', event => {
+    const input = event.target
+    if (event.isPrimary && event.button === 0 && input instanceof HTMLInputElement &&
+        input.matches('input[type="range"]:enabled') && nearestScope(input) === scope)
+      input.focus({ preventScroll: true })
+  }, { ...options, capture: true })
   scope.addEventListener('focusin', sync, options)
   scope.addEventListener('focusout', () => queueMicrotask(sync), options)
   for (const type of ['input', 'keyup', 'pointerup', 'selectionchange']) scope.addEventListener(type, measure, options)

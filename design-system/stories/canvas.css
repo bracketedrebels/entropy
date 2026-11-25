@@ -58,7 +58,8 @@
 .neui-date-screen[data-direction="-1"] { transform:translateX(-100%) }
 .neui-date-screen[data-direction="1"] { transform:translateX(100%) }
 .neui-date-nav { display:grid; grid-template-columns:minmax(0,1fr) 44px 44px; align-items:center; color:var(--neui-muted) }
-.neui-date-nav small { padding-inline-start:28px }
+.neui-date-field { --neui-date-caption-start: 5px }
+.neui-date-nav small, .neui-date-field .neui-note { padding-inline-start:var(--neui-date-caption-start,5px) }
 .neui-date-page { font-size:1.4rem }
 .neui-date-page:disabled { opacity:.35 }
 .neui-date-week { text-align:center; font-size:.8125rem; color:var(--neui-muted) }
@@ -78,3 +79,10 @@
 .neui-scale-example > input { display:block }
 .neui-scale-example .neui-range-ticks { margin-block-start:-12px }
 .neui-scale-labels { display:flex; justify-content:space-between; margin-top:4px; color:var(--neui-muted); font-size:.875rem; font-variant-numeric:tabular-nums }
+.neui-number-entry { display:flex; align-items:center }
+.neui-number-entry > label { flex:1; min-width:0; padding-block:0 }
+.neui-number-entry > button { flex:none }
+.neui-quantity { display:flex; align-items:baseline; gap:.3em; min-width:0; font-variant-numeric:tabular-nums }
+.neui-quantity-value { position:relative; min-width:1ch; padding-inline-end:1px; overflow:hidden }
+.neui-quantity-value > span { visibility:hidden; white-space:pre }
+.neui-quantity-value > input { position:absolute; inset:0; padding:0; min-width:0; font-variant-numeric:inherit }

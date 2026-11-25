@@ -17,8 +17,8 @@
   --_check-rim: color-mix(in srgb, currentColor 60%, #fffdde);
 
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: var(--neui-check-size, 6px);
+  height: var(--neui-check-size, 6px);
   border-radius: 1.5px;
   color: var(--neui-check-color, #ad4a12);
   background-color: color-mix(in srgb, var(--neui-channel, #adbcc57a), var(--_check-core) calc(var(--_check-on) * 100%));

@@ -134,3 +134,19 @@ it('keeps the light in the focused sticky panel’s coordinates across scroll re
   expect(local()).toBe('')
   expect(frame.querySelector('.neui-cap-lamp')).toBeNull()
 })
+
+it('focuses a native range on touch down and projects the light at the track height', async () => {
+  const host = document.createElement('div')
+  host.className = 'neui-track-focus'
+  host.innerHTML = '<input type="text"><input type="range">'
+  document.body.append(host)
+  await settle()
+  const range = host.querySelector<HTMLInputElement>('[type=range]')!
+  vi.spyOn(range, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ y: 40, height: 48 }))
+  host.querySelector('input')!.focus()
+  const touch = Object.assign(new Event('pointerdown', { bubbles: true }), { isPrimary: true, button: 0, pointerType: 'touch' })
+  range.dispatchEvent(touch)
+  expect(document.activeElement).toBe(range)
+  expect(signal(host)).toBe('1')
+  expect(host.style.getPropertyValue('--neui-focus-y')).toBe('64px')
+})

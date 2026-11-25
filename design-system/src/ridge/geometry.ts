@@ -80,10 +80,22 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
       pane.querySelectorAll('mask path, .neui-cut, .neui-lip, .neui-floor').forEach(path => path.setAttribute('d', paths[index]))
       pane.querySelector('mask')!.setAttribute('height', String(heights[index]+8))
     })
-    const inner = Math.max(0, radius-gap), upper = band ? 0 : inner
-    topClip.style.clipPath = `path("M 0 ${headH} H ${inset} V ${start+band} H ${width-inset-upper} a ${upper} ${upper} 0 0 1 ${upper} ${upper} V ${headH} H ${width} V ${height} H 0 Z")`
-    bottomClip.style.clipPath = metadata
-      ? `inset(0 0 ${metadata}px 0)` : `path("M 0 0 H ${width} V ${join} H ${width-inset} a ${inner} ${inner} 0 0 1 ${-inner} ${inner} H ${inset+inner} a ${inner} ${inner} 0 0 1 ${-inner} ${-inner} H 0 Z")`
+    // Move the two curved openings with their sticky caps. The narrow side strips
+    // carry only the rails, so the content cutout can turn inwards at every corner.
+    const contentTop = start + band, contentBottom = height - Math.max(inset, metadata)
+    const contentRight = width - inset
+    const limit = Math.max(0, Math.min((width - inset * 2) / 2, (contentBottom - contentTop) / 2))
+    const inner = Math.min(Math.max(0, radius - gap), limit)
+    const endRadius = Math.min(Math.max(0, br - gap), limit)
+    const rails = (from: number, to: number) =>
+      `M 0 ${from} H ${inset} V ${to} H 0 Z M ${contentRight} ${from} H ${width} V ${to} H ${contentRight} Z`
+    const upperCut = `M ${inset} ${contentTop + inner} a ${inner} ${inner} 0 0 1 ${inner} ${-inner}
+      H ${contentRight - inner} a ${inner} ${inner} 0 0 1 ${inner} ${inner} V ${height} H ${inset} Z`
+    const lowerCut = `M ${inset} 0 H ${contentRight} V ${contentBottom - endRadius}
+      a ${endRadius} ${endRadius} 0 0 1 ${-endRadius} ${endRadius} H ${inset + inner}
+      a ${inner} ${inner} 0 0 1 ${-inner} ${-inner} Z`
+    topClip.style.clipPath = `path("${upperCut.replace(/\s+/g, ' ')} ${rails(headH, height)}")`
+    bottomClip.style.clipPath = `path("${lowerCut.replace(/\s+/g, ' ')} ${rails(0, join)}")`
     animations.forEach(a => a.cancel())
     animations = []
     if (timeline && travel > 0) {

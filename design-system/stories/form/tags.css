@@ -27,3 +27,7 @@
   .neui-tag[data-guide]:not([data-neui-swiping]) { animation:none; --neui-swipe-progress:.6 }
 }
 @media (forced-colors:active) { .neui-tag[data-neui-swipe-open=true] .neui-swipe-action { outline:1px solid ButtonText; outline-offset:-1px } }
+.neui-step-icon { display:grid; place-items:center; width:1em }
+.neui-step-icon > * { grid-area:1 / 1 }
+.neui-step-icon .neui-step-number { font-variant-numeric:tabular-nums; color:var(--neui-muted); opacity:calc(1 - var(--neui-swipe-progress)) }
+.neui-step-icon .neuicon-transition { --neuicon-progress:var(--neui-swipe-progress) }

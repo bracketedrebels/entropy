@@ -10,6 +10,7 @@
   --neui-hit: 48px; --neui-action-height: 44px; --neui-choice-height: 64px;
   --neui-inset: 11px; --neui-row-radius: 24px; --neui-choice-radius: 32px;
   --neui-bg: linear-gradient(180deg, #f3f6f8, #e6ecf1 49%, #d4dee7);
+  --neui-control-surface: #e6ecf1;
   --neui-text: #293944; --neui-muted: #586b78; --neui-channel: #adbcc57a;
   --neui-shadow: #73859368; --neui-lip: #ffffffc7; --neui-copper: #ad4a12;
   --neui-check-color: var(--neui-copper); --neui-check-emission: 0; --neui-check-tint: 0%;
@@ -22,6 +23,7 @@
   font: 300 1rem/1.5 var(--neui-font);
 }
 :where(.neui-surface[data-theme="dark"]) {
+  --neui-control-surface: #29313a;
   color-scheme: dark; --neui-bg: linear-gradient(180deg,#303740, #252d35 52%, #1f252c);
   --neui-text: #e1eaf1; --neui-muted: #adbcc8; --neui-channel: #283139;
   --neui-shadow: #0b121aab; --neui-lip: #72818c75; --neui-core: #ffdfae; --neui-halo: #bd8960;
@@ -59,6 +61,7 @@ button.neui-row, label.neui-row, .neui-pill-action { cursor: pointer; touch-acti
 .neui-reveal[inert] { pointer-events:none }
 .neui-ridge { position:relative; --neui-cap-light-y:initial }
 :where(.neui-ridge,.neui-track-focus) { --neui-focus-active:0; --neui-focus-y:0px }
+.neui-meta-group { display:contents }
 .neui-pill {
   --neui-pill-inset: 10px;
   position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center;

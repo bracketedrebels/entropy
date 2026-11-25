@@ -6,7 +6,21 @@
   margin: 0;
   appearance: none;
   background: transparent;
-  color: var(--neui-mark-selected, currentColor);
+  --neui-pin-dot: var(--neui-channel);
+  --neui-pin-r: calc(var(--neui-check-size, 6px) / 2);
+  --neui-pin-halo: transparent;
+  --neui-pin-paint:
+    radial-gradient(circle at center, var(--neui-pin-dot) calc(var(--neui-pin-r) - .5px), transparent var(--neui-pin-r)),
+    radial-gradient(circle at 50% calc(50% - .7px), var(--neui-shadow) calc(var(--neui-pin-r) - .5px), transparent var(--neui-pin-r)),
+    radial-gradient(circle at 50% calc(50% + .7px), var(--neui-lip) calc(var(--neui-pin-r) - .5px), transparent var(--neui-pin-r)),
+    radial-gradient(circle, var(--neui-pin-halo) var(--neui-pin-r), transparent 70%),
+    var(--neui-control-surface, Canvas);
+  --neui-pin-relief: inset 0 1px 1px var(--neui-lip), inset 0 -1px 1px var(--neui-shadow), 0 1px 2px var(--neui-shadow);
+  -webkit-tap-highlight-color: transparent;
+  &:is(:focus, :active):enabled {
+    --neui-pin-dot: var(--neui-mark-selected);
+    --neui-pin-halo: color-mix(in srgb, var(--neui-halo) calc(60% * var(--neui-check-emission, 0)), transparent);
+  }
   cursor: pointer;
   &:focus-visible { outline: 1px solid var(--neui-muted); outline-offset: -2px; border-radius: 999px; }
   &::-webkit-slider-runnable-track {
@@ -28,19 +42,23 @@
     margin-top: calc((3px - var(--neui-range-thumb, 18px)) / 2);
     border: 0;
     border-radius: 50%;
-    background: currentColor;
-    box-shadow: var(--neui-mark-shadow);
+    background: var(--neui-pin-paint);
+    box-shadow: var(--neui-pin-relief);
   }
   &::-moz-range-thumb {
     width: var(--neui-range-thumb, 18px);
     height: var(--neui-range-thumb, 18px);
     border: 0;
     border-radius: 50%;
-    background: currentColor;
-    box-shadow: var(--neui-mark-shadow);
+    background: var(--neui-pin-paint);
+    box-shadow: var(--neui-pin-relief);
   }
+  .neui-track-focus &:focus-visible { outline: none; }
   &:disabled { opacity: .5; cursor: default; }
-  @media (forced-colors: active) { appearance: auto; accent-color: auto; }
+  @media (forced-colors: active) {
+    appearance: auto; accent-color: auto;
+    .neui-track-focus &:focus-visible { outline: 2px solid Highlight; }
+  }
 }
 
 /* Optional sibling with author-supplied marks; align endpoints to the thumb centres. */

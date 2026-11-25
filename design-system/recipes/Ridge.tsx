@@ -15,6 +15,6 @@ export function Ridge({ id, label, header, meta, children }: RidgeProps) {
     <span slot="label" id={id + '-label'}>{label}</span>
     {header && <div slot="header">{header}</div>}
     {children}
-    {meta && <div slot="meta" className="contents">{meta}</div>}
+    {meta && <div slot="meta" className="neui-meta-group">{meta}</div>}
   </div>
 }

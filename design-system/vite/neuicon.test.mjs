@@ -135,3 +135,18 @@ it('prunes static-only entries and packs @apply per stylesheet in development', 
     }
   })
 })
+
+it('can reveal a destination alone on a pseudo-element without a source glyph', async () => {
+  await withProject(async root => {
+    await writeFile(join(root, 'index.html'), '<link rel="stylesheet" href="./ui.css"><i class="before:neuicon-transition before:neuicon-to-trash"></i>')
+    await writeFile(join(root, 'ui.css'), '@import "tailwindcss"; @neuicon;')
+    const { output } = await build({ root, configFile: false, logLevel: 'silent', plugins: [neuicon(), tailwindcss()],
+      css: { postcss: { plugins: [] } }, build: { write: false, cssMinify: false } })
+    const css = output.find(file => file.fileName.endsWith('.css')).source
+    expect(css).toMatch(/mask:\s*var\(--neuicon-mask,\s*var\(--neuicon-dissolve-from,\s*linear-gradient\(transparent/)
+    const { sprites } = unpack(css)
+    expect(sprites).toHaveLength(1)
+    expect(sprites[0].match(/<image /g)).toHaveLength(1)
+    expect(sprites[0]).toContain(encodeURIComponent(catalog.icons.trash))
+  })
+})
