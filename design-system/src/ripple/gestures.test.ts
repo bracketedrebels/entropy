@@ -9,7 +9,7 @@ beforeEach(() => {
   tracks.length = 0
   const computed = window.getComputedStyle.bind(window)
   vi.spyOn(window, 'getComputedStyle').mockImplementation((element, pseudo) => pseudo
-    ? { transitionDuration: duration } as CSSStyleDeclaration : computed(element))
+    ? { transitionDuration: duration, animationDuration: duration.split(',')[0] } as CSSStyleDeclaration : computed(element))
   vi.stubGlobal('CSS', { registerProperty: vi.fn() })
   detach = listenForRipple(document)
 })
@@ -139,4 +139,68 @@ it('keeps gradients valid while a browser without registered properties adds or 
   window.dispatchEvent(new Event('blur'))
   expect(pending.size).toBe(0)
   expect(samples(target)).toBe('')
+})
+
+
+it('shares one travel track for the crest and border and leaves the acquired focus intact on a repeat tap', async () => {
+  const field = button()
+  field.classList.add('neui-focus-ring')
+  pointer(field, 'pointerdown', 1, 30)
+  const front = 'var(--neui-front-0)'
+  expect(field.style.getPropertyValue('--neui-ring-x')).toBe('10%')
+  expect(field.style.getPropertyValue('--neui-ring-progress')).toBe(front)
+  expect(samples(field)).toContain('10% 25% ' + front)
+  expect(tracks).toHaveLength(1)
+  field.focus()
+  pointer(field, 'pointerdown', 2, 180)
+  expect(field.style.getPropertyValue('--neui-ring-progress')).toBe(front)
+  expect(tracks).toHaveLength(2)
+  tracks[0].finish()
+  await Promise.resolve()
+  expect(field.style.getPropertyValue('--neui-ring-progress')).toBe('')
+  expect(samples(field)).toContain('--neui-front-1')
+})
+
+it('reveals a ring by itself, freezes a partial reveal on blur, and restores the whole ring on keyboard focus', () => {
+  const field = button()
+  field.className = 'neui-focus-ring'
+  pointer(field, 'pointerdown')
+  field.focus()
+  expect(field.dataset.neuiPress).toBeUndefined()
+  expect(samples(field)).toBe('')
+  expect(tracks[0].frames).toHaveLength(2)
+  field.style.setProperty('--neui-front-0', '.35')
+  field.blur()
+  expect(field.style.getPropertyValue('--neui-ring-progress')).toBe('.35')
+  field.focus()
+  expect(field.style.getPropertyValue('--neui-ring-progress')).toBe('')
+  expect(tracks).toHaveLength(1)
+})
+
+it('uses independent nested targets and cancels both tracks on a cancelled touch', () => {
+  const outer = button()
+  outer.className = 'neui-focus-ring'
+  const inner = button(outer)
+  pointer(inner, 'pointerdown')
+  expect(samples(inner)).not.toBe('')
+  expect(inner.hasAttribute('data-neui-ring')).toBe(false)
+  expect(outer.hasAttribute('data-neui-press')).toBe(false)
+  expect(outer.style.getPropertyValue('--neui-ring-progress')).toBe('var(--neui-front-0)')
+  pointer(window, 'pointercancel')
+  expect(tracks.every(track => track.cancel.mock.calls.length === 1)).toBe(true)
+})
+
+it('shows the entire ring for a CSS opt-in with zero duration, then releases the runtime marker on blur', async () => {
+  duration = '0s, 0s'
+  const field = button()
+  field.className = 'editor'
+  field.style.setProperty('--neui-focus-ring-target', '1')
+  pointer(field, 'pointerdown')
+  field.focus()
+  expect(tracks).toHaveLength(0)
+  expect(field.hasAttribute('data-neui-ring')).toBe(true)
+  expect(field.style.getPropertyValue('--neui-ring-progress')).toBe('')
+  field.blur()
+  await Promise.resolve()
+  expect(field.hasAttribute('data-neui-ring')).toBe(false)
 })

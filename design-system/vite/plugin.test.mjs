@@ -21,7 +21,7 @@ beforeEach(async () => {
   await writeFile(join(root, 'client.tsx'), `import './app.css'
     const h = (tag: string, props: object) => Object.assign(document.createElement(tag), props)
     document.body.append(<button className={location.hash ? 'neui-ripple' : 'neui-pill'} />)`)
-  await writeFile(join(root, 'app.css'), '@import "tailwindcss"; @import "@neui/kit/tailwind.css"; .action { @apply neui-ripple duration-500; }')
+  await writeFile(join(root, 'app.css'), '@import "tailwindcss"; @import "@neui/kit/tailwind.css"; .action { @apply neui-ripple neui-focus-ring duration-500 ease-linear; }')
 })
 afterEach(() => rm(root, { recursive: true, force: true }))
 
@@ -47,6 +47,8 @@ it('bundles one runtime and its worklet for an HTML app with Tailwind and no Rea
   expect(css).toMatch(/--neui-band:\s*32px/)
   const action = css.match(/\.action\s*\{([^}]+)\}/)?.[1]
   expect(action).toMatch(/--neui-ripple-target:\s*1/)
+  expect(action).toMatch(/--neui-focus-ring-target:\s*1/)
+  expect(action).toMatch(/--tw-ease:\s*linear/)
   // The NEUI bridge reads this non-inheriting value on the target, before styling ::after.
   expect(action).toMatch(/--tw-duration:\s*(?:500ms|0?\.5s);/)
   expect(css).toMatch(/--neui-utility-duration:\s*var\(--tw-duration\)/)

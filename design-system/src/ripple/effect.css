@@ -18,6 +18,12 @@
   --neui-ripple-y: 50%;
 }
 
+.neui-ripple::after, [data-neui-press]::after,
+.neui-focus-ring::before, [data-neui-ring]::before {
+  --neui-growth: var(--neui-utility-duration, var(--neui-ripple-duration, 1s));
+  --neui-travel-ease: var(--neui-utility-ease, var(--neui-ripple-easing, ease-out));
+}
+
 .neui-ripple::after, [data-neui-press]::after {
   content: "";
   position: absolute;
@@ -25,7 +31,6 @@
   z-index: -1;
   border-radius: inherit;
   pointer-events: none;
-  --neui-growth: var(--neui-utility-duration, var(--neui-ripple-duration, 1s));
   /* Resolve duration utilities, calc() and reduced motion here. Each live wave
      samples these timings when it starts, independently of its neighbours. */
   transition-property: none;

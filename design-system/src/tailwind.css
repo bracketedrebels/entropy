@@ -34,13 +34,18 @@
 /* Tailwind 4 registers --tw-duration without inheritance. Resolve it on the press target
    so the painted pseudo-element receives the duration chosen by the active utility. */
 @layer components {
-  :where(.neui-ripple, [data-neui-press]) { --neui-utility-duration: var(--tw-duration); }
+  :where(.neui-ripple, [data-neui-press], .neui-focus-ring, [data-neui-ring]) {
+    --neui-utility-duration: var(--tw-duration);
+    --neui-utility-ease: var(--tw-ease);
+  }
 }
 
 /* Allow @apply and Tailwind variants to opt a native element into delegation. */
 @utility neui-ripple {
   --neui-ripple-target: 1;
 }
+
+@utility neui-focus-ring { --neui-focus-ring-target: 1; }
 
 /* Structural behaviors use literal class names. Sizing and paint remain CSS-owned. */
 @utility neui-ridge {
