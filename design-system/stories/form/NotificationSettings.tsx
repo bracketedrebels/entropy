@@ -2,6 +2,8 @@ import { useId, useRef, useState } from 'react'
 import { Reveal } from '../../recipes/Reveal'
 import { CalendarField } from './CalendarField'
 import { ChoicePicker } from './ChoicePicker'
+import { DeliveryOrderField } from './DeliveryOrderField'
+import { RetryIntervalField } from './RetryIntervalField'
 import { EmailField } from './EmailField'
 import { RadioField } from './OptionRow'
 import { TagField } from './TagField'
@@ -45,6 +47,10 @@ export function NotificationSettings() {
         <EmailField id={id + '-email'} enabled={emailEnabled} value={state.emailText} applied={state.emailAddress}
           onChange={(emailText, emailAddress) => setState(old => ({ ...old, emailText, emailAddress }))} />
       </div></Reveal>
+      <DeliveryOrderField id={id + '-retry-route'} steps={state.retryRoute}
+        onChange={retryRoute => setState(old => ({ ...old, retryRoute }))} />
+      <RetryIntervalField id={id + '-retry-minutes'} draft={state.retryDraft} applied={state.retryMinutes}
+        onChange={(retryDraft, retryMinutes) => setState(old => ({ ...old, retryDraft, retryMinutes }))} />
       <ChoicePicker id={id + '-projects'} name="projects" label="Проекты в сводке" options={projects} multiple
         searchLabel="Поиск проектов" emptyLabel="Выбрать проекты" selected={state.projects} onChange={projects => {
           setState(old => {

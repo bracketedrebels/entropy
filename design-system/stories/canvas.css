@@ -71,3 +71,10 @@
 .neui-date-week [data-weekend] { font-style:italic }
 .neui-date-years { user-select:none }
 .neui-date-years[data-dragging] { scroll-snap-type:none; cursor:grabbing }
+
+.neui-step-actions { display:flex; flex-wrap:wrap; gap:0 4px; padding-inline:8px }
+.neui-step-actions :disabled { opacity:.45; cursor:default }
+.neui-scale-example { padding:0 12px 4px }
+.neui-scale-example > input { display:block }
+.neui-scale-example .neui-range-ticks { margin-block-start:-12px }
+.neui-scale-labels { display:flex; justify-content:space-between; margin-top:4px; color:var(--neui-muted); font-size:.875rem; font-variant-numeric:tabular-nums }

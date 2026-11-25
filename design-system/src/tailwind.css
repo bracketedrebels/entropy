@@ -1,5 +1,6 @@
 @import "./styles.css" layer(components);
 @import "./check.css";
+@import "./range.css";
 @import "./calendar/grid.css";
 
 /* Resolve semantic utilities on the element, including inside nested themed surfaces. */

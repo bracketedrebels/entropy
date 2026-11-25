@@ -25,6 +25,7 @@ function tagToTrash(t) {
 }
 
 const shapes = {
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',
   calendar: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 10h18"/>',
   search: '<circle cx="10" cy="10" r="6.5"/><path d="m15 15 5 5"/>',
   clear: '<path d="m6 6 12 12M18 6 6 18"/>',

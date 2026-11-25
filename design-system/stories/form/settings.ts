@@ -3,9 +3,11 @@ import { calendarDraft, calendarValue } from '@neui/kit/react'
 import type { CalendarDraft, CalendarPart } from '@neui/kit/react'
 import { channels, emptyDigest, format, frequency, initialIntro, projects } from './options'
 import type { Option } from './options'
+import { interval, loadDeliverySteps, retryMinutes } from './retries'
 
 const storageKey = 'trinet:storybook:notification-settings:v1'
 const defaults = {
+  retryRoute: loadDeliverySteps(undefined), retryMinutes: interval.initial, retryDraft: String(interval.initial),
   dateDraft: {} as CalendarDraft, frequency: 'daily', format: 'brief', delivery: ['inbox'], emailText: '', emailAddress: '',
   projects: ['trinet-design', 'entropy-automation'], primaryProject: '', emptyDigest: 'skip',
   subject: '', introText: initialIntro, tags: ['potential', 'frequently_used'], tagDraft: '',
@@ -31,7 +33,10 @@ function load(): Settings {
         if (typeof raw === 'string' && /^\d+$/.test(raw) && raw.length <= (part === 'year' ? 4 : 2)) dateDraft[part] = raw
       }
     }
+    const minutes = retryMinutes(String(values.retryMinutes)) ?? interval.initial
     return {
+      retryRoute: loadDeliverySteps(values.retryRoute), retryMinutes: minutes,
+      retryDraft: text(record.retryDraft, String(minutes)),
       tags: Array.isArray(values.tags) ? [...new Set<string>(values.tags.filter((t: unknown): t is string =>
         typeof t === 'string' && !!t.trim()).map((t: string) => t.trim()))] : defaults.tags,
       tagDraft: text(record.tagDraft, ''),
@@ -51,11 +56,11 @@ export function useSettings() {
   const [state, setState] = useState(load)
   const [saved, setSaved] = useState(true)
   useEffect(() => {
-    const { emailText, emailAddress, dateDraft, tagDraft, ...fields } = state
+    const { emailText, emailAddress, dateDraft, tagDraft, retryRoute, retryDraft, ...fields } = state
     const iso = calendarValue(dateDraft)
-    const values = { ...fields, ...(iso ? { firstDigestDate: iso } : {}), senderName: 'Trinet', ...(fields.delivery.includes('email') ? { emailAddress } : {}) }
+    const values = { ...fields, retryRoute: retryRoute.map(step => step.channel), ...(iso ? { firstDigestDate: iso } : {}), senderName: 'Trinet', ...(fields.delivery.includes('email') ? { emailAddress } : {}) }
     try {
-      localStorage.setItem(storageKey, JSON.stringify({ values, tagDraft, ...(!iso ? { dateDraft } : {}), emailDraft: { text: emailText, applied: emailAddress } }))
+      localStorage.setItem(storageKey, JSON.stringify({ values, tagDraft, retryDraft, ...(!iso ? { dateDraft } : {}), emailDraft: { text: emailText, applied: emailAddress } }))
       setSaved(true)
     } catch { setSaved(false) }
   }, [state])

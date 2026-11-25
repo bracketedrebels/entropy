@@ -1,0 +1,54 @@
+/* The native input owns the value, snapping, pointer capture and keyboard controls. */
+@utility neui-range {
+  width: 100%;
+  min-width: 0;
+  height: var(--neui-hit, 48px);
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  color: var(--neui-mark-selected, currentColor);
+  cursor: pointer;
+  &:focus-visible { outline: 1px solid var(--neui-muted); outline-offset: -2px; border-radius: 999px; }
+  &::-webkit-slider-runnable-track {
+    height: 3px;
+    border-radius: 999px;
+    background: var(--neui-channel);
+    box-shadow: inset 0 1px 1px var(--neui-shadow), 0 1px 0 var(--neui-lip);
+  }
+  &::-moz-range-track {
+    height: 3px;
+    border-radius: 999px;
+    background: var(--neui-channel);
+    box-shadow: inset 0 1px 1px var(--neui-shadow), 0 1px 0 var(--neui-lip);
+  }
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: var(--neui-range-thumb, 18px);
+    height: var(--neui-range-thumb, 18px);
+    margin-top: calc((3px - var(--neui-range-thumb, 18px)) / 2);
+    border: 0;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: var(--neui-mark-shadow);
+  }
+  &::-moz-range-thumb {
+    width: var(--neui-range-thumb, 18px);
+    height: var(--neui-range-thumb, 18px);
+    border: 0;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: var(--neui-mark-shadow);
+  }
+  &:disabled { opacity: .5; cursor: default; }
+  @media (forced-colors: active) { appearance: auto; accent-color: auto; }
+}
+
+/* Optional sibling with author-supplied marks; align endpoints to the thumb centres. */
+@utility neui-range-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-inline: calc(var(--neui-range-thumb, 18px) / 2);
+  color: var(--neui-muted);
+  pointer-events: none;
+  & > * { width: 1px; height: 4px; background: currentColor; }
+}
