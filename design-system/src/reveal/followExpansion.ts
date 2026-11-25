@@ -1,6 +1,7 @@
 export function revealTransitions(panel: HTMLElement) {
   return (panel.getAnimations?.({ subtree: true }) ?? []).filter(animation =>
-    'transitionProperty' in animation && animation.transitionProperty === 'grid-template-rows')
+    'transitionProperty' in animation && (animation.transitionProperty === 'grid-template-rows' ||
+      (animation.transitionProperty === 'height' && (animation.effect as KeyframeEffect | null)?.target?.hasAttribute('data-open'))))
 }
 
 /** Only an explicit opening gesture may advance the containing scroller. */

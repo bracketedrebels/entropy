@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { NotificationSettings } from './NotificationSettings'
 
@@ -122,4 +122,51 @@ it('keeps the completed two-digit month when keyboard entry advances focus to th
   expect(payload().get('firstDigestDate')).toBe('2024-12-31')
   fireEvent.keyDown(day, { key: 'Escape' })
   expect(day.getAttribute('aria-expanded')).toBe('false')
+})
+
+
+it('retains the visible calendar grid until its closing height transition finishes', async () => {
+  render(<NotificationSettings />)
+  fireEvent.click(button(/^Год,/))
+  const grid = screen.getByRole('radiogroup', { name: /^Год,/ })
+  const panel = grid.closest<HTMLElement>('.neui-date-disclosure')!
+  let finish!: () => void
+  const finished = new Promise<void>(resolve => { finish = resolve })
+  Object.defineProperty(panel.parentElement!, 'getAnimations', { value: () => [
+    { transitionProperty: 'height', effect: { target: panel }, finished },
+  ] })
+  fireEvent.click(button('Свернуть календарь'))
+  expect(panel.hasAttribute('inert')).toBe(true)
+  expect(panel.contains(grid)).toBe(true)
+  fireEvent.click(button(/^Год,/))
+  await act(async () => { finish() })
+  expect(panel.hasAttribute('inert')).toBe(false)
+  expect(panel.contains(grid)).toBe(true)
+  fireEvent.click(button('Свернуть календарь'))
+  await act(async () => { await finished })
+  expect(panel.contains(grid)).toBe(false)
+})
+
+it('keeps adjacent year ranges in the same columns and reuses the arriving page across a swipe', () => {
+  const rect = HTMLElement.prototype.getBoundingClientRect
+  const bounds = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+    return this.matches('.neui-date-years') ? DOMRect.fromRect({ width: 320 }) : rect.call(this)
+  })
+  try {
+    render(<NotificationSettings />)
+    fireEvent.click(button(/^Год,/))
+    const grid = screen.getByRole('radiogroup', { name: /^Год,/ })
+    const strip = grid.parentElement!
+    const previous = grid.previousElementSibling as HTMLElement
+    const previousColumn = Number(previous.style.gridColumnStart)
+    expect(Number(grid.getAttribute('data-first')) - Number(previous.firstElementChild?.textContent)).toBe(35)
+    strip.scrollLeft = (previousColumn - 1) * 320
+    fireEvent.scroll(strip)
+    expect(strip.querySelector('[data-current="true"]')).toBe(previous)
+    expect(Number(previous.style.gridColumnStart)).toBe(previousColumn)
+    strip.scrollLeft += 320
+    fireEvent.scroll(strip)
+    expect(strip.querySelector('[data-current="true"]')).toBe(grid)
+    expect(strip.childElementCount).toBe(3)
+  } finally { bounds.mockRestore() }
 })

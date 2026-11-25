@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import type { Locale } from 'date-fns'
 import { ru } from 'date-fns/locale/ru'
-import { calendarGrid, calendarValue, daysInDraft, initialView, monthStart, pageView, partNumber, selectPart } from './model'
+import { calendarGrid, calendarValue, daysInDraft, initialView, monthStart, pageView, partNumber, selectPart, yearPage, yearsPerPage } from './model'
 import type { CalendarDraft, CalendarPart } from './model'
 
 export interface CalendarOptions {
@@ -69,8 +69,13 @@ export function useCalendar({ draft, onChange, locale = ru, today: reference }: 
     setPrevious(null)
   }
   const page = useCallback((step: -1 | 1) => setView(old => pageView(old, part, step) ?? old), [part])
+  const goToYearPage = useCallback((index: number) => {
+    const first = 1 + index * yearsPerPage
+    if (!Number.isInteger(index) || first < 1 || first > 9999) return
+    setView(old => yearPage(old.getFullYear()) === first ? old : monthStart(first, old.getMonth() + 1))
+  }, [])
   return { part, isOpen, view, today, locale, pattern, draft, value: calendarValue(draft), canUndo: previous !== null,
     maxDay: daysInDraft(draft), partValue: (key: CalendarPart) => partNumber(draft, key),
     open, close: () => setOpen(false), edit, choose, reset, undo,
-    page }
+    page, goToYearPage }
 }

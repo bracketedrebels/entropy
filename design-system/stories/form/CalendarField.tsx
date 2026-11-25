@@ -101,10 +101,9 @@ export function CalendarField({ id, name, label, draft, onChange, locale }: Prop
       </div>
       {error && <p id={id + '-error'} className="neui-note neui-error" role="status">{error}</p>}
       <Reveal.Group open={isOpen} followViewport id={id + '-assistant'} onCollapsed={() => setVisited(false)}>
-        <Reveal.Item open={isOpen}>
+        <CalendarPanel calendar={calendar} panelRef={panel} mounted={visited}>
           {!present && <p className="neui-note">Без даты отправка начнётся с ближайшего выпуска.</p>}
-          {visited && <CalendarPanel calendar={calendar} panelRef={panel} />}
-        </Reveal.Item>
+        </CalendarPanel>
       </Reveal.Group>
       <input type="hidden" name={name} disabled={!calendar.value} value={calendar.value ?? ''} />
     </Field>

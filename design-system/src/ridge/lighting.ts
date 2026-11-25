@@ -19,6 +19,8 @@ export function ridgeLighting(shell: HTMLElement, head: HTMLElement, foot: HTMLE
   let ranges: StickyRanges | undefined
   let animations: Animation[] = []
   let up = 0, down = 0
+  let lastY: string | undefined
+  let pendingFade: object | undefined
 
   function position() {
     if (!contour) return
@@ -73,15 +75,34 @@ export function ridgeLighting(shell: HTMLElement, head: HTMLElement, foot: HTMLE
   }
 
   const stop = projectFocus(shell, (target, y) => {
-    let panel = target
+    if (!target) {
+      if (!lastY || pendingFade) return
+      // The tracker releases its public signals immediately. Keep the last paint source
+      // and its local coordinates until that source has actually become transparent.
+      shell.style.setProperty('--neui-cap-light-y', lastY)
+      const token = pendingFade = {}
+      const bands = origin && lamp ? [lamp.band] : textures.map(texture => texture.querySelector('.neui-light')!)
+      const fades = bands.flatMap(band => band.getAnimations?.() ?? []).filter(animation =>
+        'transitionProperty' in animation && animation.transitionProperty === 'opacity')
+      const release = () => {
+        if (pendingFade !== token) return
+        pendingFade = undefined
+        lastY = undefined
+        shell.style.removeProperty('--neui-cap-light-y')
+        if (origin) { origin = null; bind() }
+      }
+      if (fades.length) void Promise.allSettled(fades.map(fade => fade.finished)).then(release)
+      else release()
+      return
+    }
+    pendingFade = undefined
+    let panel: Element | null = target
     while (panel && panel !== shell && panel !== head && panel !== foot) panel = panel.assignedSlot ?? panel.parentElement
     const next = panel === head || panel === foot ? panel : null
+    lastY = next ? (y - next.getBoundingClientRect().top) + 'px' : shell.style.getPropertyValue('--neui-focus-y')
     if (next) {
-      const localY = (y - next.getBoundingClientRect().top) + 'px'
-      if (shell.style.getPropertyValue('--neui-cap-light-y') !== localY) shell.style.setProperty('--neui-cap-light-y', localY)
-    } else if (origin) {
-      shell.style.removeProperty('--neui-cap-light-y')
-    }
+      if (shell.style.getPropertyValue('--neui-cap-light-y') !== lastY) shell.style.setProperty('--neui-cap-light-y', lastY)
+    } else shell.style.removeProperty('--neui-cap-light-y')
     if (next !== origin) {
       origin = next
       bind()
@@ -100,6 +121,7 @@ export function ridgeLighting(shell: HTMLElement, head: HTMLElement, foot: HTMLE
       position()
     },
     dispose() {
+      pendingFade = undefined
       stop()
       animations.forEach(animation => animation.cancel())
       lamp?.svg.remove()

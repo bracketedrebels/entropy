@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import type { KeyboardEvent, MutableRefObject, RefObject } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
+import type { KeyboardEvent, MutableRefObject, ReactNode, RefObject } from 'react'
 import { useYearDrag } from './useYearDrag'
-import { useCalendarGrid } from '@neui/kit/react'
+import { useCalendarGrid, useReveal, yearsPerPage } from '@neui/kit/react'
 import type { CalendarPart, useCalendar } from '@neui/kit/react'
 
 type Calendar = ReturnType<typeof useCalendar>
@@ -18,6 +18,7 @@ function CalendarScreen({ calendar, part, focusNext }: {
   const { current, pages, canBack, canForward } = useCalendarGrid({ ...calendar, part })
   const active = part === calendar.part && calendar.isOpen
   const strip = useRef<HTMLDivElement>(null)
+  const pageWidth = useRef(0)
   const drag = useYearDrag()
   const screen = useRef<HTMLDivElement>(null)
   const gridFocus = useRef(false)
@@ -29,9 +30,6 @@ function CalendarScreen({ calendar, part, focusNext }: {
 
   useLayoutEffect(() => {
     if (!active) return
-    const track = strip.current
-    const page = track?.querySelector<HTMLElement>('[data-current="true"]')
-    if (track && page) track.scrollLeft = page.offsetLeft
     setCursor(null)
     if (focusNext.current || gridFocus.current) {
       screen.current?.querySelector<HTMLButtonElement>('[data-current="true"] [data-value="' + preferred + '"]')?.focus({ preventScroll: true })
@@ -40,27 +38,23 @@ function CalendarScreen({ calendar, part, focusNext }: {
     }
   }, [active, pageKey])
 
-  // Rebase the three native snap pages only after the arriving page has actually settled.
-  useEffect(() => {
+  // Each range has a permanent column. Moving the three-page window never moves a visible page.
+  useLayoutEffect(() => {
     const track = strip.current
-    if (!track || !active) return
-    let timer: ReturnType<typeof setTimeout>
-    function settle() {
-      if (!track?.clientWidth || track.hasAttribute('data-dragging')) return
-      const snapped = Array.from(track.children).find(node => Math.abs((node as HTMLElement).offsetLeft - track.scrollLeft) < 2)
-      if (!snapped) return
-      const first = Number((snapped as HTMLElement).dataset.first)
-      if (first !== current.first) calendar.page(first > current.first ? 1 : -1)
+    if (!active || !track) return
+    const align = (width: number) => {
+      const page = track.querySelector<HTMLElement>('[data-current="true"]')
+      if (!page || !width) return
+      pageWidth.current = width
+      track.scrollLeft = page.offsetLeft
     }
-    const scroll = () => { clearTimeout(timer); timer = setTimeout(settle, 120) }
-    track.addEventListener('scroll', scroll, { passive: true })
-    track.addEventListener('scrollend', settle)
-    return () => {
-      clearTimeout(timer)
-      track.removeEventListener('scroll', scroll)
-      track.removeEventListener('scrollend', settle)
-    }
-  }, [active, current.first, calendar.page])
+    align(track.getBoundingClientRect().width)
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry.contentRect.width !== pageWidth.current) align(entry.contentRect.width)
+    })
+    observer.observe(track)
+    return () => observer.disconnect()
+  }, [active])
 
   function turn(direction: -1 | 1) {
     if (direction < 0 ? !canBack : !canForward) return
@@ -90,6 +84,7 @@ function CalendarScreen({ calendar, part, focusNext }: {
   const grids = pages.map(page => {
     const visible = page === current
     return <div key={page.first} data-current={visible} data-first={page.first} role="radiogroup"
+      style={part === 'year' ? { gridColumnStart: (page.first - 1) / yearsPerPage + 1 } : undefined}
       aria-label={partNames[part] + ', ' + page.caption} aria-hidden={!visible || undefined}
       className={'neui-calendar-grid ' + layout[part]}>
       {page.cells.map((cell, index) => <button key={cell.value} type="button" role="radio" className="neui-date-cell neui-ripple"
@@ -118,23 +113,35 @@ function CalendarScreen({ calendar, part, focusNext }: {
     {part === 'day' && <div aria-hidden="true" className="neui-calendar-grid neui-calendar-days neui-date-week">
       {current.weekdays.map((day, i) => <span key={i} title={day.fullLabel} data-weekend={day.weekend || undefined}>{day.label}</span>)}
     </div>}
-    {part === 'year' ? <div ref={strip} {...drag} className="neui-date-years" dir="ltr">{grids}</div> : grids}
+    {part === 'year' ? <div ref={strip} {...drag} className="neui-date-years" dir="ltr" onScroll={event => {
+      if (!active || !pageWidth.current) return
+      const index = Math.round(event.currentTarget.scrollLeft / pageWidth.current)
+      if (index !== (current.first - 1) / yearsPerPage) calendar.goToYearPage(index)
+    }}>{grids}</div> : grids}
   </section>
 }
 
-export function CalendarPanel({ calendar, panelRef }: { calendar: Calendar; panelRef: RefObject<HTMLDivElement> }) {
+export function CalendarPanel({ calendar, panelRef, mounted, children }: {
+  calendar: Calendar; panelRef: RefObject<HTMLDivElement>; mounted: boolean; children: ReactNode
+}) {
   const focusNext = useRef(false)
+  const disclosure = useReveal(calendar.isOpen)
   useLayoutEffect(() => {
-    const host = panelRef.current
-    const current = host?.querySelector<HTMLElement>('[data-level="' + calendar.part + '"]')
-    if (!host || !current) return
-    const measure = () => { host.style.height = current.offsetHeight + 'px' }
+    const inner = panelRef.current
+    if (!inner) return
+    const disclosure = inner.parentElement!
+    const measure = () => disclosure.style.setProperty('--neui-calendar-height', inner.offsetHeight + 'px')
     measure()
     const observer = new ResizeObserver(measure)
-    observer.observe(current)
+    observer.observe(inner)
     return () => observer.disconnect()
-  }, [calendar.part, panelRef])
-  return <div ref={panelRef} className="neui-date-screens">
-    {levels.map(part => <CalendarScreen key={part} part={part} calendar={calendar} focusNext={focusNext} />)}
+  }, [mounted, calendar.part, panelRef])
+  return <div className="neui-date-disclosure" {...disclosure}>
+    {mounted && <div ref={panelRef} className="neui-date-content">
+      {children}
+      <div className="neui-date-stack">
+        {levels.map(part => <CalendarScreen key={part} part={part} calendar={calendar} focusNext={focusNext} />)}
+      </div>
+    </div>}
   </div>
 }

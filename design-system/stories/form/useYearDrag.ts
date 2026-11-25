@@ -10,10 +10,11 @@ export function useYearDrag() {
     const node = event.currentTarget
     origin.current = null
     if (!node.hasAttribute('data-dragging')) return
-    const page = Math.round(node.scrollLeft / node.clientWidth)
+    const pages = Array.from(node.children, child => (child as HTMLElement).offsetLeft)
+    const left = pages.reduce((best, x) => Math.abs(x - node.scrollLeft) < Math.abs(best - node.scrollLeft) ? x : best)
     node.removeAttribute('data-dragging')
     if (node.hasPointerCapture(event.pointerId)) node.releasePointerCapture(event.pointerId)
-    node.scrollTo({ left: page * node.clientWidth,
+    node.scrollTo({ left,
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
   }
   return {
