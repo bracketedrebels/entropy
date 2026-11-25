@@ -40,7 +40,7 @@ export function TextField({ id, name, label, icon, value, limit, description, pl
     <span id={id + '-count'} className="neui-pill neui-count" style={{ '--urgency': (50 - remaining) * 2 + '%' } as CSSProperties}>
       {word === 'one' ? 'Остался' : 'Осталось'} {remaining} {endings[word] ?? 'символа'}
     </span>}>
-    <div className="neui-row neui-ripple neui-focus-ring neui-edit">
+    <div className="neui-row neui-ripple neui-focus neui-edit">
       <span aria-hidden="true" className={`neui-row-leading ${icons[icon]}`} />
       <textarea ref={editor} className="neui-editor" name={name} placeholder={placeholder} readOnly={readOnly} aria-labelledby={id + '-label'}
         aria-describedby={[description && id + '-description', remaining <= 50 && id + '-count'].filter(Boolean).join(' ') || undefined} rows={1} value={value} maxLength={limit}

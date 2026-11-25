@@ -19,9 +19,9 @@
 }
 
 .neui-ripple::after, [data-neui-press]::after,
-.neui-focus-ring::before, [data-neui-ring]::before {
-  --neui-growth: var(--neui-utility-duration, var(--neui-ripple-duration, 1s));
-  --neui-travel-ease: var(--neui-utility-ease, var(--neui-ripple-easing, ease-out));
+.neui-focus::before, [data-neui-focus]::before {
+  --neui-growth: var(--neui-utility-duration, var(--neui-travel-duration, var(--neui-ripple-duration, 800ms)));
+  --neui-travel-ease: var(--neui-utility-ease, var(--neui-travel-easing, var(--neui-ripple-easing, ease-out)));
 }
 
 .neui-ripple::after, [data-neui-press]::after {

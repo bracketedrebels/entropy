@@ -194,7 +194,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   flushGap(matches.length)
 
   return <Field id={id} label={label} description={description} header={searchable && <Reveal open={open} returnFocusRef={trigger}>
-    <div className="neui-row neui-ripple neui-focus-ring neui-entry">
+    <div className="neui-row neui-ripple neui-focus neui-entry">
       <span aria-hidden="true" className="neuicon-search neui-row-area-leading place-self-center" />
       <input ref={search} type="search" className="neui-field-input neui-row-area-content" aria-label={searchLabel} placeholder={searchLabel}
         disabled={!open} aria-controls={optionsId} value={query} onChange={e => filter(e.target.value)}

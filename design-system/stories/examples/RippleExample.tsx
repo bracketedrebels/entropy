@@ -6,7 +6,7 @@ export function RippleExample() {
   const [progress, setProgress] = useState(.22)
   return <>
     <button type="button" className="neui-row neui-ripple min-h-32">
-      <span className="neui-row-area-content">По умолчанию · 1000 мс<small className="neui-note">Нажмите в нескольких местах подряд</small></span>
+      <span className="neui-row-area-content">По умолчанию · 800 мс<small className="neui-note">Нажмите в нескольких местах подряд</small></span>
     </button>
     <button type="button" className="neui-row neui-ripple duration-500">
       <span className="neui-row-area-content">duration-500 · 500 мс</span>

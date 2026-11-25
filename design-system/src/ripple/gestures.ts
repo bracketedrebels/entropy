@@ -1,6 +1,6 @@
 import { compose, play, type Wave } from './waves'
 import { pressTargets } from './targets'
-import { revealRing, ringBlur, ringFocus } from './focusRing'
+import { revealFocus, leaveFocus, enterFocus } from './focus'
 
 export function listenForRipple(doc: Document) {
   const win = doc.defaultView!
@@ -10,21 +10,21 @@ export function listenForRipple(doc: Document) {
   const options = { signal: events.signal }
   const forwarded = new WeakSet<HTMLLabelElement>()
 
-  function start(target: HTMLElement, x: number, y: number, crest: boolean, ring: boolean, pointerId?: number) {
-    const reveal = ring && !target.matches(':focus-within')
+  function start(target: HTMLElement, x: number, y: number, crest: boolean, focus: boolean, pointerId?: number) {
+    const reveal = focus && !target.matches(':focus-within')
     if (!crest && !reveal) return
     const pressed = pointerId === undefined ? undefined : pointers.get(pointerId) ?? new Set<() => void>()
     const waves = active.get(target) ?? new Map<number, Wave>()
     let slot = 0
     while (waves.has(slot)) slot++
     const wave: Wave = { x, y, progress: '--neui-front-' + slot, energy: crest ? '--neui-energy-' + slot : undefined, cancel: () => {}, stop: () => {} }
-    const finishRing = reveal ? revealRing(target, x, y, wave.progress) : undefined
+    const finishFocus = reveal ? revealFocus(target, x, y, wave.progress) : undefined
     const clear = () => {
       if (waves.get(slot) !== wave) return
       waves.delete(slot)
       pressed?.delete(clear)
       if (pointerId !== undefined && !pressed?.size && pointers.get(pointerId) === pressed) pointers.delete(pointerId)
-      finishRing?.()
+      finishFocus?.()
       wave.cancel()
       if (crest) {
         compose(target, waves.values())
@@ -49,13 +49,13 @@ export function listenForRipple(doc: Document) {
 
   function press(event: PointerEvent) {
     if (event.button !== 0) return
-    const { ripple, ring } = pressTargets(event)
-    for (const target of new Set([ripple, ring])) {
+    const { ripple, focus } = pressTargets(event)
+    for (const target of new Set([ripple, focus])) {
       if (!target) continue
       const rect = target.getBoundingClientRect()
       if (!rect.width || !rect.height) continue
       start(target, (event.clientX - rect.left) * 100 / rect.width,
-        (event.clientY - rect.top) * 100 / rect.height, target === ripple, target === ring, event.pointerId)
+        (event.clientY - rect.top) * 100 / rect.height, target === ripple, target === focus, event.pointerId)
     }
   }
 
@@ -87,12 +87,12 @@ export function listenForRipple(doc: Document) {
     if (event.matches) clearAll()
   }, options)
   doc.addEventListener('focusin', event => {
-    const { ring } = pressTargets(event, true)
-    if (ring) ringFocus(ring)
+    const { focus } = pressTargets(event, true)
+    if (focus) enterFocus(focus)
   }, options)
   doc.addEventListener('focusout', event => {
-    const ring = event.composedPath().find(node => node instanceof HTMLElement && node.matches('.neui-focus-ring,[data-neui-ring]')) as HTMLElement | undefined
-    if (ring && !(event.relatedTarget instanceof Node && ring.contains(event.relatedTarget))) ringBlur(ring)
+    const focus = event.composedPath().find(node => node instanceof HTMLElement && node.matches('.neui-focus,[data-neui-focus]')) as HTMLElement | undefined
+    if (focus && !(event.relatedTarget instanceof Node && focus.contains(event.relatedTarget))) leaveFocus(focus)
   }, options)
   doc.addEventListener('pointerdown', press, options)
   doc.addEventListener('click', keyboardClick, options)

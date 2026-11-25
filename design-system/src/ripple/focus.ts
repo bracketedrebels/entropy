@@ -3,25 +3,25 @@ const fronts = new WeakMap<HTMLElement, string>()
 const fades = new WeakMap<HTMLElement, object>()
 
 function reset(target: HTMLElement) {
-  target.style.removeProperty('--neui-ring-progress')
-  target.style.removeProperty('--neui-ring-x')
-  target.style.removeProperty('--neui-ring-y')
+  target.style.removeProperty('--neui-focus-progress')
+  target.style.removeProperty('--neui-focus-origin-x')
+  target.style.removeProperty('--neui-focus-origin-y')
 }
 
-export function ringFocus(target: HTMLElement) {
+export function enterFocus(target: HTMLElement) {
   // Runtime selector for @apply and responsive utilities. Literal classes supply their own CSS.
-  if (!target.classList.contains('neui-focus-ring')) target.setAttribute('data-neui-ring', '')
+  if (!target.classList.contains('neui-focus')) target.setAttribute('data-neui-focus', '')
   if (fades.delete(target)) reset(target)
 }
 
-export function ringBlur(target: HTMLElement) {
+export function leaveFocus(target: HTMLElement) {
   const front = fronts.get(target)
   if (front) {
     const reached = getComputedStyle(target).getPropertyValue(front).trim() || '0'
-    target.style.setProperty('--neui-ring-progress', reached)
+    target.style.setProperty('--neui-focus-progress', reached)
     fronts.delete(target)
   }
-  if (!front && !target.hasAttribute('data-neui-ring')) return
+  if (!front && !target.hasAttribute('data-neui-focus')) return
   const token = {}
   fades.set(target, token)
   const transitions = (target.getAnimations?.({ subtree: true }) ?? []).filter(motion =>
@@ -31,20 +31,20 @@ export function ringBlur(target: HTMLElement) {
     if (fades.get(target) !== token || target.matches(':focus-within')) return
     fades.delete(target)
     reset(target)
-    target.removeAttribute('data-neui-ring')
+    target.removeAttribute('data-neui-focus')
   })
 }
 
-export function revealRing(target: HTMLElement, x: number, y: number, front: string) {
-  ringFocus(target)
+export function revealFocus(target: HTMLElement, x: number, y: number, front: string) {
+  enterFocus(target)
   fronts.set(target, front)
-  target.style.setProperty('--neui-ring-x', x + '%')
-  target.style.setProperty('--neui-ring-y', y + '%')
-  target.style.setProperty('--neui-ring-progress', 'var(' + front + ')')
+  target.style.setProperty('--neui-focus-origin-x', x + '%')
+  target.style.setProperty('--neui-focus-origin-y', y + '%')
+  target.style.setProperty('--neui-focus-progress', 'var(' + front + ')')
   return () => {
     if (fronts.get(target) !== front) return
     fronts.delete(target)
     reset(target)
-    if (!target.matches(':focus-within')) target.removeAttribute('data-neui-ring')
+    if (!target.matches(':focus-within')) target.removeAttribute('data-neui-focus')
   }
 }
