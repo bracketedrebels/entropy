@@ -39,8 +39,10 @@ export function RetryIntervalField({ id, draft, applied, onChange }: Props) {
             <span id={id + '-unit'} className="text-muted">мин</span>
           </span>
         </label>
-        {open && <button type="button" className="neui-pill" aria-label="Свернуть шкалу" aria-expanded="true"
-          aria-controls={id + '-scale'} onClick={close}>Свернуть</button>}
+        <Reveal.Item axis="inline" open={open} returnFocusRef={editor}>
+          <button type="button" className="neui-pill" aria-label="Свернуть шкалу" aria-expanded={open}
+            aria-controls={id + '-scale'} onClick={close}>Свернуть</button>
+        </Reveal.Item>
       </div>
       <input type="hidden" name="retryMinutes" value={applied} />
       <Reveal open={open} id={id + '-scale'} returnFocusRef={editor} followViewport>

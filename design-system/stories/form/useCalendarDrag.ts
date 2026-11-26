@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import type { MouseEvent, PointerEvent } from 'react'
 
 // Touch and trackpads use the native snap scroller. Desktop mice can grab the same strip.
-export function useYearDrag() {
+export function useCalendarDrag() {
   const origin = useRef<{ x: number; scroll: number; id: number } | null>(null)
   const suppressClick = useRef(false)
   function release(event: PointerEvent<HTMLDivElement>) {

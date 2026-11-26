@@ -134,7 +134,8 @@ export function calendarGrid(part: CalendarPart, dateInView: Date, draft: Calend
   const weekdays = part === 'day' ? weekHeaders(firstDay, locale) : []
   const caption = part === 'year' ? number.format(first) + ' – ' + number.format(end)
     : format(view, part === 'day' ? 'LLLL yyyy' : 'yyyy', { locale })
-  return { first, cells, weekdays, caption, columns: part === 'year' ? 5 : part === 'month' ? 3 : 7 }
+  const pageIndex = part === 'year' ? (first - 1) / yearsPerPage : part === 'month' ? year - 1 : (year - 1) * 12 + month - 1
+  return { pageIndex, first, cells, weekdays, caption, columns: part === 'year' ? 5 : part === 'month' ? 3 : 7 }
 }
 
 function weekHeaders(start: Date, locale: Locale) {

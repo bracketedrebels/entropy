@@ -24,6 +24,18 @@
   --radius-choice: var(--neui-choice-radius);
 }
 
+@utility neui-divider {
+  inline-size: var(--neui-divider-size, 25%);
+  block-size: 2px;
+  margin-inline: auto;
+  margin-block: .5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--neui-channel);
+  box-shadow: inset 0 1px 0 var(--neui-shadow), 0 1px 0 var(--neui-lip);
+  @media (forced-colors: active) { background: CanvasText; }
+}
+
 @utility bg-surface {
   background: var(--neui-bg);
 }

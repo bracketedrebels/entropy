@@ -67,12 +67,12 @@
 .neui-date-cell { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; line-height:1.2 }
 .neui-date-cell[aria-checked=true] { --neui-check-level:1 }
 .neui-date-cell[aria-current=date] > :first-child { text-decoration:underline; text-underline-offset:3px }
-.neui-date-years { position:relative; display:grid; grid-auto-columns:100%; overflow-x:auto; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:none; overflow-anchor:none }
-.neui-date-years > * { grid-row:1; scroll-snap-align:start; scroll-snap-stop:always; align-content:start; grid-auto-rows:minmax(44px,auto) }
+.neui-calendar-pager { position:relative; display:grid; grid-auto-columns:100%; overflow-x:auto; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:none; overflow-anchor:none }
+.neui-calendar-pager > * { grid-row:1; scroll-snap-align:start; scroll-snap-stop:always; align-content:start; grid-auto-rows:minmax(44px,auto) }
 @media(prefers-reduced-motion:reduce) { .neui-date-disclosure,.neui-date-screen { transition:none } }
 .neui-date-week [data-weekend] { font-style:italic }
-.neui-date-years { user-select:none }
-.neui-date-years[data-dragging] { scroll-snap-type:none; cursor:grabbing }
+.neui-calendar-pager { user-select:none }
+.neui-calendar-pager[data-dragging] { scroll-snap-type:none; cursor:grabbing }
 
 .neui-step-actions { display:flex; flex-wrap:wrap; gap:0 4px; padding-inline:8px }
 .neui-step-actions :disabled { opacity:.45; cursor:default }
@@ -82,7 +82,8 @@
 .neui-scale-labels { display:flex; justify-content:space-between; margin-top:4px; color:var(--neui-muted); font-size:.875rem; font-variant-numeric:tabular-nums }
 .neui-number-entry { display:flex; align-items:center }
 .neui-number-entry > label { flex:1; min-width:0; padding-block:0 }
-.neui-number-entry > button { flex:none }
+.neui-number-entry > .neui-reveal-inline { min-inline-size:0; flex:0 1 auto }
+.neui-number-entry .neui-pill { white-space:nowrap; max-inline-size:none }
 .neui-quantity { display:flex; align-items:baseline; gap:.3em; min-width:0; font-variant-numeric:tabular-nums }
 .neui-quantity-value { position:relative; min-width:1ch; padding-inline-end:1px; overflow:hidden }
 .neui-quantity-value > span { visibility:hidden; white-space:pre }

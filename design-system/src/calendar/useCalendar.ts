@@ -11,7 +11,7 @@ export interface CalendarOptions {
   today?: Date
 }
 
-/** Generates the current grid and at most two adjacent year pages, independent of the DOM. */
+/** Generates the current grid and at most two adjacent pages, independent of the DOM. */
 export function useCalendarGrid({ part, view, draft, locale, today, range }: {
   part: CalendarPart; view: Date; draft: CalendarDraft; locale: Locale; today: Date
   range?: CalendarRangeContext
@@ -19,7 +19,7 @@ export function useCalendarGrid({ part, view, draft, locale, today, range }: {
   return useMemo(() => {
     const current = calendarGrid(part, view, draft, locale, today, range)
     const previous = pageView(view, part, -1), next = pageView(view, part, 1)
-    const adjacent = (date: Date | null) => part === 'year' && date ? [calendarGrid(part, date, draft, locale, today, range)] : []
+    const adjacent = (date: Date | null) => date ? [calendarGrid(part, date, draft, locale, today, range)] : []
     return { current, pages: [...adjacent(previous), current, ...adjacent(next)], canBack: !!previous, canForward: !!next }
   }, [part, view, draft, locale, today, range?.draft, range?.endpoint])
 }

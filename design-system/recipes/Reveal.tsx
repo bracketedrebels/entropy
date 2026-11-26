@@ -3,6 +3,7 @@ import { useReveal, useRevealGroup } from '@neui/kit/react'
 
 export interface RevealProps {
   open: boolean
+  axis?: 'block' | 'inline'
   id?: string
   collapsed?: ReactNode
   children: ReactNode
@@ -12,9 +13,9 @@ export interface RevealProps {
   followViewport?: boolean
 }
 
-function Item({ open, children, returnFocusRef }: Pick<RevealProps, 'open' | 'children' | 'returnFocusRef'>) {
+function Item({ open, axis, children, returnFocusRef }: Pick<RevealProps, 'open' | 'axis' | 'children' | 'returnFocusRef'>) {
   const panel = useReveal(open, returnFocusRef)
-  return <div className="neui-reveal" {...panel}>
+  return <div className={axis === 'inline' ? 'neui-reveal neui-reveal-inline' : 'neui-reveal'} {...panel}>
     <div className="neui-reveal-clip">{children}</div>
   </div>
 }
@@ -31,10 +32,10 @@ function Group({ open, id, children, followViewport = false, onCollapsed }: Grou
 }
 
 /** Controlled in-flow disclosure. Both branches retain their local state. */
-export function Reveal({ open, id, collapsed, children, returnFocusRef, followViewport }: RevealProps) {
+export function Reveal({ open, axis, id, collapsed, children, returnFocusRef, followViewport }: RevealProps) {
   return <Group id={id} open={open} followViewport={followViewport}>
-    {collapsed != null && <Item open={!open} returnFocusRef={returnFocusRef}>{collapsed}</Item>}
-    <Item open={open} returnFocusRef={returnFocusRef}>{children}</Item>
+    {collapsed != null && <Item axis={axis} open={!open} returnFocusRef={returnFocusRef}>{collapsed}</Item>}
+    <Item axis={axis} open={open} returnFocusRef={returnFocusRef}>{children}</Item>
   </Group>
 }
 

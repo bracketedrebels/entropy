@@ -1,6 +1,7 @@
 export function revealTransitions(panel: HTMLElement) {
   return (panel.getAnimations?.({ subtree: true }) ?? []).filter(animation =>
     'transitionProperty' in animation && (animation.transitionProperty === 'grid-template-rows' ||
+      animation.transitionProperty === 'grid-template-columns' ||
       (animation.transitionProperty === 'height' && (animation.effect as KeyframeEffect | null)?.target?.hasAttribute('data-open'))))
 }
 

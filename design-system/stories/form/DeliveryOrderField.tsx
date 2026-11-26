@@ -122,10 +122,13 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
     {steps.map(step => <input key={step.id} type="hidden" name="retryRoute" value={step.channel} />)}
     {!steps.length && <p className="neui-note">Повторных попыток пока нет.</p>}
     <Reveal id={id + '-add'} open={panel === 'add'} returnFocusRef={addButton} followViewport>
-      <ChannelButtons onChoose={channel => {
-        onChange([...steps, { id: crypto.randomUUID(), channel }])
-        setStatus(`Добавлен шаг ${steps.length + 1}. ${titles.get(channel)}.`)
-      }} />
+      {steps.length > 0 && <hr className="neui-divider" />}
+      <div role="group" aria-label="Каналы для добавления">
+        <ChannelButtons onChoose={channel => {
+          onChange([...steps, { id: crypto.randomUUID(), channel }])
+          setStatus(`Добавлен шаг ${steps.length + 1}. ${titles.get(channel)}.`)
+        }} />
+      </div>
     </Reveal>
     <span className="sr-only" role="status">{status}</span>
   </Field>

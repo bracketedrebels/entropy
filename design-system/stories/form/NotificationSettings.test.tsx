@@ -147,28 +147,43 @@ it('retains the visible calendar grid until its closing height transition finish
   expect(panel.contains(grid)).toBe(false)
 })
 
-it('keeps adjacent year ranges in the same columns and reuses the arriving page across a swipe', () => {
-  const rect = HTMLElement.prototype.getBoundingClientRect
-  const bounds = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-    return this.matches('.neui-date-years') ? DOMRect.fromRect({ width: 320 }) : rect.call(this)
+it.each([
+  ['Год, выбрать', '1996 – 2030', '1961 – 1995', -1],
+  ['Месяц, выбрать', '2024', '2025', 1],
+  ['День, выбрать', 'декабрь 2024', 'январь 2025', 1],
+  ['Начало периода, Месяц, выбрать', '2024', '2023', -1],
+  ['Конец периода, День, выбрать', 'декабрь 2024', 'ноябрь 2024', -1],
+] as const)('slides real adjacent pages for %s and never changes the date by browsing', (segment, from, to, step) => {
+  vi.setSystemTime(new Date(2024, 11, 12))
+  const left = vi.spyOn(HTMLElement.prototype, 'offsetLeft', 'get').mockImplementation(function (this: HTMLElement) {
+    return this.parentElement?.classList.contains('neui-calendar-pager') ? Array.from(this.parentElement.children).indexOf(this) * 320 : 0
+  })
+  const width = vi.spyOn(Element.prototype, 'clientWidth', 'get').mockImplementation(function (this: Element) {
+    return this.classList.contains('neui-calendar-pager') ? 320 : 0
   })
   try {
     render(<NotificationSettings />)
-    fireEvent.click(button(/^Год,/))
-    const grid = screen.getByRole('radiogroup', { name: /^Год,/ })
-    const strip = grid.parentElement!
-    const previous = grid.previousElementSibling as HTMLElement
-    const previousColumn = Number(previous.style.gridColumnStart)
-    expect(Number(grid.getAttribute('data-first')) - Number(previous.firstElementChild?.textContent)).toBe(35)
-    strip.scrollLeft = (previousColumn - 1) * 320
+    fireEvent.click(button(segment))
+    const current = screen.getByRole('radiogroup', { name: new RegExp(from + '$') })
+    const strip = current.parentElement!
+    const adjacent = (step < 0 ? current.previousElementSibling : current.nextElementSibling) as HTMLElement
+    expect(adjacent.getAttribute('aria-label')).toContain(to)
+    function swipe(target: HTMLElement) {
+      strip.scrollLeft = target.offsetLeft
+      fireEvent.scroll(strip)
+      fireEvent(strip, new Event('scrollend'))
+      expect(strip.querySelector('[data-current="true"]')).toBe(target)
+      expect(strip.childElementCount).toBe(3)
+      expect(strip.scrollLeft).toBe(target.offsetLeft)
+    }
+    strip.scrollLeft += step * 160
     fireEvent.scroll(strip)
-    expect(strip.querySelector('[data-current="true"]')).toBe(previous)
-    expect(Number(previous.style.gridColumnStart)).toBe(previousColumn)
-    strip.scrollLeft += 320
-    fireEvent.scroll(strip)
-    expect(strip.querySelector('[data-current="true"]')).toBe(grid)
-    expect(strip.childElementCount).toBe(3)
-  } finally { bounds.mockRestore() }
+    expect(current.dataset.current).toBe('true')
+    swipe(adjacent)
+    swipe(current)
+    expect(payload().has('firstDigestDate')).toBe(false)
+    expect(payload().has('digestPeriod.start')).toBe(false)
+  } finally { left.mockRestore(); width.mockRestore() }
 })
 
 it('keeps new tags first, restores drafts, deletes with a separate keypress, and undoes in place', () => {
@@ -249,10 +264,14 @@ it('keeps the numeric draft free while only applying permitted intervals, includ
   type(scale, '24')
   expect([editor().value, value()]).toEqual(['24', '24'])
   expect(editor().getAttribute('aria-invalid')).toBe('false')
-  fireEvent.click(button('Свернуть шкалу'))
+  const collapse = button('Свернуть шкалу')
+  fireEvent.click(collapse)
+  expect(collapse.closest('.neui-reveal-inline')?.hasAttribute('inert')).toBe(true)
+  expect(collapse.isConnected).toBe(true)
   expect(document.activeElement).toBe(editor())
   expect(screen.queryByRole('slider')).toBeNull()
   fireEvent.click(editor())
+  expect(button('Свернуть шкалу')).toBe(collapse)
   expect(screen.getByRole('slider')).toBeTruthy()
   fireEvent.keyDown(editor(), { key: 'Escape' })
   expect(screen.queryByRole('slider')).toBeNull()

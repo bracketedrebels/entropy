@@ -19,7 +19,7 @@ const meta = {
   args: { language: 'ru' }, argTypes: { language: { control: 'select', options: ['ru', 'en-US'] } },
   tags: ['autodocs'],
   parameters: { docs: { source: { code: source }, description: { component:
-    'Выберите сегмент даты. Локаль задаёт порядок частей, названия месяцев и начало недели. По годам можно листать горизонтально.' } } },
+    'Выберите сегмент даты. Локаль задаёт порядок частей, названия месяцев и начало недели. Дни листаются по месяцам, месяцы — по годам, годы — по 35 лет за раз.' } } },
 } satisfies Meta<typeof Example>
 export default meta
 export const DatePicker: StoryObj<typeof meta> = { name: 'Выбор даты' }

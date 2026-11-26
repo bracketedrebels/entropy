@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { KeyboardEvent, MutableRefObject, ReactNode, RefObject } from 'react'
-import { useYearDrag } from './useYearDrag'
-import { calendarValue, useCalendarGrid, useReveal, yearsPerPage } from '@neui/kit/react'
+import { useCalendarDrag } from './useCalendarDrag'
+import { calendarValue, useCalendarGrid, useReveal } from '@neui/kit/react'
 import type { CalendarPart, CalendarRangeContext, useCalendar } from '@neui/kit/react'
 
 export const endpointNames = { start: 'Начало периода', end: 'Конец периода' }
@@ -15,12 +15,11 @@ const paging = { day: ['Предыдущий месяц', 'Следующий м
 function CalendarScreen({ calendar, part, focusNext, range }: {
   calendar: Calendar; part: CalendarPart; focusNext: MutableRefObject<boolean>; range?: CalendarRangeContext
 }) {
-  const { view } = calendar
+  const { view, page: changePage } = calendar
   const { current, pages, canBack, canForward } = useCalendarGrid({ ...calendar, part, range })
   const active = part === calendar.part && calendar.isOpen
   const strip = useRef<HTMLDivElement>(null)
-  const pageWidth = useRef(0)
-  const drag = useYearDrag()
+  const drag = useCalendarDrag()
   const screen = useRef<HTMLDivElement>(null)
   const gridFocus = useRef(false)
   const [cursor, setCursor] = useState<number | null>(null)
@@ -44,23 +43,48 @@ function CalendarScreen({ calendar, part, focusNext, range }: {
     }
   }, [active, pageKey])
 
-  // Each range has a permanent column. Moving the three-page window never moves a visible page.
+  // Keep the arriving grid mounted throughout the gesture. Recenter the three-page
+  // window only after native snapping finishes, including on trackpads and touch.
   useLayoutEffect(() => {
     const track = strip.current
     if (!active || !track) return
-    const align = (width: number) => {
-      const page = track.querySelector<HTMLElement>('[data-current="true"]')
-      if (!page || !width) return
-      pageWidth.current = width
-      track.scrollLeft = page.offsetLeft
+    const currentPage = track.querySelector<HTMLElement>('[data-current="true"]')
+    if (!currentPage) return
+    let width = track.clientWidth
+    let pending: ReturnType<typeof setTimeout> | undefined
+    let committed = false
+    const align = () => { track.scrollLeft = currentPage.offsetLeft }
+    const settle = () => {
+      if (committed || !track.clientWidth || track.hasAttribute('data-dragging')) return
+      const delta = track.scrollLeft - currentPage.offsetLeft
+      const direction = delta < 0 ? -1 : 1
+      const neighbor = direction < 0 ? currentPage.previousElementSibling : currentPage.nextElementSibling
+      if (!(neighbor instanceof HTMLElement) || Math.abs(delta) < track.clientWidth / 2 ||
+          Math.abs(track.scrollLeft - neighbor.offsetLeft) > 1) return
+      committed = true
+      gridFocus.current ||= currentPage.contains(document.activeElement)
+      changePage(direction)
     }
-    align(track.getBoundingClientRect().width)
-    const observer = new ResizeObserver(([entry]) => {
-      if (entry.contentRect.width !== pageWidth.current) align(entry.contentRect.width)
+    const afterScroll = () => {
+      clearTimeout(pending)
+      pending = setTimeout(settle, 120)
+    }
+    align()
+    const observer = new ResizeObserver(() => {
+      if (width === track.clientWidth) return
+      width = track.clientWidth
+      align()
     })
     observer.observe(track)
-    return () => observer.disconnect()
-  }, [active])
+    track.addEventListener('scrollend', settle)
+    if (!('onscrollend' in window)) track.addEventListener('scroll', afterScroll, { passive: true })
+    return () => {
+      observer.disconnect()
+      clearTimeout(pending)
+      track.removeEventListener('scrollend', settle)
+      track.removeEventListener('scroll', afterScroll)
+    }
+  }, [active, current.pageIndex, range?.endpoint, changePage])
 
   function turn(direction: -1 | 1) {
     if (direction < 0 ? !canBack : !canForward) return
@@ -91,10 +115,9 @@ function CalendarScreen({ calendar, part, focusNext, range }: {
   }
   const grids = pages.map(page => {
     const visible = page === current
-    return <div key={page.first} data-current={visible} data-first={page.first} role="radiogroup"
-      style={part === 'year' ? { gridColumnStart: (page.first - 1) / yearsPerPage + 1 } : undefined}
+    return <div key={page.pageIndex} data-current={visible} data-page={page.pageIndex} role="radiogroup"
       aria-label={(range ? endpointNames[range.endpoint] + ', ' : '') + partNames[part] + ', ' + page.caption} aria-hidden={!visible || undefined}
-      className={'neui-calendar-grid ' + layout[part]}>
+      {...(!visible ? { inert: '' } : {})} className={'neui-calendar-grid ' + layout[part]}>
       {page.cells.map((cell, index) => <button key={cell.value} type="button" role="radio"
         className={'neui-date-cell neui-ripple' + (range && part === 'day' ? ' neui-calendar-range-day' : '')}
         data-value={cell.value} disabled={cell.disabled}
@@ -125,11 +148,7 @@ function CalendarScreen({ calendar, part, focusNext, range }: {
     {part === 'day' && <div aria-hidden="true" className="neui-calendar-grid neui-calendar-days neui-date-week">
       {current.weekdays.map((day, i) => <span key={i} title={day.fullLabel} data-weekend={day.weekend || undefined}>{day.label}</span>)}
     </div>}
-    {part === 'year' ? <div ref={strip} {...drag} className="neui-date-years" dir="ltr" onScroll={event => {
-      if (!active || !pageWidth.current) return
-      const index = Math.round(event.currentTarget.scrollLeft / pageWidth.current)
-      if (index !== (current.first - 1) / yearsPerPage) calendar.goToYearPage(index)
-    }}>{grids}</div> : grids}
+    <div ref={strip} {...drag} className="neui-calendar-pager" dir="ltr">{grids}</div>
   </section>
 }
 
