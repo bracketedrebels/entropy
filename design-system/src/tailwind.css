@@ -24,6 +24,8 @@
   --radius-choice: var(--neui-choice-radius);
 }
 
+@custom-variant leaving (&[data-leaving="true"]);
+
 @utility neui-divider {
   inline-size: var(--neui-divider-size, 25%);
   block-size: 2px;

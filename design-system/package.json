@@ -16,7 +16,8 @@
     "./dom": "./src/dom.ts",
     "./behaviors": "./src/behaviors.ts",
     "./styles.css": "./src/styles.css",
-    "./tailwind.css": "./src/tailwind.css"
+    "./tailwind.css": "./src/tailwind.css",
+    "./presence": "./src/reveal/presence.tsx"
   },
   "scripts": {
     "storybook": "storybook dev -p 6006",
@@ -27,7 +28,9 @@
   },
   "dependencies": {
     "@date-fns/utc": "2.1.1",
-    "date-fns": "4.1.0"
+    "date-fns": "4.1.0",
+    "@babel/parser": "7.29.15",
+    "magic-string": "1.4.5"
   },
   "peerDependencies": {
     "react": "^17 || ^18 || ^19",
@@ -51,9 +54,7 @@
     "typescript": "~5.9.3",
     "vite": "^7.2.0",
     "vitest": "^3.2.7",
-    "@neui/icon": "0.1.0",
-    "@babel/parser": "7.29.15",
-    "magic-string": "1.4.5"
+    "@neui/icon": "0.1.0"
   },
   "peerDependenciesMeta": {
     "react": {
