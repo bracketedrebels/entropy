@@ -21,10 +21,12 @@
   },
   "scripts": {
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build --disable-telemetry && npm run bench:ridge",
+    "build-storybook": "npm run build:catalog && storybook build --output-dir storybook-static/storybook --disable-telemetry && npm run bench:ridge",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "bench:ridge": "node bench/ridge/build.mjs"
+    "bench:ridge": "node bench/ridge/build.mjs",
+    "dev:catalog": "vite --config catalog/vite.config.mts",
+    "build:catalog": "vite build --config catalog/vite.config.mts"
   },
   "dependencies": {
     "@date-fns/utc": "2.1.1",

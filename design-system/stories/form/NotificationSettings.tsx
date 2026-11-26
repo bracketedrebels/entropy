@@ -11,7 +11,7 @@ import { TextField } from './TextField'
 import { channels, emptyDigest, format, frequency, projects } from './options'
 import { useSettings } from './settings'
 
-export function NotificationSettings() {
+export function NotificationSettings({ embedded = false }: { embedded?: boolean } = {}) {
   const id = useId().replace(/:/g, '')
   const { state, setState, saved } = useSettings()
   const [previousProject, setPreviousProject] = useState('')
@@ -31,7 +31,8 @@ export function NotificationSettings() {
       else { setPreviousProject(state.primaryProject); setState(old => ({ ...old, primaryProject: '' })) }
     }}>{previousProject ? 'Вернуть' : 'Сбросить'}</button>
 
-  return <main className="neui-example" lang="ru"><h1>Настройки сводки</h1>
+  const Container = embedded ? 'div' : 'main'
+  return <Container className="neui-example" lang="ru">{!embedded && <h1>Настройки сводки</h1>}
     <form className="neui-settings" onSubmit={e => e.preventDefault()}>
       <RadioField id={id + '-frequency'} name="frequency" label="Как часто присылать сводку?" options={frequency}
         value={state.frequency} onChange={value => setText('frequency', value)} />
@@ -79,5 +80,5 @@ export function NotificationSettings() {
     </form>
     <p className="neui-after" role="status">{saved ? 'Настройки и черновики сохраняются на этом устройстве.'
       : 'Не удалось сохранить на устройстве. Изменения пока доступны в этой вкладке.'}</p>
-  </main>
+  </Container>
 }
