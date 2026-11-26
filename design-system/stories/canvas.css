@@ -83,7 +83,7 @@
 .neui-number-entry { display:flex; align-items:center }
 .neui-number-entry > label { flex:1; min-width:0; padding-block:0 }
 .neui-number-entry > .neui-reveal-inline { min-inline-size:0; flex:0 1 auto }
-.neui-number-entry .neui-pill { white-space:nowrap; max-inline-size:none }
+.neui-number-entry .neui-pill { margin-inline-start:var(--neui-inset,11px); white-space:nowrap; max-inline-size:none }
 .neui-quantity { display:flex; align-items:baseline; gap:.3em; min-width:0; font-variant-numeric:tabular-nums }
 .neui-quantity-value { position:relative; min-width:1ch; padding-inline-end:1px; overflow:hidden }
 .neui-quantity-value > span { visibility:hidden; white-space:pre }
