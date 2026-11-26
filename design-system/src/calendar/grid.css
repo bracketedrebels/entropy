@@ -5,3 +5,12 @@
 @utility neui-calendar-days { --neui-calendar-columns: 7; }
 @utility neui-calendar-months { --neui-calendar-columns: 3; }
 @utility neui-calendar-years { --neui-calendar-columns: 5; }
+
+@utility neui-calendar-range-day {
+  &[data-in-range="true"] {
+    background-color: var(--neui-calendar-range-fill, color-mix(in srgb, var(--neui-muted) 16%, transparent));
+    border-radius: 0;
+  }
+  &[data-band-start="true"] { border-start-start-radius: 99px; border-end-start-radius: 99px; }
+  &[data-band-end="true"] { border-start-end-radius: 99px; border-end-end-radius: 99px; }
+}

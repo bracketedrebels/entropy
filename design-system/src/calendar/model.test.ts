@@ -39,3 +39,29 @@ it('enumerates every civil day even in a month with an international date-line c
   expect(grid.cells[30].accessibleLabel).toContain('December 31')
   expect(grid.weekdays.filter(day => day.weekend).map(day => day.fullLabel)).toEqual(['Sunday', 'Saturday'])
 })
+
+it('marks inclusive civil days, both bounds and week breaks across New Year', () => {
+  const draft = { start: calendarDraft('2023-12-30'), end: calendarDraft('2024-01-08') }
+  const days = (year: number, month: number) => {
+    const view = monthStart(year, month)
+    return calendarGrid('day', view, draft.end, ru, view, { draft, endpoint: 'end' }).cells
+  }
+  const december = days(2023, 12), january = days(2024, 1)
+  expect(december[28].disabled).toBe(true)
+  expect(december[29]).toMatchObject({ rangeStart: true, inRange: true, bandStart: true, disabled: false })
+  expect(december[30].bandEnd).toBe(true)
+  expect(january.slice(0, 8).every(cell => cell.inRange)).toBe(true)
+  expect(january[0].bandStart).toBe(true)
+  expect(january[6].bandEnd).toBe(true)
+  expect(january[7]).toMatchObject({ bandStart: true, bandEnd: true, rangeEnd: true })
+  expect(january[8].inRange).toBe(false)
+})
+
+it('keeps open bounds distinct from a one-day or inverted interval', () => {
+  const leap = calendarDraft('2024-02-29'), view = monthStart(2024, 2)
+  const cells = (start: typeof leap, end: typeof leap) =>
+    calendarGrid('day', view, start, ru, view, { draft: { start, end }, endpoint: 'start' }).cells
+  expect(cells(leap, {}).at(-1)).toMatchObject({ inRange: false, rangeStart: true, rangeEnd: false })
+  expect(cells(leap, leap).at(-1)).toMatchObject({ inRange: true, rangeStart: true, rangeEnd: true, bandStart: true, bandEnd: true })
+  expect(cells(leap, calendarDraft('2024-02-28')).some(cell => cell.inRange)).toBe(false)
+})

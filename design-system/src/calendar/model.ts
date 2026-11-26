@@ -1,15 +1,26 @@
 import { UTCDateMini } from '@date-fns/utc'
-import { addDays, addMonths, format, getDaysInMonth, startOfWeek } from 'date-fns'
+import { addDays, addMonths, format, getDaysInMonth, isWithinInterval, startOfWeek } from 'date-fns'
 import type { Locale } from 'date-fns'
 
 export type CalendarPart = 'year' | 'month' | 'day'
 export type CalendarDraft = Partial<Record<CalendarPart, string>>
+export type RangeEndpoint = 'start' | 'end'
+export type CalendarRangeDraft = Record<RangeEndpoint, CalendarDraft>
+
+export interface CalendarRangeContext { draft: CalendarRangeDraft; endpoint: RangeEndpoint }
+
 export interface CalendarCell {
   value: number
   label: string
   accessibleLabel: string
   selected: boolean
   today: boolean
+  inRange?: boolean
+  rangeStart?: boolean
+  rangeEnd?: boolean
+  bandStart?: boolean
+  bandEnd?: boolean
+  disabled?: boolean
   column?: number
 }
 export const yearsPerPage = 35
@@ -49,6 +60,15 @@ export function calendarDraft(iso: unknown): CalendarDraft {
   return calendarValue(draft) ? draft : {}
 }
 
+export function calendarRangeValue(range: CalendarRangeDraft) {
+  const start = calendarValue(range.start), end = calendarValue(range.end)
+  return start && end && start <= end ? { start, end } : null
+}
+
+function civilDate(draft: CalendarDraft) {
+  return calendarValue(draft) ? addDays(monthStart(Number(draft.year), Number(draft.month)), Number(draft.day) - 1) : null
+}
+
 export function initialView(draft: CalendarDraft, today: Date) {
   return monthStart(partNumber(draft, 'year') ?? today.getFullYear(), partNumber(draft, 'month') ?? today.getMonth() + 1)
 }
@@ -72,7 +92,8 @@ export function selectPart(draft: CalendarDraft, part: CalendarPart, value: numb
   return next
 }
 
-export function calendarGrid(part: CalendarPart, dateInView: Date, draft: CalendarDraft, locale: Locale, today: Date) {
+export function calendarGrid(part: CalendarPart, dateInView: Date, draft: CalendarDraft, locale: Locale, today: Date,
+  range?: CalendarRangeContext) {
   const year = dateInView.getFullYear(), month = dateInView.getMonth() + 1
   const view = monthStart(year, month)
   const first = part === 'year' ? yearPage(year) : 1
@@ -82,11 +103,31 @@ export function calendarGrid(part: CalendarPart, dateInView: Date, draft: Calend
   const selected = (part === 'year' || draft.year === pad(year, 4)) && (part !== 'day' || draft.month === pad(month))
     ? partNumber(draft, part) : undefined
   const number = new Intl.NumberFormat(locale.code, { useGrouping: false, minimumIntegerDigits: part === 'year' ? 4 : 1 })
+  const start = range && civilDate(range.draft.start), endDate = range && civilDate(range.draft.end)
+  const interval = start && endDate && start <= endDate ? { start, end: endDate } : null
   const cells: CalendarCell[] = Array.from({ length: end - first + 1 }, (_, i) => {
     const value = first + i
     const date = part === 'month' ? monthStart(year, value) : part === 'day' ? addDays(view, i) : view
     const label = part === 'month' ? format(date, 'LLLL', { locale }) : number.format(value)
-    return { value, label, selected: selected === value, today: part === 'day' && year === today.getFullYear() && month === today.getMonth() + 1 && value === today.getDate(),
+    let rangeState: Partial<CalendarCell> | undefined
+    if (range && part !== 'day') {
+      const bound = range.endpoint === 'end' ? start : endDate
+      if (bound) {
+        const candidate = part === 'year' ? value : year * 12 + value
+        const limit = part === 'year' ? bound.getFullYear() : bound.getFullYear() * 12 + bound.getMonth() + 1
+        rangeState = { disabled: range.endpoint === 'end' ? candidate < limit : candidate > limit }
+      }
+    }
+    if (range && part === 'day') {
+      const rangeStart = !!start && +date === +start, rangeEnd = !!endDate && +date === +endDate
+      const inRange = !!interval && isWithinInterval(date, interval)
+      const column = (offset + i) % 7
+      rangeState = { rangeStart, rangeEnd, inRange,
+        bandStart: inRange && (rangeStart || i === 0 || column === 0),
+        bandEnd: inRange && (rangeEnd || value === end || column === 6),
+        disabled: range.endpoint === 'end' ? !!start && date < start : !!endDate && date > endDate }
+    }
+    return { ...rangeState, value, label, selected: selected === value, today: part === 'day' && year === today.getFullYear() && month === today.getMonth() + 1 && value === today.getDate(),
       accessibleLabel: part === 'day' ? format(date, 'PPPP', { locale }) : label,
       column: part === 'day' && i === 0 ? offset + 1 : undefined }
   })

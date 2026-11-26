@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from 'react'
 import { Reveal } from '../../recipes/Reveal'
+import { CalendarRangeField } from './CalendarRangeField'
 import { CalendarField } from './CalendarField'
 import { ChoicePicker } from './ChoicePicker'
 import { DeliveryOrderField } from './DeliveryOrderField'
@@ -38,6 +39,8 @@ export function NotificationSettings() {
         value={state.frequency} onChange={value => setText('frequency', value)} />
       <CalendarField id={id + '-date'} name="firstDigestDate" label="Дата первой сводки" draft={state.dateDraft}
         onChange={dateDraft => setState(old => ({ ...old, dateDraft }))} />
+      <CalendarRangeField id={id + '-period'} name="digestPeriod" label="Период событий" draft={state.periodDraft}
+        onChange={periodDraft => setState(old => ({ ...old, periodDraft }))} />
       <RadioField id={id + '-format'} name="format" label="В каком формате?" options={format}
         value={state.format} onChange={value => setText('format', value)} />
       <ChoicePicker id={id + '-delivery'} name="delivery" label="Куда доставлять сводку?" actionLabel="каналы доставки"

@@ -42,9 +42,10 @@
 .neui-date-segments { display:flex; align-items:center; width:max-content; font-variant-numeric:tabular-nums }
 .neui-date-entry > .neui-pill { grid-area:trailing }
 .neui-date-cell,.neui-date-page,.neui-date-segment {
-  position:relative; isolation:isolate; border:0; border-radius:999px; background:transparent; color:inherit;
+  position:relative; isolation:isolate; border:0; color:inherit;
   font:inherit; cursor:pointer; padding:2px; min-width:0; min-height:44px;
 }
+.neui-date-segment,.neui-date-page,.neui-date-cell:not([data-in-range=true]) { border-radius:999px; background:transparent }
 .neui-date-segment { padding-inline:4px }
 .neui-date-segment[aria-expanded=true] { background:var(--neui-pill-bg) }
 .neui-date-segment[aria-invalid=true] { text-decoration:underline dotted var(--neui-danger) }
@@ -86,3 +87,11 @@
 .neui-quantity-value { position:relative; min-width:1ch; padding-inline-end:1px; overflow:hidden }
 .neui-quantity-value > span { visibility:hidden; white-space:pre }
 .neui-quantity-value > input { position:absolute; inset:0; padding:0; min-width:0; font-variant-numeric:inherit }
+
+.neui-date-entry > .neui-date-segments { grid-area:content }
+.neui-date-pair { display:flex; flex-wrap:wrap; align-items:center; gap:0 .3em; font-variant-numeric:tabular-nums }
+.neui-date-bound { display:inline-flex; align-items:center; gap:.3em }
+.neui-date-pair .neui-date-segment { padding-inline:.12em }
+.neui-date-separator { color:var(--neui-muted) }
+.neui-date-cell[data-endpoint] { --neui-check-level:1 }
+.neui-date-cell:disabled { opacity:.38; cursor:default }
