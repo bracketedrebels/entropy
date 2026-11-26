@@ -14,7 +14,7 @@ const meta = {
     docs: {
       source: { code: source },
       description: {
-        component: 'neui-reveal и neui-reveal-clip задают переход в потоке. useReveal синхронизирует доступность панели и возвращает фокус на триггер. Состояние раскрытия и разметка принадлежат приложению.',
+        component: 'neui-collapse-block и neui-collapse-inline задают раскрытие в потоке. После ухода узел размонтируется. Откройте поле снова, чтобы увидеть черновик из состояния формы.',
       },
     },
   },

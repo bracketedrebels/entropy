@@ -1,9 +1,8 @@
 import { useRef, useState } from 'react'
 import type { Locale } from 'date-fns'
-import { useCalendar } from '@neui/kit/react'
+import { useCalendar, useRevealGroup } from '@neui/kit/react'
 import type { CalendarDraft, CalendarPart } from '@neui/kit/react'
 import { Field } from '../../recipes/Field'
-import { Reveal } from '../../recipes/Reveal'
 import { CalendarPanel } from './CalendarPanel'
 import { DateSegments, segmentValidation } from './DateSegments'
 
@@ -19,7 +18,7 @@ interface Props {
 export function CalendarField({ id, name, label, draft, onChange, locale }: Props) {
   const calendar = useCalendar({ draft, onChange, locale })
   const { isOpen, part } = calendar
-  const [visited, setVisited] = useState(false)
+  const group = useRevealGroup(isOpen, { followViewport: true })
   const [validate, setValidate] = useState(false)
   const entry = useRef<HTMLDivElement>(null)
   const panel = useRef<HTMLDivElement>(null)
@@ -27,7 +26,7 @@ export function CalendarField({ id, name, label, draft, onChange, locale }: Prop
   const validation = segmentValidation(calendar, validate)
   const { error } = validation
   const focus = (key: CalendarPart) => entry.current?.querySelector<HTMLElement>('[data-segment="' + key + '"]')?.focus({ preventScroll: true })
-  function open(key: CalendarPart) { setVisited(true); calendar.open(key) }
+  function open(key: CalendarPart) { calendar.open(key) }
   function close() { calendar.close(); setValidate(true); focus(part) }
   const action = (present || calendar.canUndo) && <button type="button" className="neui-pill"
     aria-label={(calendar.canUndo ? 'Вернуть' : 'Сбросить') + ' дату'} onClick={() => {
@@ -52,11 +51,13 @@ export function CalendarField({ id, name, label, draft, onChange, locale }: Prop
         {!isOpen && action}
       </div>
       {error && <p id={id + '-error'} className="neui-note neui-error" role="status">{error}</p>}
-      <Reveal.Group open={isOpen} followViewport id={id + '-assistant'} onCollapsed={() => setVisited(false)}>
-        <CalendarPanel calendar={calendar} panelRef={panel} mounted={visited}>
-          {!present && <p className="neui-note">Без даты отправка начнётся с ближайшего выпуска.</p>}
-        </CalendarPanel>
-      </Reveal.Group>
+      <div ref={group} id={id + '-assistant'}>
+        {calendar.isOpen && <div className="neui-collapse-block">
+          <CalendarPanel calendar={calendar} panelRef={panel}>
+            {!present && <p className="neui-note">Без даты отправка начнётся с ближайшего выпуска.</p>}
+          </CalendarPanel>
+        </div>}
+      </div>
       <input type="hidden" name={name} disabled={!calendar.value} value={calendar.value ?? ''} />
     </Field>
   </div>

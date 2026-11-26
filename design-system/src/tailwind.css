@@ -1,5 +1,6 @@
 @import "./styles.css" layer(components);
 @import "./check.css";
+@import "./reveal/collapse.css";
 @import "./range.css";
 @import "./calendar/grid.css";
 

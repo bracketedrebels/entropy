@@ -30,7 +30,9 @@
     "@date-fns/utc": "2.1.1",
     "date-fns": "4.1.0",
     "@babel/parser": "7.29.15",
-    "magic-string": "1.4.5"
+    "magic-string": "1.4.5",
+    "postcss": "8.5.33",
+    "tinyglobby": "0.2.17"
   },
   "peerDependencies": {
     "react": "^17 || ^18 || ^19",

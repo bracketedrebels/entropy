@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { KeyboardEvent, MutableRefObject, ReactNode, RefObject } from 'react'
 import { useCalendarDrag } from './useCalendarDrag'
-import { calendarValue, useCalendarGrid, useReveal } from '@neui/kit/react'
+import { calendarValue, useCalendarGrid } from '@neui/kit/react'
 import type { CalendarPart, CalendarRangeContext, useCalendar } from '@neui/kit/react'
 
 export const endpointNames = { start: 'Начало периода', end: 'Конец периода' }
@@ -152,27 +152,29 @@ function CalendarScreen({ calendar, part, focusNext, range }: {
   </section>
 }
 
-export function CalendarPanel({ calendar, panelRef, mounted, children, range }: {
-  calendar: Calendar; panelRef: RefObject<HTMLDivElement>; mounted: boolean; children?: ReactNode; range?: CalendarRangeContext
+export function CalendarPanel({ calendar, panelRef, children, range }: {
+  calendar: Calendar; panelRef: RefObject<HTMLDivElement>; children?: ReactNode; range?: CalendarRangeContext
 }) {
   const focusNext = useRef(false)
-  const disclosure = useReveal(calendar.isOpen)
+  const viewport = useRef<HTMLDivElement>(null)
+  // The outer grid handles entry/exit. Inner pages also change height when switching level.
   useLayoutEffect(() => {
-    const inner = panelRef.current
-    if (!inner) return
-    const disclosure = inner.parentElement!
-    const measure = () => disclosure.style.setProperty('--neui-calendar-height', inner.offsetHeight + 'px')
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(inner)
+    const content = panelRef.current, box = viewport.current
+    if (!content || !box) return
+    const size = () => { box.style.height = content.offsetHeight + 'px' }
+    size()
+    const observer = new ResizeObserver(size)
+    observer.observe(content)
     return () => observer.disconnect()
-  }, [mounted, calendar.part, panelRef])
-  return <div className="neui-date-disclosure" {...disclosure}>
-    {mounted && <div ref={panelRef} className="neui-date-content">
-      {children}
-      <div className="neui-date-stack">
-        {levels.map(part => <CalendarScreen key={part} part={part} range={range} calendar={calendar} focusNext={focusNext} />)}
+  }, [panelRef])
+  return <div className="neui-reveal-clip">
+    <div ref={viewport} className="neui-date-viewport">
+      <div className="neui-date-content" ref={panelRef}>
+        {children}
+        <div className="neui-date-stack">
+          {levels.map(part => <CalendarScreen key={part} part={part} range={range} calendar={calendar} focusNext={focusNext} />)}
+        </div>
       </div>
-    </div>}
+    </div>
   </div>
 }

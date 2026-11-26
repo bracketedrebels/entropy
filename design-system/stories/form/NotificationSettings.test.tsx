@@ -129,11 +129,11 @@ it('retains the visible calendar grid until its closing height transition finish
   render(<NotificationSettings />)
   fireEvent.click(button(/^Год,/))
   const grid = screen.getByRole('radiogroup', { name: /^Год,/ })
-  const panel = grid.closest<HTMLElement>('.neui-date-disclosure')!
+  const panel = grid.closest<HTMLElement>('.neui-collapse-block')!
   let finish!: () => void
   const finished = new Promise<void>(resolve => { finish = resolve })
-  Object.defineProperty(panel.parentElement!, 'getAnimations', { value: () => [
-    { transitionProperty: 'height', effect: { target: panel }, finished },
+  Object.defineProperty(panel, 'getAnimations', { value: () => [
+    { transitionProperty: 'grid-template-rows', effect: { target: panel }, finished },
   ] })
   fireEvent.click(button('Свернуть календарь'))
   expect(panel.hasAttribute('inert')).toBe(true)
@@ -144,7 +144,7 @@ it('retains the visible calendar grid until its closing height transition finish
   expect(panel.contains(grid)).toBe(true)
   fireEvent.click(button('Свернуть календарь'))
   await act(async () => { await finished })
-  expect(panel.contains(grid)).toBe(false)
+  expect(panel.isConnected).toBe(false)
 })
 
 it.each([

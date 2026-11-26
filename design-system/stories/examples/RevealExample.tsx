@@ -1,11 +1,10 @@
 import { useId, useRef, useState } from 'react'
-import { useReveal } from '@neui/kit/react'
 
 export function RevealExample() {
   const id = useId()
   const trigger = useRef<HTMLButtonElement>(null)
   const [open, setOpen] = useState(false)
-  const panel = useReveal(open, trigger)
+  const [draft, setDraft] = useState('')
 
   return (
     <>
@@ -13,10 +12,10 @@ export function RevealExample() {
         onClick={() => setOpen(value => !value)}>
         {open ? 'Скрыть адрес' : 'Указать другой адрес'}
       </button>
-      <div {...panel} id={id} className="neui-reveal">
+      {open && <div id={id} className="lab-disclosure">
         <div className="neui-reveal-clip">
           <label className="block pt-4">Адрес для сводки
-            <input type="email" disabled={!open} placeholder="Адрес из профиля"
+            <input type="email" value={draft} onChange={event => setDraft(event.target.value)} placeholder="Адрес из профиля"
               className="block w-full border-0 bg-transparent [font:inherit] text-ink placeholder:text-muted"
               onKeyDown={event => {
                 if (event.key === 'Escape') {
@@ -26,7 +25,7 @@ export function RevealExample() {
               }} />
           </label>
         </div>
-      </div>
+      </div>}
       <p className="mt-[18px] mb-0 text-muted">Сводка приходит раз в день.</p>
     </>
   )

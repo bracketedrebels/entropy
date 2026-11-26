@@ -1,5 +1,4 @@
-import { useId, useRef, useState } from 'react'
-import { Reveal } from '../../recipes/Reveal'
+import { useId, useState } from 'react'
 import { CalendarRangeField } from './CalendarRangeField'
 import { CalendarField } from './CalendarField'
 import { ChoicePicker } from './ChoicePicker'
@@ -16,7 +15,6 @@ export function NotificationSettings() {
   const id = useId().replace(/:/g, '')
   const { state, setState, saved } = useSettings()
   const [previousProject, setPreviousProject] = useState('')
-  const deliveryTrigger = useRef<HTMLButtonElement>(null)
   const emailEnabled = state.delivery.includes('email')
   function setText(key: 'frequency' | 'format' | 'emptyDigest' | 'subject' | 'introText', value: string) {
     setState(old => ({ ...old, [key]: value }))
@@ -44,12 +42,15 @@ export function NotificationSettings() {
       <RadioField id={id + '-format'} name="format" label="В каком формате?" options={format}
         value={state.format} onChange={value => setText('format', value)} />
       <ChoicePicker id={id + '-delivery'} name="delivery" label="Куда доставлять сводку?" actionLabel="каналы доставки"
-        options={channels} multiple selected={state.delivery} emptyLabel="Доставка выключена" triggerRef={deliveryTrigger}
+        options={channels} multiple selected={state.delivery} emptyLabel="Доставка выключена"
         onChange={delivery => setState(old => ({ ...old, delivery }))} />
-      <Reveal open={emailEnabled} returnFocusRef={deliveryTrigger}><div className="neui-conditional-field">
-        <EmailField id={id + '-email'} enabled={emailEnabled} value={state.emailText} applied={state.emailAddress}
-          onChange={(emailText, emailAddress) => setState(old => ({ ...old, emailText, emailAddress }))} />
-      </div></Reveal>
+      {emailEnabled && <div className="neui-collapse-block"><div className="neui-reveal-clip">
+        <div className="neui-conditional-field">
+          <EmailField id={id + '-email'} value={state.emailText} applied={state.emailAddress}
+            onChange={(emailText, emailAddress) => setState(old => ({ ...old, emailText, emailAddress }))} />
+        </div>
+      </div></div>}
+      <input type="hidden" name="emailAddress" disabled={!emailEnabled} value={state.emailAddress} />
       <DeliveryOrderField id={id + '-retry-route'} steps={state.retryRoute}
         onChange={retryRoute => setState(old => ({ ...old, retryRoute }))} />
       <RetryIntervalField id={id + '-retry-minutes'} draft={state.retryDraft} applied={state.retryMinutes}

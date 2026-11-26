@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Field } from '../../recipes/Field'
-import { Reveal } from '../../recipes/Reveal'
+import { useRevealGroup } from '@neui/kit/react'
 import { channels } from './options'
 import type { DeliveryStep } from './retries'
 import './tags.css'
@@ -26,10 +26,8 @@ function ChannelButtons({ onChoose }: { onChoose: (channel: string) => void }) {
 
 export function DeliveryOrderField({ id, steps, onChange }: Props) {
   const [panel, setPanel] = useState<string | null>(null)
+  const addGroup = useRevealGroup(panel === 'add', { followViewport: true })
   const [removed, setRemoved] = useState<RemovedStep>()
-  const [leaving, setLeaving] = useState<RemovedStep[]>([])
-  const visible = leaving.reduceRight(restoreStep, steps)
-  const positions = leaving.length ? new Map(steps.map((step, index) => [step.id, index])) : undefined
   const [status, setStatus] = useState('')
   const addButton = useRef<HTMLButtonElement>(null)
   const rows = useRef(new Map<string, HTMLButtonElement>())
@@ -57,7 +55,6 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
     const step = steps[index]
     const deletion = { step, index, next: steps[index + 1]?.id }
     setRemoved(deletion)
-    setLeaving(old => [...old, deletion])
     pendingFocus.current = steps[index + 1]?.id ?? steps[index - 1]?.id ?? 'add'
     setPanel(null)
     onChange(steps.filter(item => item.id !== step.id))
@@ -65,7 +62,6 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
   }
   function restore() {
     if (!removed) return
-    setLeaving(old => old.filter(entry => entry.step.id !== removed.step.id))
     pendingFocus.current = removed.step.id
     onChange(restoreStep(steps, removed))
     setRemoved(undefined)
@@ -80,15 +76,12 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
     </>}>
     <span className="sr-only" id={id + '-help'}>Нажмите на шаг для изменения порядка. Для удаления потяните вправо или нажмите Delete.</span>
     <ol className="neui-tags" aria-label="Попытки доставки">
-      {visible.map((step, position) => {
-        const index = positions ? positions.get(step.id) ?? -1 : position
-        const present = index >= 0
-        const ordinal = (present ? index : position) + 1
-        const open = panel === step.id && present
+      {steps.map((step, index) => {
+        const ordinal = index + 1
+        const open = panel === step.id
         const actions = id + '-' + step.id
-        return <li key={step.id}><Reveal.Group open={present}
-          onCollapsed={() => setLeaving(old => old.filter(entry => entry.step.id !== step.id))}>
-          <Reveal.Item open={present}>
+        return <li key={step.id} className="neui-collapse-block">
+          <div className="neui-reveal-clip">
             <div className="neui-swipe-right neui-tag neui-focus-anchor neui-focus neui-ripple" data-neui-swipe-open={open}>
               <button type="button" className="neui-swipe-content neui-tag-name" aria-expanded={open} aria-controls={actions}
                 ref={el => { if (el) rows.current.set(step.id, el); else rows.current.delete(step.id) }}
@@ -97,11 +90,11 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
                 onKeyDown={e => {
                   if (e.key === 'Delete' || e.key === 'Backspace') {
                     e.preventDefault()
-                    if (!e.repeat && present) remove(index)
+                    if (!e.repeat) remove(index)
                   } else if (e.key === 'Escape') setPanel(null)
                 }}>{titles.get(step.channel)}</button>
               <button type="button" className="neui-swipe-action" aria-label={'Удалить попытку ' + ordinal}
-                aria-hidden={!open} tabIndex={open ? 0 : -1} disabled={!present} onClick={() => remove(index)}>
+                aria-hidden={!open} tabIndex={open ? 0 : -1} onClick={() => remove(index)}>
                 <span className="neui-tag-word"><span>Удалить</span></span>
               </button>
               <span className="neui-tag-icon neui-step-icon" aria-hidden="true">
@@ -109,27 +102,29 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
                 <span className="neuicon-transition neuicon-to-trash duration-0" />
               </span>
             </div>
-            <Reveal id={actions} open={open}>
+            {open && <div id={actions} className="neui-collapse-block"><div className="neui-reveal-clip">
               <div className="neui-step-actions">
                 <button type="button" className="neui-pill" disabled={index <= 0} onClick={() => move(index, -1)}>Вверх</button>
-                <button type="button" className="neui-pill" disabled={!present || index === steps.length - 1} onClick={() => move(index, 1)}>Вниз</button>
+                <button type="button" className="neui-pill" disabled={index === steps.length - 1} onClick={() => move(index, 1)}>Вниз</button>
               </div>
-            </Reveal>
-          </Reveal.Item>
-        </Reveal.Group></li>
+            </div></div>}
+          </div>
+        </li>
       })}
     </ol>
     {steps.map(step => <input key={step.id} type="hidden" name="retryRoute" value={step.channel} />)}
     {!steps.length && <p className="neui-note">Повторных попыток пока нет.</p>}
-    <Reveal id={id + '-add'} open={panel === 'add'} returnFocusRef={addButton} followViewport>
-      {steps.length > 0 && <hr className="neui-divider" />}
-      <div role="group" aria-label="Каналы для добавления">
-        <ChannelButtons onChoose={channel => {
-          onChange([...steps, { id: crypto.randomUUID(), channel }])
-          setStatus(`Добавлен шаг ${steps.length + 1}. ${titles.get(channel)}.`)
-        }} />
-      </div>
-    </Reveal>
+    <div ref={addGroup} id={id + '-add'}>
+      {panel === 'add' && <div className="neui-collapse-block"><div className="neui-reveal-clip">
+        {steps.length > 0 && <hr className="neui-divider" />}
+        <div role="group" aria-label="Каналы для добавления">
+          <ChannelButtons onChoose={channel => {
+            onChange([...steps, { id: crypto.randomUUID(), channel }])
+            setStatus(`Добавлен шаг ${steps.length + 1}. ${titles.get(channel)}.`)
+          }} />
+        </div>
+      </div></div>}
+    </div>
     <span className="sr-only" role="status">{status}</span>
   </Field>
 }

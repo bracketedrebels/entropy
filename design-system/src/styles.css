@@ -61,6 +61,13 @@ button.neui-row, label.neui-row, .neui-pill-action { cursor: pointer; touch-acti
 .neui-reveal-inline,.neui-reveal-inline[data-open=true] { grid-template-rows:auto; transition-property:grid-template-columns }
 .neui-reveal-inline { display:inline-grid; grid-template-columns:0fr }
 .neui-reveal-inline[data-open=true] { grid-template-columns:1fr }
+/* Compatibility for the React recipe in apps importing plain styles.css. */
+.neui-reveal.neui-collapse-block[data-leaving] { grid-template-rows:0fr }
+.neui-reveal.neui-collapse-inline[data-leaving] { grid-template-columns:0fr }
+@starting-style {
+  .neui-reveal.neui-collapse-block[data-open=true] { grid-template-rows:0fr }
+  .neui-reveal.neui-collapse-inline[data-open=true] { grid-template-columns:0fr }
+}
 .neui-reveal[inert] { pointer-events:none }
 .neui-ridge { position:relative; --neui-cap-light-y:initial }
 :where(.neui-ridge,.neui-track-focus) { --neui-focus-active:0; --neui-focus-y:0px }

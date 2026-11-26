@@ -1,5 +1,7 @@
+import { createContext, useContext, useLayoutEffect, useRef } from 'react'
+import { presence } from '@neui/kit/presence'
 import type { ReactNode, RefObject } from 'react'
-import { useReveal, useRevealGroup } from '@neui/kit/react'
+import { useRevealGroup } from '@neui/kit/react'
 
 export interface RevealProps {
   open: boolean
@@ -13,11 +15,24 @@ export interface RevealProps {
   followViewport?: boolean
 }
 
+// Existing recipe callers can update disabled/checked props while their row exits.
+const Content = createContext<ReactNode>(null)
+function CurrentContent() { return <>{useContext(Content)}</> }
+
 function Item({ open, axis, children, returnFocusRef }: Pick<RevealProps, 'open' | 'axis' | 'children' | 'returnFocusRef'>) {
-  const panel = useReveal(open, returnFocusRef)
-  return <div className={axis === 'inline' ? 'neui-reveal neui-reveal-inline' : 'neui-reveal'} {...panel}>
-    <div className="neui-reveal-clip">{children}</div>
-  </div>
+  const ownedFocus = useRef(false)
+  useLayoutEffect(() => {
+    if (!open && ownedFocus.current) {
+      returnFocusRef?.current?.focus({ preventScroll: true })
+      ownedFocus.current = false
+    }
+  }, [open, returnFocusRef])
+  return <Content.Provider value={children}>{presence(open && <div
+    data-open={true} className={axis === 'inline' ? 'neui-reveal neui-reveal-inline neui-collapse-inline' : 'neui-reveal neui-collapse-block'}
+    onFocusCapture={() => { ownedFocus.current = true }}
+    onBlurCapture={event => { ownedFocus.current = event.currentTarget.contains(event.relatedTarget) }}>
+    <div className="neui-reveal-clip"><CurrentContent /></div>
+  </div>)}</Content.Provider>
 }
 
 /** Follow one explicit expansion, even when several sibling items change height. */
@@ -31,7 +46,7 @@ function Group({ open, id, children, followViewport = false, onCollapsed }: Grou
   return <div id={id} ref={host}>{children}</div>
 }
 
-/** Controlled in-flow disclosure. Both branches retain their local state. */
+/** Controlled in-flow disclosure. Drafts and selection belong to the caller. */
 export function Reveal({ open, axis, id, collapsed, children, returnFocusRef, followViewport }: RevealProps) {
   return <Group id={id} open={open} followViewport={followViewport}>
     {collapsed != null && <Item axis={axis} open={!open} returnFocusRef={returnFocusRef}>{collapsed}</Item>}

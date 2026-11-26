@@ -7,3 +7,6 @@
 /* Example application brand used by the Check story. */
 @theme { --color-brand: #48a6ce; }
 @neuicon;
+
+@utility lab-fold { @apply neui-collapse-block; }
+.lab-disclosure { @apply lab-fold; }

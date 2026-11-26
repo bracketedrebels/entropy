@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Field } from '../../recipes/Field'
-import { Reveal } from '../../recipes/Reveal'
+import { useRevealGroup } from '@neui/kit/react'
 import { interval, retryMinutes } from './retries'
 
 const marks = Array.from({ length: 1 + (interval.max - interval.min) / interval.step }, (_, i) => interval.min + i * interval.step)
@@ -8,6 +8,7 @@ type Props = { id: string; draft: string; applied: number; onChange: (draft: str
 
 export function RetryIntervalField({ id, draft, applied, onChange }: Props) {
   const [open, setOpen] = useState(false)
+  const group = useRevealGroup(open, { followViewport: true })
   const editor = useRef<HTMLInputElement>(null)
   const returning = useRef(false)
   function close() {
@@ -39,7 +40,7 @@ export function RetryIntervalField({ id, draft, applied, onChange }: Props) {
             <span id={id + '-unit'} className="text-muted">мин</span>
           </span>
         </label>
-        {open && <div className="inline-grid min-w-0 grid-cols-[1fr] transition-[grid-template-columns] duration-[240ms] ease-[cubic-bezier(.2,.8,.2,1)] starting:grid-cols-[0fr] leaving:grid-cols-[0fr] motion-reduce:transition-none">
+        {open && <div className="neui-collapse-inline">
           <div className="neui-reveal-clip">
             <button type="button" className="neui-pill" aria-label="Свернуть шкалу" aria-expanded={open}
               aria-controls={id + '-scale'} onClick={close}>Свернуть</button>
@@ -47,15 +48,17 @@ export function RetryIntervalField({ id, draft, applied, onChange }: Props) {
         </div>}
       </div>
       <input type="hidden" name="retryMinutes" value={applied} />
-      <Reveal open={open} id={id + '-scale'} returnFocusRef={editor} followViewport>
-        <div className="neui-scale-example">
-          <input type="range" className="neui-range" aria-label="Интервал по шкале, минуты"
-            min={interval.min} max={interval.max} step={interval.step} value={applied}
-            onChange={e => onChange(e.currentTarget.value, e.currentTarget.valueAsNumber)} />
-          <div className="neui-range-ticks" aria-hidden="true">{marks.map(mark => <i key={mark} />)}</div>
-          <div className="neui-scale-labels" aria-hidden="true"><span>{interval.min} мин</span><span>{interval.max} мин</span></div>
-        </div>
-      </Reveal>
+      <div ref={group} id={id + '-scale'}>
+        {open && <div className="neui-collapse-block"><div className="neui-reveal-clip">
+          <div className="neui-scale-example">
+            <input type="range" className="neui-range" aria-label="Интервал по шкале, минуты"
+              min={interval.min} max={interval.max} step={interval.step} value={applied}
+              onChange={e => onChange(e.currentTarget.value, e.currentTarget.valueAsNumber)} />
+            <div className="neui-range-ticks" aria-hidden="true">{marks.map(mark => <i key={mark} />)}</div>
+            <div className="neui-scale-labels" aria-hidden="true"><span>{interval.min} мин</span><span>{interval.max} мин</span></div>
+          </div>
+        </div></div>}
+      </div>
     </div>
   </Field>
 }

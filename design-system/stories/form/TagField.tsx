@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { Field } from '../../recipes/Field'
-import { Reveal } from '../../recipes/Reveal'
 import './tags.css'
 
 const guideKey = 'neui:tag-swipe-guide:v1'
@@ -39,9 +38,7 @@ export function TagField({ id, label, name, tags, draft, onChange }: TagFieldPro
   const [guide, setGuide] = useState<string>()
   const pointerType = useRef('')
   const dismissed = useRef(false)
-  const [exiting, setExiting] = useState<Removed[]>([])
   const [undo, setUndo] = useState<Removed>()
-  const visible = exiting.reduceRight(restoreAt, tags)
   function focusTag(value?: string) {
     (buttons.current.get(value ?? '') ?? input.current)?.focus({ preventScroll: true })
   }
@@ -52,13 +49,11 @@ export function TagField({ id, label, name, tags, draft, onChange }: TagFieldPro
     focusTag(removed.next ?? tags[i - 1])
     setOpen(undefined); setGuide(undefined)
     setUndo(removed)
-    setExiting(old => [...old, removed])
     onChange(tags.filter(tag => tag !== value), draft)
   }
   function commit() {
     const value = draft.trim()
     if (!value) return
-    setExiting(old => old.filter(row => row.value !== value))
     if (!tags.includes(value)) setUndo(undefined)
     onChange(tags.includes(value) ? tags : [value, ...tags], '')
   }
@@ -91,7 +86,6 @@ export function TagField({ id, label, name, tags, draft, onChange }: TagFieldPro
     }
   }
   const recovery = undo && <button className="neui-pill" type="button" aria-label="Вернуть удалённый тег" onClick={() => {
-    setExiting(old => old.filter(row => row.value !== undo.value))
     onChange(restoreAt(tags, undo), draft); setUndo(undefined)
     input.current?.focus({ preventScroll: true })
   }}>Вернуть тег</button>
@@ -108,41 +102,42 @@ export function TagField({ id, label, name, tags, draft, onChange }: TagFieldPro
     <span className="sr-only" id={id + '-help'}>Enter добавляет тег. Backspace в начале ввода выбирает последний добавленный тег.
       Выбранный тег можно удалить клавишей Delete или свайпом вправо.</span>
     <ul className="neui-tags" aria-labelledby={id + '-label'}>
-      {visible.map(value => {
-        const present = tags.includes(value), expanded = open === value, teaching = guide === value
-        return <li key={value}><Reveal.Group open={present} onCollapsed={() => setExiting(old => old.filter(row => row.value !== value))}>
-          <Reveal.Item open={present}><div className="neui-swipe-right neui-tag neui-focus-anchor neui-focus neui-ripple"
-            data-neui-swipe-open={expanded} data-guide={teaching || undefined}
-            onBlur={e => {
-              if (e.currentTarget.contains(e.relatedTarget)) return
-              setOpen(old => old === value ? undefined : old)
-              setGuide(old => old === value ? undefined : old)
-            }}
-            onPointerDownCapture={e => {
-              pointerType.current = e.pointerType
-              dismissed.current = teaching
-              if (teaching) setGuide(undefined)
-            }}>
-            <button type="button" className="neui-swipe-content neui-tag-name"
-              ref={node => { if (node) buttons.current.set(value, node); else buttons.current.delete(value) }}
-              aria-expanded={expanded} aria-describedby={teaching ? id + '-hint' : id + '-help'}
-              onKeyDown={e => { pointerType.current = ''; dismissed.current = false; tagKey(e, value) }}
-              onClick={e => {
-                e.currentTarget.focus({ preventScroll: true })
-                if (dismissed.current) { dismissed.current = false; return }
-                if (e.detail && ['touch', 'pen'].includes(pointerType.current) && firstTouch()) {
-                  setGuide(value); setOpen(undefined)
-                } else setOpen(expanded ? undefined : value)
-              }}>{value}</button>
-            <button type="button" className="neui-swipe-action" aria-label={'Удалить тег «' + value + '»'}
-              aria-hidden={!expanded} tabIndex={expanded ? 0 : -1} onClick={() => erase(value)}>
-              <span className="neui-tag-word"><span>Удалить</span></span>
-            </button>
-            <span aria-hidden="true" className="neui-tag-icon neuicon-transition neuicon-from-tag neuicon-to-trash duration-0" />
+      {tags.map(value => {
+        const expanded = open === value, teaching = guide === value
+        return <li key={value} className="neui-collapse-block">
+          <div className="neui-reveal-clip">
+            <div className="neui-swipe-right neui-tag neui-focus-anchor neui-focus neui-ripple"
+              data-neui-swipe-open={expanded} data-guide={teaching || undefined}
+              onBlur={e => {
+                if (e.currentTarget.contains(e.relatedTarget)) return
+                setOpen(old => old === value ? undefined : old)
+                setGuide(old => old === value ? undefined : old)
+              }}
+              onPointerDownCapture={e => {
+                pointerType.current = e.pointerType
+                dismissed.current = teaching
+                if (teaching) setGuide(undefined)
+              }}>
+              <button type="button" className="neui-swipe-content neui-tag-name"
+                ref={node => { if (node) buttons.current.set(value, node); else buttons.current.delete(value) }}
+                aria-expanded={expanded} aria-describedby={teaching ? id + '-hint' : id + '-help'}
+                onKeyDown={e => { pointerType.current = ''; dismissed.current = false; tagKey(e, value) }}
+                onClick={e => {
+                  e.currentTarget.focus({ preventScroll: true })
+                  if (dismissed.current) { dismissed.current = false; return }
+                  if (e.detail && ['touch', 'pen'].includes(pointerType.current) && firstTouch()) {
+                    setGuide(value); setOpen(undefined)
+                  } else setOpen(expanded ? undefined : value)
+                }}>{value}</button>
+              <button type="button" className="neui-swipe-action" aria-label={'Удалить тег «' + value + '»'}
+                aria-hidden={!expanded} tabIndex={expanded ? 0 : -1} onClick={() => erase(value)}>
+                <span className="neui-tag-word"><span>Удалить</span></span>
+              </button>
+              <span aria-hidden="true" className="neui-tag-icon neuicon-transition neuicon-from-tag neuicon-to-trash duration-0" />
+            </div>
+            {teaching && <p className="neui-note neui-tag-hint" id={id + '-hint'}>Потяни вправо для удаления</p>}
           </div>
-          {teaching && <p className="neui-note neui-tag-hint" id={id + '-hint'}>Потяни вправо для удаления</p>}
-          </Reveal.Item>
-        </Reveal.Group></li>
+        </li>
       })}
     </ul>
     {tags.map(value => <input key={value} type="hidden" name={name} value={value} />)}

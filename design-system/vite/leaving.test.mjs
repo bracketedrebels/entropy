@@ -28,3 +28,14 @@ it('skips unkeyed lists, inner markers, JSX props, data computations and raw imp
   expect(transformLeaving(source, 'form.tsx')).toBeUndefined()
   expect(transformLeaving('const Form=()=>a && <i className="leaving:w-0"/>', 'form.tsx?raw')).toBeUndefined()
 })
+
+it('uses resolved aliases only on a marked host, including keyed map bodies with local declarations', () => {
+  const aliases = new Set(['panel'])
+  const code = `const Form = () => <main>
+    {open && <aside className="md:panel" />}
+    {rows.map(r => { const id = r.id; return <li key={id} className="panel" /> })}
+    {open && <section className="panel-extra" />}
+    {open && <div><i className="panel" /></div>}
+  </main>`
+  expect(transformLeaving(code, 'form.tsx', aliases).code.match(/__neuiPresence\(/g)).toHaveLength(2)
+})

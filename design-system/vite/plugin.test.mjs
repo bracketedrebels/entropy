@@ -96,3 +96,47 @@ it('connects a custom client module in dev while preserving its raw source and H
     await server.close()
   }
 })
+
+it('resolves transitive @apply aliases before JSX in dev and SSR and refreshes on stylesheet edits', async () => {
+  const style = join(root, 'shared.css')
+  await writeFile(style, '@utility middle { @apply neui-collapse-inline; }')
+  await writeFile(join(root, 'app.css'), '@import "tailwindcss"; @import "@neui/kit/tailwind.css"; @import "./shared.css"; .toolbar { @apply middle; }')
+  await writeFile(join(root, 'panel.tsx'), 'export const Panel = ({ open }) => open && <div className="toolbar" />')
+  const server = await createServer({ ...config({ leavingStyles: ['app.css'] }), server: { middlewareMode: true, ws: false, watch: null },
+    optimizeDeps: { noDiscovery: true } })
+  try {
+    for (const ssr of [false, true]) {
+      const transformed = await server.transformRequest('/panel.tsx', { ssr })
+      expect(transformed.code).toContain('presence')
+      expect(transformed.code).not.toContain('leaving:')
+    }
+    await writeFile(style, '@utility middle { @apply block; }')
+    const plugin = server.config.plugins.find(plugin => plugin.name === 'neui:client')
+    await plugin.hotUpdate({ file: style, server })
+    const updated = await server.transformRequest('/panel.tsx')
+    expect(updated.code).not.toContain('presence')
+    await writeFile(style, '@utility middle { @apply neui-collapse-block; }')
+    await plugin.hotUpdate({ file: style, server })
+    expect((await server.transformRequest('/panel.tsx')).code).toContain('presence')
+  } finally { await server.close() }
+})
+
+it('builds aliased starting and leaving styles without rewriting the host class', async () => {
+  await writeFile(join(root, 'app.css'), `@import "tailwindcss"; @import "@neui/kit/tailwind.css";
+    @utility compressed { @apply neui-collapse-inline; }
+    .toolbar { @apply compressed duration-500; }`)
+  await writeFile(join(root, 'client.tsx'), `import './app.css'
+    import { createElement as h } from 'react'
+    export const Toolbar = ({open}) => open && <div className="toolbar"><button>Collapse</button></div>
+    console.log(Toolbar)`)
+  // Resolve React for this consumer fixture, as it would be installed in an application.
+  await symlink(join(kit, 'node_modules/react'), join(root, 'node_modules/react'), 'dir')
+  const { output } = await build({ ...config(), build: { write: false, minify: false, cssMinify: false } })
+  const chunks = output.filter(file => file.type === 'chunk')
+  expect(chunks.some(file => Object.keys(file.modules).some(id => id.endsWith('/src/reveal/presence.tsx')))).toBe(true)
+  const css = output.find(file => file.fileName.endsWith('.css')).source
+  expect(css).toMatch(/\.toolbar\s*\{/)
+  expect(css).toContain('@starting-style')
+  expect(css).toContain('data-leaving')
+  expect(chunks.map(file => file.code).join('')).toMatch(/className: "toolbar"/)
+})

@@ -1,8 +1,7 @@
 import { useRef, useState } from 'react'
-import { useCalendarRange } from '@neui/kit/react'
+import { useCalendarRange, useRevealGroup } from '@neui/kit/react'
 import type { CalendarPart, CalendarRangeOptions, RangeEndpoint } from '@neui/kit/react'
 import { Field } from '../../recipes/Field'
-import { Reveal } from '../../recipes/Reveal'
 import { CalendarPanel, endpointNames } from './CalendarPanel'
 import { DateSegments, segmentValidation } from './DateSegments'
 
@@ -13,9 +12,9 @@ export function CalendarRangeField({ id, name, label, ...options }: CalendarRang
 }) {
   const picker = useCalendarRange(options)
   const { calendar, endpoints, endpoint } = picker
+  const group = useRevealGroup(calendar.isOpen, { followViewport: true })
   const entry = useRef<HTMLDivElement>(null)
   const panel = useRef<HTMLDivElement>(null)
-  const [visited, setVisited] = useState(false)
   const [validate, setValidate] = useState(false)
   const present = bounds.some(key => Object.values(options.draft[key]).some(Boolean))
   const validation = { start: segmentValidation(endpoints.start, validate), end: segmentValidation(endpoints.end, validate) }
@@ -56,14 +55,16 @@ export function CalendarRangeField({ id, name, label, ...options }: CalendarRang
             {key === 'end' && <span aria-hidden="true" className="neui-date-separator">—</span>}
             <DateSegments id={id} endpoint={key} calendar={endpoints[key]} panelRef={panel}
               validation={validation[key]} errorId={error ? id + '-error' : undefined}
-              focusEndpoint={focus} open={part => { setVisited(true); endpoints[key].open(part) }} close={close} />
+              focusEndpoint={focus} open={part => { endpoints[key].open(part) }} close={close} />
           </div>)}
         </div>
       </div>
       {error && <p id={id + '-error'} className="neui-note neui-error" role="status">{error}</p>}
-      <Reveal.Group open={calendar.isOpen} followViewport id={id + '-assistant'} onCollapsed={() => setVisited(false)}>
-        <CalendarPanel calendar={calendar} range={picker.range} panelRef={panel} mounted={visited} />
-      </Reveal.Group>
+      <div ref={group} id={id + '-assistant'}>
+        {calendar.isOpen && <div className="neui-collapse-block">
+          <CalendarPanel calendar={calendar} range={picker.range} panelRef={panel} />
+        </div>}
+      </div>
       {bounds.map(key => <input key={key} type="hidden" name={name + '.' + key} disabled={!picker.value}
         value={picker.value?.[key] ?? ''} />)}
     </Field>

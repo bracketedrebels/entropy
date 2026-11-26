@@ -49,8 +49,7 @@
 .neui-date-segment { padding-inline:4px }
 .neui-date-segment[aria-expanded=true] { background:var(--neui-pill-bg) }
 .neui-date-segment[aria-invalid=true] { text-decoration:underline dotted var(--neui-danger) }
-.neui-date-disclosure { height:0; overflow:clip; transition:height 240ms ease-in-out }
-.neui-date-disclosure[data-open=true] { height:var(--neui-calendar-height,0px) }
+.neui-date-viewport { overflow:clip; transition:height 240ms ease-in-out }
 .neui-date-stack { position:relative }
 .neui-date-content { display:flow-root }
 .neui-date-screen[data-direction="0"] { position:relative }
@@ -69,7 +68,7 @@
 .neui-date-cell[aria-current=date] > :first-child { text-decoration:underline; text-underline-offset:3px }
 .neui-calendar-pager { position:relative; display:grid; grid-auto-columns:100%; overflow-x:auto; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:none; overflow-anchor:none }
 .neui-calendar-pager > * { grid-row:1; scroll-snap-align:start; scroll-snap-stop:always; align-content:start; grid-auto-rows:minmax(44px,auto) }
-@media(prefers-reduced-motion:reduce) { .neui-date-disclosure,.neui-date-screen { transition:none } }
+@media(prefers-reduced-motion:reduce) { .neui-date-screen,.neui-date-viewport { transition:none } }
 .neui-date-week [data-weekend] { font-style:italic }
 .neui-calendar-pager { user-select:none }
 .neui-calendar-pager[data-dragging] { scroll-snap-type:none; cursor:grabbing }
