@@ -69,6 +69,34 @@ it('retains filtered selections and synchronizes priority, reset, undo and remov
   expect(document.activeElement).toBe(searchbox('Поиск проектов'))
 })
 
+it('recycles catalogue rows without starting a disclosure or moving the focused project', () => {
+  render(<NotificationSettings />)
+  const field = screen.getByRole('group', { name: 'Проекты в сводке' })
+  const list = field.querySelector<HTMLElement>('.neui-catalog')!
+  const ruler = list.querySelector<HTMLElement>('.neui-pitch')!
+  let top = 0
+  vi.spyOn(ruler, 'getBoundingClientRect').mockImplementation(() => new DOMRect(0, 0, 1, 64))
+  vi.spyOn(list, 'getBoundingClientRect').mockImplementation(() => new DOMRect(0, top, 380, 144 * 64))
+  vi.useFakeTimers()
+  fireEvent.click(button(/Раскрыть Проекты/))
+  const focused = within(field).getByRole('checkbox', { name: 'Trinet · Дизайн-система' })
+  act(() => focused.focus())
+  const firstSlot = focused.closest<HTMLElement>('.neui-catalog-row')!
+  const height = list.style.height
+  const firstTop = firstSlot.style.top
+  const project = (name: string) => within(field).queryByRole('checkbox', { name })
+  for (const index of [130, 0, 130]) {
+    top = -index * 64
+    act(() => { fireEvent.scroll(window); vi.advanceTimersByTime(32) })
+    expect(!!project('Ядро · Импорт данных')).toBe(index === 130)
+    expect(document.activeElement).toBe(focused)
+    expect(firstSlot.style.top).toBe(firstTop)
+    expect(list.style.height).toBe(height)
+    expect(list.querySelector('.neui-reveal')).toBeNull()
+    expect(list.querySelectorAll('label').length).toBeLessThan(40)
+  }
+})
+
 it('keeps native radio semantics, text limits and profile ownership after reload', () => {
   const story = render(<NotificationSettings />)
   expect(screen.getByRole<HTMLInputElement>('radio', { name: /По расписанию/ }).disabled).toBe(true)

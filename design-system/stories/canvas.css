@@ -26,6 +26,7 @@
 .neui-settings > .neui-ridge:not(:first-child) { margin-top:30px }
 .neui-conditional-field { padding-top:30px }
 .neui-catalog { position:relative; overflow:clip; overflow-anchor:none; --neui-project-height:4rem }
+.neui-catalog-row { position:absolute; inset-inline:0; top:0 }
 .neui-catalog .neui-choice,.neui-pitch { height:var(--neui-project-height); min-height:0 }
 .neui-pitch { position:absolute; width:1px; visibility:hidden; pointer-events:none }
 .neui-entry { cursor:text }

@@ -6,7 +6,7 @@ export function revealTransitions(panel: HTMLElement) {
 }
 
 /** Only an explicit opening gesture may advance the containing scroller. */
-export function followExpansion(region: HTMLElement, panel: HTMLElement) {
+export function followExpansion(region: HTMLElement, panel: HTMLElement, motions?: readonly Animation[]) {
   let container: HTMLElement | null = region.parentElement
   while (container && !/^(auto|scroll|overlay)$/.test(getComputedStyle(container).overflowY)) {
     container = container.parentElement
@@ -33,7 +33,7 @@ export function followExpansion(region: HTMLElement, panel: HTMLElement) {
   const options = { signal: controller.signal, passive: true, capture: true }
   for (const event of ['pointerdown', 'touchmove', 'wheel', 'keydown', 'input']) window.addEventListener(event, stop, options)
   follow()
-  void Promise.allSettled(revealTransitions(panel).map(animation => animation.finished)).then(() => {
+  void Promise.allSettled((motions ?? revealTransitions(panel)).map(animation => animation.finished)).then(() => {
     if (!controller.signal.aborted) { follow(); stop() }
   })
   return stop

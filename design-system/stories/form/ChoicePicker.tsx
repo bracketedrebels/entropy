@@ -2,6 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode, RefObject } from 'react'
 import { Field } from '../../recipes/Field'
 import { Reveal } from '../../recipes/Reveal'
+import { followExpansion } from '../../src/reveal/followExpansion'
 import { Mark, OptionRow } from './OptionRow'
 import type { Option } from './options'
 import { useChoiceWindow } from './useChoiceWindow'
@@ -49,11 +50,11 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
     ? order.filter(([, title, detail]) => terms.every(term => fold(title + ' ' + (detail ?? '')).includes(term))) : order
   const { list, probe, range } = useChoiceWindow(windowed, open, matches.length)
   const rowCount = open ? matches.length : multiple ? preview.length : 1
-  const beforeResize = useRef<number | null>(null)
+  const beforeResize = useRef<{ height: number; follow: boolean } | null>(null)
   const motion = useRef<Animation | null>(null)
-  function captureHeight() {
+  function captureHeight(follow = false) {
     if (!windowed || !list.current?.animate) return
-    beforeResize.current = list.current.getBoundingClientRect().height
+    beforeResize.current = { height: list.current.getBoundingClientRect().height, follow }
     motion.current?.cancel()
   }
   // A 144-row list opens at the same visible speed as a short list. Release the
@@ -62,16 +63,29 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
     const before = beforeResize.current
     beforeResize.current = null
     const host = list.current, pitch = probe.current?.getBoundingClientRect().height
-    if (before === null || !host || !pitch || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!windowed) return
+    const finish = () => { if (!open) setSettled(true) }
+    if (!before || !host || !pitch) { finish(); return }
     const limit = window.innerHeight + 2 * pitch
-    const from = Math.min(before, limit)
+    const from = Math.min(before.height, limit)
     const to = Math.min(rowCount * pitch, limit)
-    if (Math.abs(from - to) < 1) return
+    const region = host.closest<HTMLElement>('.neui-ridge') ?? host
+    if (Math.abs(from - to) < 1 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      finish()
+      if (before.follow) return followExpansion(region, host, [])
+      return
+    }
     const animation = host.animate([{ height: from + 'px' }, { height: to + 'px' }],
       { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' })
     motion.current = animation
-    return () => animation.cancel()
-  }, [open, query, rowCount, list, probe])
+    const stopFollowing = before.follow ? followExpansion(region, host, [animation]) : undefined
+    void animation.finished.then(() => { if (motion.current === animation) finish() }, () => {})
+    return () => {
+      motion.current = null
+      stopFollowing?.()
+      animation.cancel()
+    }
+  }, [open, query, rowCount, windowed, list, probe])
   function filter(value: string) {
     returnToStart()
     captureHeight()
@@ -90,7 +104,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   }, [id, open, focusKey])
 
   function expand(target?: string) {
-    captureHeight()
+    captureHeight(true)
     if (settled) setSession(order)
     nextFocus.current = target ?? null
     setFocusKey(target ?? null)
@@ -150,14 +164,6 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   // Keep the summary and the focused input mounted even outside the overscan window.
   const rows: ReactNode[] = []
   const visibleControls = new Set<string>()
-  let gap = 0
-  function flushGap(index: number) {
-    if (!gap) return
-    rows.push(<Reveal.Item key={'gap-' + (index - gap)} open={open}>
-      <div aria-hidden="true" style={{ height: 'calc(' + gap + ' * var(--neui-project-height))' }} />
-    </Reveal.Item>)
-    gap = 0
-  }
   function optionRow(option: Option, index: number) {
     const key = option[0]
     if (open && !multiple) visibleControls.add(key)
@@ -170,7 +176,7 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   // On expansion the first result occupies that slot; only the remaining rows unfold.
   if (!multiple) {
     const value = chosen[0]
-    rows.push(<div key="single-summary">
+    rows.push(<div key="single-summary" className={windowed ? 'neui-catalog-row' : undefined}>
       {open ? matches[0] && optionRow(matches[0], 0) :
         <button type="button" className="neui-row neui-ripple neui-choice" aria-controls={optionsId} aria-expanded={false}
           onClick={() => expand(value?.[0] ?? (searchable ? 'search' : order[0]?.[0]))}>
@@ -182,16 +188,25 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   for (let index = multiple ? 0 : 1; index < matches.length; index++) {
     const option = matches[index]
     const key = option[0], inPreview = multiple && preview.includes(option)
-    if (windowed && !inPreview && key !== focusKey && (index < range.first || index >= range.end)) {
-      gap++
-      continue
+    if (windowed) {
+      // Keep geometry independent of the mounted window. Closing clips the first
+      // viewport of rows until the list has contracted to its selection summary.
+      const inWindow = open ? index >= range.first && index < range.end
+        : !settled && index < Math.max(16, range.end - range.first)
+      if (!inWindow && !inPreview && !(open && key === focusKey)) continue
+      const slot = !open && settled ? preview.indexOf(option) : index
+      const retiring = !open && !inPreview
+      rows.push(<div key={key} className="neui-catalog-row"
+        style={{ top: 'calc(' + slot + ' * var(--neui-project-height))' }}
+        {...(retiring ? { inert: '', 'aria-hidden': true } : {})}>
+        {optionRow(option, index)}
+      </div>)
+    } else {
+      rows.push(<Reveal.Item key={key} open={open || inPreview} returnFocusRef={trigger}>
+        {optionRow(option, index)}
+      </Reveal.Item>)
     }
-    flushGap(index)
-    rows.push(<Reveal.Item key={key} open={open || inPreview} returnFocusRef={trigger}>
-      {optionRow(option, index)}
-    </Reveal.Item>)
   }
-  flushGap(matches.length)
 
   return <Field id={id} label={label} description={description} header={searchable && <Reveal open={open} returnFocusRef={trigger}>
     <div className="neui-row neui-ripple neui-focus neui-entry">
@@ -215,8 +230,9 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
         <path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
     </button>{recovery}
   </>}>
-    <Reveal.Group followViewport open={open} id={optionsId} onCollapsed={() => setSettled(true)}>
-      <div ref={list} className={windowed ? 'neui-catalog' : undefined}>
+    <Reveal.Group followViewport={!windowed} open={open} id={optionsId} onCollapsed={windowed ? undefined : () => setSettled(true)}>
+      <div ref={list} className={windowed ? 'neui-catalog' : undefined}
+        style={windowed ? { height: 'calc(' + rowCount + ' * var(--neui-project-height))' } : undefined}>
         {windowed && <div ref={probe} className="neui-pitch" aria-hidden="true" />}
         {rows}
       </div>
