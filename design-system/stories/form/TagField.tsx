@@ -135,7 +135,11 @@ export function TagField({ id, label, name, tags, draft, onChange }: TagFieldPro
               </button>
               <span aria-hidden="true" className="neui-tag-icon neuicon-transition neuicon-from-tag neuicon-to-trash duration-0" />
             </div>
-            {teaching && <p className="neui-note neui-tag-hint" id={id + '-hint'}>Потяни вправо для удаления</p>}
+            {teaching && <div className="neui-collapse-block">
+              <div className="neui-reveal-clip">
+                <p className="neui-note neui-tag-hint" id={id + '-hint'}>Потяни вправо для удаления</p>
+              </div>
+            </div>}
           </div>
         </li>
       })}

@@ -1,8 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import type { KeyboardEvent, ReactNode, RefObject } from 'react'
+import type { CSSProperties, KeyboardEvent, ReactNode, RefObject } from 'react'
 import { Field } from '../../recipes/Field'
 import { Reveal } from '../../recipes/Reveal'
-import { followExpansion } from '../../src/reveal/followExpansion'
 import { Mark, OptionRow } from './OptionRow'
 import type { Option } from './options'
 import { useChoiceWindow } from './useChoiceWindow'
@@ -50,45 +49,8 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
     ? order.filter(([, title, detail]) => terms.every(term => fold(title + ' ' + (detail ?? '')).includes(term))) : order
   const { list, probe, range } = useChoiceWindow(windowed, open, matches.length)
   const rowCount = open ? matches.length : multiple ? preview.length : 1
-  const beforeResize = useRef<{ height: number; follow: boolean } | null>(null)
-  const motion = useRef<Animation | null>(null)
-  function captureHeight(follow = false) {
-    if (!windowed || !list.current?.animate) return
-    beforeResize.current = { height: list.current.getBoundingClientRect().height, follow }
-    motion.current?.cancel()
-  }
-  // A 144-row list opens at the same visible speed as a short list. Release the
-  // height constraint at the end so the document owns its full scroll extent.
-  useLayoutEffect(() => {
-    const before = beforeResize.current
-    beforeResize.current = null
-    const host = list.current, pitch = probe.current?.getBoundingClientRect().height
-    if (!windowed) return
-    const finish = () => { if (!open) setSettled(true) }
-    if (!before || !host || !pitch) { finish(); return }
-    const limit = window.innerHeight + 2 * pitch
-    const from = Math.min(before.height, limit)
-    const to = Math.min(rowCount * pitch, limit)
-    const region = host.closest<HTMLElement>('.neui-ridge') ?? host
-    if (Math.abs(from - to) < 1 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      finish()
-      if (before.follow) return followExpansion(region, host, [])
-      return
-    }
-    const animation = host.animate([{ height: from + 'px' }, { height: to + 'px' }],
-      { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' })
-    motion.current = animation
-    const stopFollowing = before.follow ? followExpansion(region, host, [animation]) : undefined
-    void animation.finished.then(() => { if (motion.current === animation) finish() }, () => {})
-    return () => {
-      motion.current = null
-      stopFollowing?.()
-      animation.cancel()
-    }
-  }, [open, query, rowCount, windowed, list, probe])
   function filter(value: string) {
     returnToStart()
-    captureHeight()
     setQuery(value)
   }
   const total = options.length + ' ' + (forms[plural.select(options.length)] ?? 'вариантов')
@@ -104,7 +66,6 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   }, [id, open, focusKey])
 
   function expand(target?: string) {
-    captureHeight(true)
     if (settled) setSession(order)
     nextFocus.current = target ?? null
     setFocusKey(target ?? null)
@@ -118,7 +79,6 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   function close() {
     trigger.current?.focus({ preventScroll: true })
     if (windowed) returnToStart()
-    captureHeight()
     setOpen(false)
     setQuery('')
   }
@@ -217,10 +177,14 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
           if (e.key === 'Escape') { e.preventDefault(); close() }
           if (matches.length && (e.key === 'ArrowDown' || e.key === 'Enter')) { e.preventDefault(); focusOption(0) }
         }} />
-      {query && <button className="neui-clear neui-row-area-trailing" type="button"
-        aria-label="Очистить поиск" onClick={() => { filter(''); search.current?.focus({ preventScroll: true }) }}>
-        <span aria-hidden="true" className="neuicon-clear" />
-      </button>}
+      {query && <span className="neui-collapse-inline neui-row-area-trailing">
+        <span className="neui-reveal-clip">
+          <button className="neui-clear" type="button" aria-label="Очистить поиск"
+            onClick={() => { filter(''); search.current?.focus({ preventScroll: true }) }}>
+            <span aria-hidden="true" className="neuicon-clear" />
+          </button>
+        </span>
+      </span>}
     </div>
   </Reveal>} meta={<>
     <button type="button" className="neui-pill" ref={trigger} aria-controls={optionsId} aria-expanded={open}
@@ -228,16 +192,22 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
       onClick={e => open ? close() : expand(e.detail === 0 ? (searchable ? 'search' : order[0]?.[0]) : undefined)}>
       {caption}<svg className="neui-chev" data-open={open} width="12" height="12" viewBox="0 0 16 16" aria-hidden="true">
         <path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
-    </button>{recovery}
+    </button>
+    {recovery && <span className="neui-collapse-inline"><span className="neui-reveal-clip">{recovery}</span></span>}
   </>}>
-    <Reveal.Group followViewport={!windowed} open={open} id={optionsId} onCollapsed={windowed ? undefined : () => setSettled(true)}>
+    <Reveal.Group followViewport open={open} id={optionsId} onCollapsed={() => setSettled(true)}>
       <div ref={list} className={windowed ? 'neui-catalog' : undefined}
-        style={windowed ? { height: 'calc(' + rowCount + ' * var(--neui-project-height))' } : undefined}>
-        {windowed && <div ref={probe} className="neui-pitch" aria-hidden="true" />}
+        style={windowed ? { '--neui-catalog-rows': rowCount } as CSSProperties : undefined}>
+        {windowed && <>
+          <div className="neui-catalog-window" data-open={open} aria-hidden="true" />
+          <div ref={probe} className="neui-pitch" aria-hidden="true" />
+        </>}
         {rows}
       </div>
-      {open && !!terms.length && <p className="neui-note" role="status">{matches.length
-        ? 'Найдено: ' + matches.length : 'Совпадений нет. Попробуйте другой запрос.'}</p>}
+      {open && !!terms.length && <div className="neui-collapse-block"><div className="neui-reveal-clip">
+        <p className="neui-note" role="status">{matches.length
+          ? 'Найдено: ' + matches.length : 'Совпадений нет. Попробуйте другой запрос.'}</p>
+      </div></div>}
       {multiple && <Reveal.Item open={!open && !chosen.length} returnFocusRef={trigger}>
         <button type="button" className="neui-row neui-ripple"
           onClick={() => expand(searchable ? 'search' : order[0]?.[0])}>

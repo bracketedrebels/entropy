@@ -82,7 +82,8 @@ it('recycles catalogue rows without starting a disclosure or moving the focused 
   const focused = within(field).getByRole('checkbox', { name: 'Trinet · Дизайн-система' })
   act(() => focused.focus())
   const firstSlot = focused.closest<HTMLElement>('.neui-catalog-row')!
-  const height = list.style.height
+  const height = list.style.getPropertyValue('--neui-catalog-rows')
+  expect(height).toBe('144')
   const firstTop = firstSlot.style.top
   const project = (name: string) => within(field).queryByRole('checkbox', { name })
   for (const index of [130, 0, 130]) {
@@ -91,7 +92,7 @@ it('recycles catalogue rows without starting a disclosure or moving the focused 
     expect(!!project('Ядро · Импорт данных')).toBe(index === 130)
     expect(document.activeElement).toBe(focused)
     expect(firstSlot.style.top).toBe(firstTop)
-    expect(list.style.height).toBe(height)
+    expect(list.style.getPropertyValue('--neui-catalog-rows')).toBe(height)
     expect(list.querySelector('.neui-reveal')).toBeNull()
     expect(list.querySelectorAll('label').length).toBeLessThan(40)
   }
@@ -242,6 +243,40 @@ it('keeps new tags first, restores drafts, deletes with a separate keypress, and
   fireEvent.click(button('Вернуть удалённый тег'))
   expect(tags()).toEqual(['обзор', 'potential', 'frequently_used'])
   form.unmount()
+})
+
+it('keeps the outgoing tag and undo slot until their own transitions finish', async () => {
+  render(<NotificationSettings />)
+  const tag = button('frequently_used')
+  const row = tag.closest('li')!
+
+  function holdTransition(target: Element) {
+    let finish!: () => void
+    const finished = new Promise<void>(resolve => { finish = resolve })
+    Object.defineProperty(target, 'getAnimations', { value: () => [{
+      transitionProperty: 'grid-template-rows', effect: { target }, finished,
+    }] })
+    return () => act(async () => finish())
+  }
+
+  const finishRow = holdTransition(row)
+  fireEvent.click(tag)
+  fireEvent.click(button('Удалить тег «frequently_used»'))
+  expect(row.dataset.leaving).toBe('true')
+  expect(tag.isConnected).toBe(true)
+  expect(payload().getAll('tags')).not.toContain('frequently_used')
+  const undo = button('Вернуть удалённый тег')
+  const footer = undo.closest<HTMLElement>('[slot="meta"]')!
+  const finishFooter = holdTransition(footer)
+  fireEvent.click(undo)
+  expect(footer.dataset.leaving).toBe('true')
+  expect(undo.isConnected).toBe(true)
+  expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Теги сводки' }))
+  expect(button('frequently_used')).toBe(tag)
+  await finishRow()
+  await finishFooter()
+  expect(tag.isConnected).toBe(true)
+  expect(undo.isConnected).toBe(false)
 })
 
 it('moves, deletes and restores individual occurrences; the route round-trips as an ordered array', () => {

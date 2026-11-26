@@ -26,6 +26,22 @@
 .neui-settings > .neui-ridge:not(:first-child) { margin-top:30px }
 .neui-conditional-field { padding-top:30px }
 .neui-catalog { position:relative; overflow:clip; overflow-anchor:none; --neui-project-height:4rem }
+/* The first viewport resizes in flow. Extra offscreen space is released immediately
+   on shrink and becomes available once expansion reaches the viewport. */
+.neui-catalog {
+  --catalog-height:calc(var(--neui-catalog-rows) * var(--neui-project-height));
+  --catalog-window:calc(100dvh + 2 * var(--neui-project-height));
+  --catalog-tail:max(0px, var(--catalog-height) - var(--catalog-window));
+}
+.neui-catalog-window {
+  height:min(var(--catalog-height),var(--catalog-window));
+  transition:height var(--neui-disclosure-duration,240ms) var(--neui-disclosure-ease,ease-in-out);
+}
+.neui-catalog::after {
+  content:""; display:block; height:var(--catalog-tail); max-height:var(--catalog-tail);
+  transition:max-height var(--neui-disclosure-duration,240ms) step-end;
+}
+@media(prefers-reduced-motion:reduce) { .neui-catalog-window,.neui-catalog::after { transition:none } }
 .neui-catalog-row { position:absolute; inset-inline:0; top:0 }
 .neui-catalog .neui-choice,.neui-pitch { height:var(--neui-project-height); min-height:0 }
 .neui-pitch { position:absolute; width:1px; visibility:hidden; pointer-events:none }
@@ -34,14 +50,15 @@
 .neui-field-input[type=search] { appearance:none }
 .neui-field-input[type=search]::-webkit-search-cancel-button { appearance:none }
 .neui-clear { display:grid; place-items:center; width:44px; height:44px; border:0; border-radius:50%; color:inherit; background:transparent; cursor:pointer }
-.neui-entry:has(.neui-clear) { padding-block:0 }
+.neui-entry:has(input[type=search]) { padding-block:0 }
 .neui-editor[readonly] { color:var(--neui-muted) }
 .neui-settings .neui-option { scroll-margin-block:100px 64px }
 
 .neui-settings > .neui-date-field { margin-top:30px }
 .neui-date-entry { grid-template-columns:6px minmax(0,1fr) auto; column-gap:12px; padding-block:0 }
 .neui-date-segments { display:flex; align-items:center; width:max-content; font-variant-numeric:tabular-nums }
-.neui-date-entry > .neui-pill { grid-area:trailing }
+.neui-date-action { grid-area:trailing }
+.neui-meta-actions .neui-pill, .neui-date-action .neui-pill { white-space:nowrap }
 .neui-date-cell,.neui-date-page,.neui-date-segment {
   position:relative; isolation:isolate; border:0; color:inherit;
   font:inherit; cursor:pointer; padding:2px; min-width:0; min-height:44px;

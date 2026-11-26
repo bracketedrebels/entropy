@@ -1,5 +1,4 @@
 .neui-tags { list-style:none; padding:0; margin:0 }
-.neui-tags .neui-reveal-clip { overflow:hidden }
 .neui-tag {
   min-height:var(--neui-hit); border-radius:var(--neui-row-radius);
   --neui-swipe-fill:color-mix(in srgb, var(--neui-danger) 18%, transparent);

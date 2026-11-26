@@ -42,19 +42,26 @@ export function CalendarField({ id, name, label, draft, onChange, locale }: Prop
   }}>
     <Field id={id} label={label} meta={isOpen && <>
       <button type="button" className="neui-pill" aria-expanded={true} aria-label="Свернуть календарь"
-        aria-controls={id + '-assistant'} onClick={close}>Свернуть</button>{action}
+        aria-controls={id + '-assistant'} onClick={close}>Свернуть</button>
+      {action && <span className="neui-collapse-inline"><span className="neui-reveal-clip">{action}</span></span>}
     </>}>
       <div ref={entry} className="neui-row neui-date-entry">
         <span aria-hidden="true" className="neuicon-calendar neui-row-area-leading place-self-center" />
         <DateSegments calendar={calendar} id={id} panelRef={panel} open={open} close={close}
           validation={validation} errorId={error ? id + '-error' : undefined} />
-        {!isOpen && action}
+        {!isOpen && action && <span className="neui-collapse-inline neui-date-action">
+          <span className="neui-reveal-clip">{action}</span>
+        </span>}
       </div>
-      {error && <p id={id + '-error'} className="neui-note neui-error" role="status">{error}</p>}
+      {error && <div className="neui-collapse-block"><div className="neui-reveal-clip">
+        <p id={id + '-error'} className="neui-note neui-error" role="status">{error}</p>
+      </div></div>}
       <div ref={group} id={id + '-assistant'}>
         {calendar.isOpen && <div className="neui-collapse-block">
           <CalendarPanel calendar={calendar} panelRef={panel}>
-            {!present && <p className="neui-note">Без даты отправка начнётся с ближайшего выпуска.</p>}
+            {!present && <div className="neui-collapse-block">
+              <div className="neui-reveal-clip"><p className="neui-note">Без даты отправка начнётся с ближайшего выпуска.</p></div>
+            </div>}
           </CalendarPanel>
         </div>}
       </div>

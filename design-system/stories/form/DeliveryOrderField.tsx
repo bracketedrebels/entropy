@@ -70,7 +70,9 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
   return <Field id={id} label="Порядок повторной доставки"
     description="После сбоя пробуем каналы по очереди. Один канал можно повторить."
     meta={<>
-      {removed && <button type="button" className="neui-pill" onClick={restore}>Вернуть шаг</button>}
+      {removed && <span className="neui-collapse-inline">
+        <span className="neui-reveal-clip"><button type="button" className="neui-pill" onClick={restore}>Вернуть шаг</button></span>
+      </span>}
       <button ref={addButton} type="button" className="neui-pill" aria-expanded={panel === 'add'}
         aria-controls={id + '-add'} onClick={() => toggle('add')}>{panel === 'add' ? 'Свернуть каналы' : 'Добавить шаг'}</button>
     </>}>
@@ -113,7 +115,9 @@ export function DeliveryOrderField({ id, steps, onChange }: Props) {
       })}
     </ol>
     {steps.map(step => <input key={step.id} type="hidden" name="retryRoute" value={step.channel} />)}
-    {!steps.length && <p className="neui-note">Повторных попыток пока нет.</p>}
+    {!steps.length && <div className="neui-collapse-block">
+      <div className="neui-reveal-clip"><p className="neui-note">Повторных попыток пока нет.</p></div>
+    </div>}
     <div ref={addGroup} id={id + '-add'}>
       {panel === 'add' && <div className="neui-collapse-block"><div className="neui-reveal-clip">
         {steps.length > 0 && <hr className="neui-divider" />}

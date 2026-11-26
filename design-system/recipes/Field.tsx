@@ -13,8 +13,12 @@ export function Field({ frame: Frame = Ridge, id, label, header, meta, descripti
   return <Frame id={id} label={label} header={header} meta={meta}>
     <fieldset className="neui-group" aria-labelledby={id + '-label'} aria-describedby={descriptionIds}>
       {children}
-      {description && <p id={id + '-description'} className="neui-note">{description}</p>}
-      {error && <p id={id + '-error'} className="neui-note neui-error" role="status">{error}</p>}
+      {description && <div className="neui-collapse-block"><div className="neui-reveal-clip">
+        <p id={id + '-description'} className="neui-note">{description}</p>
+      </div></div>}
+      {error && <div className="neui-collapse-block"><div className="neui-reveal-clip">
+        <p id={id + '-error'} className="neui-note neui-error" role="status">{error}</p>
+      </div></div>}
     </fieldset>
   </Frame>
 }

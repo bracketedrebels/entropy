@@ -38,15 +38,23 @@ export function CalendarRangeField({ id, name, label, ...options }: CalendarRang
     if (event.key === 'Escape' && calendar.isOpen) { event.preventDefault(); close() }
   }}>
     <Field id={id} label={label} meta={(calendar.isOpen || present || picker.canUndo) && <>
-      {calendar.isOpen && <button type="button" className="neui-pill" aria-expanded="true" aria-controls={id + '-assistant'}
-        aria-label="Свернуть календарь периода" onClick={close}>Свернуть</button>}
-      {(present || picker.canUndo) && <button type="button" className="neui-pill"
-        aria-label={picker.canUndo ? 'Вернуть период' : 'Сбросить период'} onClick={() => {
-          if (picker.canUndo) picker.undo()
-          else picker.reset()
-          setValidate(false)
-          focus('start')
-        }}>{picker.canUndo ? 'Вернуть' : 'Сбросить'}</button>}
+      {calendar.isOpen && <span className="neui-collapse-inline">
+        <span className="neui-reveal-clip">
+          <button type="button" className="neui-pill" aria-expanded="true" aria-controls={id + '-assistant'}
+            aria-label="Свернуть календарь периода" onClick={close}>Свернуть</button>
+        </span>
+      </span>}
+      {(present || picker.canUndo) && <span className="neui-collapse-inline">
+        <span className="neui-reveal-clip">
+          <button type="button" className="neui-pill" aria-label={picker.canUndo ? 'Вернуть период' : 'Сбросить период'}
+            onClick={() => {
+              if (picker.canUndo) picker.undo()
+              else picker.reset()
+              setValidate(false)
+              focus('start')
+            }}>{picker.canUndo ? 'Вернуть' : 'Сбросить'}</button>
+        </span>
+      </span>}
     </>}>
       <div ref={entry} className="neui-row neui-date-entry">
         <span aria-hidden="true" className="neuicon-calendar neui-row-area-leading place-self-center" />
@@ -59,7 +67,9 @@ export function CalendarRangeField({ id, name, label, ...options }: CalendarRang
           </div>)}
         </div>
       </div>
-      {error && <p id={id + '-error'} className="neui-note neui-error" role="status">{error}</p>}
+      {error && <div className="neui-collapse-block"><div className="neui-reveal-clip">
+        <p id={id + '-error'} className="neui-note neui-error" role="status">{error}</p>
+      </div></div>}
       <div ref={group} id={id + '-assistant'}>
         {calendar.isOpen && <div className="neui-collapse-block">
           <CalendarPanel calendar={calendar} range={picker.range} panelRef={panel} />

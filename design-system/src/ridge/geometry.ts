@@ -59,8 +59,12 @@ export function layoutRidge(shell: HTMLElement, frame: HTMLElement | ShadowRoot 
     const maxR = Math.max(0, Math.min((right-left)/2, (bottom-top)/2))
     const radius = Math.min(parseFloat(getComputedStyle(shell).getPropertyValue('--neui-row-radius')) + gap, maxR)
     const pill = frame === shell ? meta.querySelector('.neui-pill') : shell.querySelector(':scope > [slot="meta"].neui-pill, :scope > [slot="meta"] .neui-pill')
-    const faceHeight = pill ? pill.getBoundingClientRect().height - 2 * parseFloat(getComputedStyle(pill).getPropertyValue('--neui-pill-inset')) : 0
-    const br = faceHeight > 0 ? Math.min(faceHeight / 2 + gap, maxR) : radius
+    const pillHeight = pill?.getBoundingClientRect().height ?? 0
+    const faceHeight = pill ? pillHeight - 2 * parseFloat(getComputedStyle(pill).getPropertyValue('--neui-pill-inset')) : 0
+    // Reveal the smaller corner with the visible height of the footer.
+    const fraction = pillHeight ? Math.min(1, metadata / pillHeight) : 0
+    const pillRadius = Math.min(faceHeight / 2 + gap, maxR)
+    const br = faceHeight > 0 ? radius + (pillRadius - radius) * fraction : radius
     const depth = Math.max(radius, br, metadata - left)
     const headH = top + radius + band
     const join = bottom - depth
