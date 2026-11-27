@@ -1,4 +1,4 @@
-import { createCapLight } from './capLight'
+import { createCapLight, wrapEmitter } from './capLight'
 import { projectFocus } from './trackFocus'
 
 type StickyRanges = { enter: KeyframeAnimationOptions; exit: KeyframeAnimationOptions }
@@ -13,6 +13,7 @@ interface Contour {
 const shift = (y: number) => 'translateY(' + y + 'px)'
 
 export function ridgeLighting(shell: HTMLElement, head: HTMLElement, foot: HTMLElement, textures: SVGGElement[]) {
+  const emitters = textures.map(texture => wrapEmitter(texture.parentNode as SVGElement))
   let origin: Element | null = null
   let lamp: ReturnType<typeof createCapLight> | undefined
   let contour: Contour | undefined
@@ -123,6 +124,7 @@ export function ridgeLighting(shell: HTMLElement, head: HTMLElement, foot: HTMLE
     dispose() {
       pendingFade = undefined
       stop()
+      for (const emitter of emitters) emitter.replaceWith(...emitter.childNodes)
       animations.forEach(animation => animation.cancel())
       lamp?.svg.remove()
       shell.style.removeProperty('--neui-cap-light-y')

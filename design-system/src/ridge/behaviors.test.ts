@@ -116,6 +116,7 @@ it('keeps the light in the focused sticky panel’s coordinates across scroll re
   frame.querySelector<HTMLElement>('.neui-body')!.style.paddingLeft = '11px'
   frame.dispatchEvent(new Event('slotchange'))
   const textures = [...frame.querySelectorAll<SVGGElement>('.neui-texture')]
+  expect(textures.every(texture => texture.matches('.neui-emitter > g[mask] > .neui-texture'))).toBe(true)
   const local = () => shell.style.getPropertyValue('--neui-cap-light-y')
   pill.focus()
   expect(local()).toBe('24px')
@@ -125,7 +126,7 @@ it('keeps the light in the focused sticky panel’s coordinates across scroll re
     window.dispatchEvent(new Event('scroll'))
     expect(local()).toBe('24px')
     expect(shell.style.getPropertyValue('--neui-focus-y')).toBe(panel - field + 24 + 'px')
-    expect(foot.querySelectorAll('.neui-base + .neui-cap-lamp .neui-light')).toHaveLength(1)
+    expect(foot.querySelectorAll('.neui-base + .neui-cap-lamp .neui-emitter > .neui-light[mask]')).toHaveLength(1)
     expect(textures.every(texture => texture.style.display === 'none')).toBe(true)
   }
   search.focus()

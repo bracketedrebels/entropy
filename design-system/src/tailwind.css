@@ -79,3 +79,5 @@
 @utility neui-ridge-radius-* { --neui-row-radius: --value([length]); }
 @utility neui-ridge-inset-* { --neui-inset: --value([length]); }
 @utility neui-focus-band-* { --neui-band: --value([length]); }
+@utility neui-ridge-depth-* { --neui-ridge-depth: --value(number, [number]); }
+@utility neui-focus-strength-* { --neui-focus-strength: --value(number, [number]); }

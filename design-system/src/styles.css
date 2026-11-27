@@ -4,6 +4,8 @@
 @import "./ridge/frame.css";
 @import "./swipe/swipe.css";
 
+@property --neui-ridge-depth { syntax:"<number>"; inherits:true; initial-value:1 }
+@property --neui-focus-strength { syntax:"<number>"; inherits:true; initial-value:1 }
 @property --neui-row-radius { syntax:"<length>"; inherits:true; initial-value:24px }
 
 :where(.neui-surface) {
@@ -71,6 +73,12 @@ button.neui-row, label.neui-row, .neui-pill-action { cursor: pointer; touch-acti
 }
 .neui-reveal[inert] { pointer-events:none }
 .neui-ridge { position:relative; --neui-cap-light-y:initial }
+:where(.neui-ridge) {
+  transition-property: --neui-ridge-depth, --neui-focus-strength;
+  transition-duration: var(--tw-duration, 240ms);
+  transition-timing-function: var(--tw-ease, ease-out);
+}
+@media (prefers-reduced-motion:reduce) { :where(.neui-ridge) { transition-duration:0s } }
 :where(.neui-ridge,.neui-track-focus) { --neui-focus-active:0; --neui-focus-y:0px }
 .neui-meta-group { display:contents }
 .neui-meta-panel { width:100% }

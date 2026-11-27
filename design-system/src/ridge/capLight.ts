@@ -1,3 +1,12 @@
+/** Spread the light after masking, so the halo reaches beyond the two-pixel channel. */
+export function wrapEmitter(paint: SVGElement) {
+  const group = paint.ownerDocument.createElementNS('http://www.w3.org/2000/svg', 'g')
+  group.classList.add('neui-emitter')
+  paint.replaceWith(group)
+  group.append(paint)
+  return group
+}
+
 /** A single paint source in a sticky panel. Only the distant end of its mask can move. */
 export function createCapLight(source: SVGSVGElement) {
   const doc = source.ownerDocument
@@ -26,6 +35,7 @@ export function createCapLight(source: SVGSVGElement) {
   const band = source.querySelector('.neui-light')!.cloneNode(false) as SVGRectElement
   band.setAttribute('mask', 'url(#' + mask.id + ')')
   lamp.append(defs, band)
+  wrapEmitter(band)
 
   return { svg: lamp, band, near, far, railClip, moving }
 }

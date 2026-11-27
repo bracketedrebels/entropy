@@ -14,10 +14,20 @@
 .neui-groove { width:100%; height:100%; position:absolute; inset:0; overflow:hidden; pointer-events:none }
 .neui-cap-lamp { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none }
 .neui-cut,.neui-lip,.neui-floor { fill:none; stroke-linecap:round; stroke-linejoin:round }
-.neui-cut { stroke:var(--neui-shadow);stroke-width:2.2px }
-.neui-lip { stroke:var(--neui-lip);stroke-width:2.2px }
+.neui-cut,.neui-lip,.neui-floor {
+  --_neui-depth:clamp(0, var(--neui-ridge-depth,1), 1);
+  opacity:var(--_neui-depth);
+}
+.neui-cut { transform:translate(calc(-.35px * var(--_neui-depth)),calc(-.55px * var(--_neui-depth))); stroke:var(--neui-shadow);stroke-width:2.2px }
+.neui-lip { transform:translate(calc(.35px * var(--_neui-depth)),calc(.65px * var(--_neui-depth))); stroke:var(--neui-lip);stroke-width:2.2px }
 .neui-floor { stroke:var(--neui-channel);stroke-width:1.7px }
-.neui-light { height:var(--neui-band,24px); y:calc(var(--neui-cap-light-y,var(--neui-focus-y,0px)) - var(--neui-band,24px) / 2); opacity:var(--neui-focus-active,0); transition:opacity 140ms }
+.neui-light { height:var(--neui-band,24px); y:calc(var(--neui-cap-light-y,var(--neui-focus-y,0px)) - var(--neui-band,24px) / 2); opacity:calc(var(--neui-focus-active,0) * clamp(0, var(--neui-focus-strength,1), 1)); transition:opacity 140ms }
+/* The filter sees the already masked lamp, including both rails of a sticky cap. */
+.neui-emitter {
+  --_neui-excess:max(0, var(--neui-focus-strength,1) - 1);
+  filter:drop-shadow(0 0 min(4px, calc(2.5px * var(--_neui-excess)))
+    color-mix(in srgb, var(--neui-halo, currentColor) clamp(0%, calc(70% * var(--_neui-excess)), 100%), transparent));
+}
 .neui-meta { position:absolute; inset-inline:var(--neui-inset,11px); bottom:0; display:flex; flex-flow:row-reverse wrap-reverse; align-items:end; column-gap:var(--neui-inset,11px) }
 
 @media(prefers-reduced-motion:reduce) { .neui-light { transition:none } }

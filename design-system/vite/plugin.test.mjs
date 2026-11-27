@@ -18,7 +18,7 @@ beforeEach(async () => {
   await mkdir(join(root, 'node_modules/@neui'), { recursive: true })
   await symlink(kit, join(root, 'node_modules/@neui/kit'), 'dir')
   await symlink(join(kit, 'node_modules/tailwindcss'), join(root, 'node_modules/tailwindcss'), 'dir')
-  await writeFile(join(root, 'index.html'), '<section class="neui-ridge neui-track-focus neui-ridge-radius-[1.5rem] neui-ridge-inset-[12px] neui-focus-band-[32px]"><button class="action">Press</button></section><script type="module" src="./client.tsx"></script>')
+  await writeFile(join(root, 'index.html'), '<section class="neui-ridge neui-track-focus neui-ridge-radius-[1.5rem] neui-ridge-inset-[12px] neui-focus-band-[32px] neui-ridge-depth-0 neui-ridge-depth-[0.5] neui-focus-strength-[1.8]"><button class="action">Press</button></section><script type="module" src="./client.tsx"></script>')
   await writeFile(join(root, 'client.tsx'), `import './app.css'
     const h = (tag: string, props: object) => Object.assign(document.createElement(tag), props)
     document.body.append(<button className={location.hash ? 'neui-ripple' : 'neui-pill'} />)`)
@@ -48,6 +48,10 @@ it('bundles one runtime and its worklet for an HTML app with Tailwind and no Rea
   expect(css).toMatch(/--neui-row-radius:\s*1.5rem/)
   expect(css).toMatch(/--neui-inset:\s*12px/)
   expect(css).toMatch(/--neui-band:\s*32px/)
+  expect(css).toMatch(/--neui-ridge-depth:\s*0;/)
+  expect(css).toMatch(/--neui-ridge-depth:\s*0?\.5;/)
+  expect(css).toMatch(/--neui-focus-strength:\s*1\.8;/)
+  expect(css).toMatch(/mix-blend-mode:\s*soft-light/)
   const action = css.match(/\.action\s*\{([^}]+)\}/)?.[1]
   expect(action).toMatch(/--neui-ripple-target:\s*1/)
   expect(action).toMatch(/--neui-focus-target:\s*1/)

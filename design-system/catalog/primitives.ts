@@ -5,6 +5,7 @@ import CollapseInline from './examples/CollapseInline'
 import inline from './examples/CollapseInline.tsx?raw'
 
 import Relief from './examples/Relief'
+import Ridge from './examples/Ridge'
 import Swipe from './examples/Swipe'
 import swipe from './examples/Swipe.tsx?raw'
 
@@ -19,13 +20,6 @@ function radio(group: string, text: string, selected: boolean) {
     class="neui-row-area-leading neui-check-radio appearance-none m-0 checked:[--neui-check-level:1]">
   <span class="neui-row-area-content">${text}</span>
 </label>`
-}
-function ridge(name: string, classes: string, group: string) {
-  return html(name, `<section class="${classes}">
-  <span slot="label">Канал сигнала</span>
-${radio(group, 'Основной', true)}
-${radio(group, 'Резервный', false)}
-</section>`)
 }
 function wave(name: string, duration: string, preview = false) {
   return html(name, `<button type="button" class="neui-ripple ${duration} ease-out
@@ -75,11 +69,8 @@ function iconPair(name: string, pair: string) {
 }
 const selection = 'Выбор', layout = 'Раскладка', motion = 'Движение', material = 'Поверхность'
 export const primitives: Primitive[] = [
-  { id: 'ridge', title: 'Ridge', icon: 'layers', family: material, summary: 'Жёлоб объединяет строки в одно поле.', variants: [
-    ridge('С фокусом', 'neui-ridge neui-track-focus', 'ridge-focus'),
-    ridge('Широкий отступ', 'neui-ridge neui-track-focus neui-ridge-inset-[18px]', 'ridge-inset'),
-    ridge('Радиус 16', 'neui-ridge neui-track-focus neui-ridge-radius-[16px]', 'ridge-small'),
-  ] },
+  { id: 'ridge', title: 'Ridge', icon: 'layers', family: material, summary: 'Жёлоб объединяет строки и показывает положение фокуса.',
+    keywords: ['свет', 'ореол', 'глубина', 'neui-focus-strength', 'neui-ridge-depth', 'neui-track-focus', 'neui-ridge-radius', 'neui-ridge-inset'], Playground: Ridge },
   { id: 'relief', title: 'Relief', icon: 'layers', family: material,
     summary: 'У поднятой плитки середина вогнута, у утопленной — выпукла.',
     keywords: ['рельеф', 'экструзия', 'интрузия', 'углубление', 'neui-extruded', 'neui-intruded', 'neui-depth', 'squircle'], Playground: Relief },
