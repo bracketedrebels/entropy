@@ -12,15 +12,6 @@ const iconClasses = {
 export function Icon({ name }: { name: string }) {
   return <i aria-hidden="true" className={iconClasses[name as keyof typeof iconClasses]} />
 }
-// A closed, stationary contour uses the same three strokes as the field ridge.
-export function IslandRidge() {
-  return <svg className="island-outline" aria-hidden="true" focusable="false">
-    <rect className="neui-cut" transform="translate(-.35 -.55)" />
-    <rect className="neui-lip" transform="translate(.35 .65)" />
-    <rect className="neui-floor" />
-  </svg>
-}
-
 function highlight(code: string) {
   return code.split(/("[^"\n]*"|'[^'\n]*'|<\/?[\w.-]+|\/?>|\b(?:import|from|const|export|default|function|return|true|false)\b|\b[\w-]+(?==))/g)
     .map((part, i) => i % 2 ? <span key={i} className={'syn-' + (/^["']/.test(part) ? 'string' : /^[<>/]/.test(part) ? 'tag' : 'word')}>{part}</span> : part)
@@ -54,22 +45,6 @@ export function Code({ source, lang = 'TSX', folded = false, filename }: {
     {feedback && <span className="copy-status" role="status">{feedback}</span>}
   </div>
 }
-export function MaterialStudy() {
-  return <div className="material-study" role="img" aria-label="Слои поверхности с верхним освещением и тёплой точкой выбора">
-    <div className="study-grid" />
-    <div className="stack">
-      <div className="plate lower" /><div className="plate middle" />
-      <div className="plate upper"><span className="groove g1" /><span className="groove g2" />
-        <span className="groove g3" /><span className="groove g4" /><span className="stud"><i /></span></div>
-    </div>
-  </div>
-}
-export function Hero({ title, subtitle, children, art = false }: {
-  title: string; subtitle: string; children?: ReactNode; art?: boolean
-}) {
-  return <header className={'page-hero' + (art ? ' illustrated' : '')}>
-    <div className="hero-copy">
-      <h1>{title}</h1><p>{subtitle}</p>{children}</div>
-    {art && <MaterialStudy />}
-  </header>
+export function Intro({ subtitle, children }: { subtitle: string; children?: ReactNode }) {
+  return <div className="page-intro"><p>{subtitle}</p>{children}</div>
 }

@@ -7,7 +7,7 @@ import inline from './examples/CollapseInline.tsx?raw'
 import Swipe from './examples/Swipe'
 import swipe from './examples/Swipe.tsx?raw'
 
-export interface Variant { name: string; source: string; View?: ComponentType }
+export interface Variant { name: string; source: string; preview?: string; View?: ComponentType }
 export interface Primitive {
   id: string; title: string; family: string; icon: string; summary: string; variants: Variant[]
 }
@@ -53,11 +53,16 @@ function range(name: string, step: number, ticks: number) {
 </label>`)
 }
 function swatches(name: string, theme: string) {
-  return html(name, `<div class="neui-surface flex items-center justify-around gap-3 rounded-2xl p-5" data-theme="${theme}">
+  const preview = `<div class="flex items-center justify-around gap-3">
   <span class="text-ink">Текст</span>
   <span class="text-muted">Подпись</span>
   <span class="neui-check-radio [--neui-check-level:1]" aria-label="Индикатор" role="img"></span>
-</div>`)
+</div>`
+  return { name, preview, source: `<html class="neui-surface" data-theme="${theme}">
+  <body>
+${preview.split('\n').map(line => '    ' + line).join('\n')}
+  </body>
+</html>` }
 }
 function iconPair(name: string, pair: string) {
   return html(name, `<label class="flex items-center justify-center gap-4 cursor-pointer">
@@ -109,7 +114,7 @@ export const primitives: Primitive[] = [
   { id: 'range', title: 'Range', icon: 'sliders', family: selection, summary: 'Жёлоб шкалы, шаг и независимые засечки.', variants: [
     range('Шаг 25', 25, 5), range('Шаг 10', 10, 11), range('Плавно', 1, 2),
   ] },
-  { id: 'surface', title: 'Surface', icon: 'moon', family: material, summary: 'Локальная тема задаёт материал и свет.', variants: [
+  { id: 'surface', title: 'Surface', icon: 'moon', family: material, summary: 'Переключите тему всей страницы, чтобы сравнить материал и свет.', variants: [
     swatches('Графит', 'dark'), swatches('Светлая', 'light'),
   ] },
   { id: 'calendar-grid', title: 'Calendar grid', icon: 'calendar', family: layout, summary: 'Число колонок определяется единицей даты.', variants: [

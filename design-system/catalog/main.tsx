@@ -8,7 +8,7 @@ import './catalog.css'
 import '../stories/canvas.css'
 import { Gallery } from './Gallery'
 import { SectionDock, sections } from './SectionDock'
-import { Icon, IslandRidge } from './components'
+import { Icon } from './components'
 import { ReactDocs, ViteDocs, Philosophy } from './Docs'
 
 const Recipes = lazy(() => import('./Recipes'))
@@ -50,27 +50,29 @@ function App() {
     document.documentElement.dataset.theme=light?'light':'dark'
     try {localStorage.setItem('neui-catalog-theme',light?'light':'dark')} catch { /* Theme still applies in memory. */ }
   },[light])
-  return <div className="atlas neui-surface" data-theme={light?'light':'dark'}>
+  return <div className="atlas">
     <a className="skip-link" href="#main-content" onClick={e=>{e.preventDefault();document.getElementById('main-content')?.focus()}}>К содержанию</a>
     <div className="content-island">
-      <IslandRidge />
-      <div className="island-scroll" ref={viewport}>
-        <header className="bar-inner">
-          <a className="wordmark" href="#css" aria-label="NEUI, CSS API"><Icon name="layers"/>NEUI</a>
-          <div className="header-tools">
-            <button className="chrome-button neui-ripple" onClick={() => setLight(!light)}
-              aria-label={light ? 'Включить тёмную тему' : 'Включить светлую тему'} title={light ? 'Тёмная тема' : 'Светлая тема'}>
-              <Icon name={light ? 'moon' : 'lamp'}/>
-            </button>
-            <a className="chrome-button github" href="https://github.com/bracketedrebels/entropy/tree/feat/trinet-react-kit/design-system"
-              aria-label="Исходники на GitHub" title="GitHub"><Icon name="github"/></a>
-          </div>
-        </header>
-        <main className="atlas-inner" id="main-content" tabIndex={-1}>
-          {id==='css'?<Gallery detail={detail}/>:id==='vite'?<ViteDocs detail={detail}/>:id==='react'?<ReactDocs/>:
-            id==='philosophy'?<Philosophy/>:<Suspense fallback={<p role="status">Загружаем рецепты…</p>}><Recipes detail={detail}/></Suspense>}
-        </main>
-        <footer className="atlas-foot"><span>NEUI <span>·</span> Дизайн-система</span><a href="./storybook/">Архив Storybook</a></footer>
+      <div className="catalog-field neui-ridge">
+        <h1 className="island-title" slot="label">{title}</h1>
+        <div className="island-scroll" ref={viewport}>
+          <header className="bar-inner">
+            <a className="wordmark" href="#css" aria-label="NEUI, CSS API"><Icon name="layers"/>NEUI</a>
+            <div className="header-tools">
+              <button className="chrome-button neui-ripple" onClick={() => setLight(!light)}
+                aria-label={light ? 'Включить тёмную тему' : 'Включить светлую тему'} title={light ? 'Тёмная тема' : 'Светлая тема'}>
+                <Icon name={light ? 'moon' : 'lamp'}/>
+              </button>
+              <a className="chrome-button neui-ripple" href="https://github.com/bracketedrebels/entropy/tree/feat/trinet-react-kit/design-system"
+                aria-label="Исходники на GitHub" title="GitHub"><Icon name="github"/></a>
+            </div>
+          </header>
+          <main className="atlas-inner" id="main-content" tabIndex={-1}>
+            {id==='css'?<Gallery detail={detail} light={light} onTheme={setLight}/>:id==='vite'?<ViteDocs detail={detail}/>:id==='react'?<ReactDocs/>:
+              id==='philosophy'?<Philosophy/>:<Suspense fallback={<p role="status">Загружаем рецепты…</p>}><Recipes detail={detail}/></Suspense>}
+          </main>
+          <footer className="atlas-foot"><span>NEUI <span>·</span> Дизайн-система</span><a href="./storybook/">Архив Storybook</a></footer>
+        </div>
       </div>
     </div>
     <SectionDock active={id} />

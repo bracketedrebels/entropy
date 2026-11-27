@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ComponentType } from 'react'
-import { Hero, Code, Icon } from './components'
+import { Intro, Code, Icon } from './components'
 import DateDemo from './recipes/DateDemo'
 import PeriodDemo from './recipes/PeriodDemo'
 import TagsDemo from './recipes/TagsDemo'
@@ -41,9 +41,9 @@ function RecipeDetail({recipe}: {recipe:Recipe}) {
 }
 export default function Recipes({detail}: {detail?:string}) {
   const recipe = recipes.find(r=>r.id===detail) ?? recipes[0]
-  return <><Hero title="Рецепты"
+  return <><Intro
     subtitle="Рабочие поля из примитивов NEUI. Забирайте разметку, меняйте поведение и подключайте свои данные." />
     <div className="doc-layout"><nav className="side-index" aria-label="Рецепты">{recipes.map(r=>
-      <a href={'#recipes/'+r.id} key={r.id} aria-current={recipe===r?'page':undefined}><Icon name={r.icon}/>{r.name}</a>)}</nav>
+      <a className="neui-pill neui-ripple" href={'#recipes/'+r.id} key={r.id} aria-current={recipe===r?'page':undefined}><Icon name={r.icon}/>{r.name}</a>)}</nav>
     <RecipeDetail key={recipe.id} recipe={recipe}/></div></>
 }

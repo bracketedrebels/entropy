@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
-import { Icon, IslandRidge } from './components'
+import type { KeyboardEvent, PointerEvent } from 'react'
+import { Icon } from './components'
 
 export const sections = [
   ['css', 'CSS API', 'code'],
@@ -88,8 +88,7 @@ export function SectionDock({ active }: { active: SectionId }) {
     }
   }
 
-  return <nav ref={nav} className="section-dock" aria-label="Разделы каталога"
-    style={{ '--section-index': selected, '--section-count': sections.length } as CSSProperties}
+  return <div className="dock-frame neui-ridge"><nav ref={nav} className="section-dock" aria-label="Разделы каталога"
     onPointerDown={start} onPointerMove={track} onPointerUp={finish}
     onPointerCancel={() => { stroke.current = null }}
     onLostPointerCapture={e => { if (e.target === e.currentTarget) stroke.current = null }}
@@ -99,12 +98,10 @@ export function SectionDock({ active }: { active: SectionId }) {
       suppressClick.current = false
     }}
     onKeyDown={byKey} onDragStart={e => e.preventDefault()}>
-    <IslandRidge />
-    <span aria-hidden="true" className="dock-selection"><i className="neui-check-radio" /></span>
     {sections.map(([key, label, glyph]) =>
       <a className="dock-link neui-ripple" key={key} href={'#' + key}
         draggable={false} aria-current={key === active ? 'page' : undefined} aria-label={label} title={label}>
-        <Icon name={glyph} /><span className="dock-label">{label}</span>
+        <Icon name={glyph} /><i aria-hidden="true" className="dock-point neui-check-radio" />
       </a>)}
-  </nav>
+  </nav></div>
 }
