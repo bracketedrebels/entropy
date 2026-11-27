@@ -1,4 +1,7 @@
 const paths = {
+  bolt: '<path d="m13.5 2-10 12h7L9.5 22l11-13h-7z"/>',
+  orbit: '<g><ellipse cx="12" cy="12" rx="10" ry="3.7"/><ellipse cx="12" cy="12" rx="10" ry="3.7" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="3.7" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1" fill="currentColor"/></g>',
+  aperture: '<circle cx="12" cy="12" r="9.5"/><path d="m12 2.5 5.6 9.5m2.6-4.7-5.5 9.5m5.5 0H9.3m2.7 4.7-5.5-9.5m-2.7 4.7 5.5-9.5m-5.5 0h10.9"/>',
   layers: '<path d="m3 8 9-5 9 5-9 5zM3 12l9 5 9-5M3 16l9 5 9-5"/>',
   wave: '<path d="M2 13h3c2 0 2-8 4-8s3 14 5 14 2-7 4-7h4"/>',
   lamp: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',

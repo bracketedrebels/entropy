@@ -32,8 +32,7 @@ export function Gallery({ detail }: { detail?: string }) {
   const visible = primitives.filter(p => (family === 'Все' || p.family === family) &&
     [p.title, p.summary, p.family, ...p.variants.map(v => v.source)].join(' ').toLowerCase().includes(query.trim().toLowerCase()))
   return <>
-    <Hero title="CSS API" subtitle="Примитивы света, формы и движения. Собирайте интерфейс из классов Tailwind прямо в своей разметке."
-      eyebrow="Справочник примитивов" icon="layers" art>
+    <Hero title="CSS API" subtitle="Примитивы света, формы и движения. Собирайте интерфейс из классов Tailwind прямо в своей разметке." art>
       <a href="#vite" className="setup-link"><Icon name="code" />Подключение</a>
     </Hero>
     <section className="gallery" aria-label="Каталог композиций">

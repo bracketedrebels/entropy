@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, ReactNode, RefObject } from 'react'
+import { scrollContainer } from '../../src/reveal/followExpansion'
 import { Field } from '../../recipes/Field'
 import { Reveal } from '../../recipes/Reveal'
 import { Mark, OptionRow } from './OptionRow'
@@ -74,7 +75,9 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
   }
   function returnToStart() {
     const field = document.getElementById(id)
-    if (field && field.getBoundingClientRect().top < 0) field.scrollIntoView({ block: 'start', behavior: 'instant' })
+    if (!field) return
+    const top = scrollContainer(field)?.getBoundingClientRect().top ?? 0
+    if (field.getBoundingClientRect().top < top) field.scrollIntoView({ block: 'start', behavior: 'instant' })
   }
   function close() {
     trigger.current?.focus({ preventScroll: true })
@@ -95,10 +98,13 @@ export function ChoicePicker({ id, name, label, actionLabel = label, options, se
     const pitch = probe.current?.getBoundingClientRect().height ?? 0
     if (windowed && list.current && pitch) {
       const top = list.current.getBoundingClientRect().top + index * pitch
-      const ceiling = Math.max(0, search.current?.closest('[slot="header"]')?.getBoundingClientRect().bottom ?? 0)
-      const floor = Math.min(window.innerHeight, trigger.current?.getBoundingClientRect().top ?? window.innerHeight)
-      if (top < ceiling) window.scrollBy(0, top - ceiling)
-      else if (top + pitch > floor) window.scrollBy(0, top + pitch - floor)
+      const container = scrollContainer(list.current)
+      const viewport = container?.getBoundingClientRect()
+      const scroller = container ?? window
+      const ceiling = Math.max(viewport?.top ?? 0, search.current?.closest('[slot="header"]')?.getBoundingClientRect().bottom ?? 0)
+      const floor = Math.min(viewport?.bottom ?? window.innerHeight, trigger.current?.getBoundingClientRect().top ?? window.innerHeight)
+      if (top < ceiling) scroller.scrollBy(0, top - ceiling)
+      else if (top + pitch > floor) scroller.scrollBy(0, top + pitch - floor)
     }
     const element = document.getElementById(id + '-' + key)
     if (element) element.focus({ preventScroll: windowed })

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 const iconClasses = {
+  bolt:'neuicon-bolt', orbit:'neuicon-orbit', aperture:'neuicon-aperture',
   layers:'neuicon-layers', wave:'neuicon-wave', lamp:'neuicon-lamp', marker:'neuicon-marker',
   braces:'neuicon-braces', code:'neuicon-code', copy:'neuicon-copy', tick:'neuicon-tick',
   grid:'neuicon-grid', tag:'neuicon-tag', star:'neuicon-star', expand:'neuicon-expand',
@@ -11,6 +12,15 @@ const iconClasses = {
 export function Icon({ name }: { name: string }) {
   return <i aria-hidden="true" className={iconClasses[name as keyof typeof iconClasses]} />
 }
+// A closed, stationary contour uses the same three strokes as the field ridge.
+export function IslandRidge() {
+  return <svg className="island-outline" aria-hidden="true" focusable="false">
+    <rect className="neui-cut" transform="translate(-.35 -.55)" />
+    <rect className="neui-lip" transform="translate(.35 .65)" />
+    <rect className="neui-floor" />
+  </svg>
+}
+
 function highlight(code: string) {
   return code.split(/("[^"\n]*"|'[^'\n]*'|<\/?[\w.-]+|\/?>|\b(?:import|from|const|export|default|function|return|true|false)\b|\b[\w-]+(?==))/g)
     .map((part, i) => i % 2 ? <span key={i} className={'syn-' + (/^["']/.test(part) ? 'string' : /^[<>/]/.test(part) ? 'tag' : 'word')}>{part}</span> : part)
@@ -52,14 +62,13 @@ export function MaterialStudy() {
       <div className="plate upper"><span className="groove g1" /><span className="groove g2" />
         <span className="groove g3" /><span className="groove g4" /><span className="stud"><i /></span></div>
     </div>
-    <span aria-hidden="true" className="spec-label sl-light">light</span><span aria-hidden="true" className="spec-label sl-surface">surface</span>
   </div>
 }
-export function Hero({ title, subtitle, icon, eyebrow, children, art = false }: {
-  title: string; subtitle: string; icon: string; eyebrow: string; children?: ReactNode; art?: boolean
+export function Hero({ title, subtitle, children, art = false }: {
+  title: string; subtitle: string; children?: ReactNode; art?: boolean
 }) {
   return <header className={'page-hero' + (art ? ' illustrated' : '')}>
-    <div className="hero-copy"><div className="eyebrow"><Icon name={icon} />{eyebrow}</div>
+    <div className="hero-copy">
       <h1>{title}</h1><p>{subtitle}</p>{children}</div>
     {art && <MaterialStudy />}
   </header>

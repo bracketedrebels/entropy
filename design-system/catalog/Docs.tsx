@@ -57,7 +57,7 @@ const pages = [
 ] as const
 export function ViteDocs({detail}: {detail?:string}) {
   const id = pages.some(p=>p[0]===detail) ? detail : 'setup'
-  return <><Hero icon="braces" title="Vite API" eyebrow="Интеграция при сборке" subtitle="Подключите поведение NEUI, компиляцию классов Tailwind и нужные вашему проекту иконки." />
+  return <><Hero title="Vite API" subtitle="Подключите поведение NEUI, компиляцию классов Tailwind и нужные вашему проекту иконки." />
     <div className="doc-layout"><nav className="side-index" aria-label="Разделы Vite API">{pages.map(([key,name,icon])=>
       <a href={'#vite/'+key} key={key} aria-current={key===id?'page':undefined}><Icon name={icon}/>{name}</a>)}</nav>
     <article className="doc-body">{id==='setup'?<>
@@ -93,7 +93,7 @@ export function ViteDocs({detail}: {detail?:string}) {
     </>}</article></div></>
 }
 export function ReactDocs() {
-  return <><Hero icon="braces" title="React API" eyebrow="Фабрики хуков" subtitle="Поведение подключается к вашей разметке через ref. Состояние, семантика и дерево элементов остаются у приложения."/>
+  return <><Hero title="React API" subtitle="Поведение подключается к вашей разметке через ref. Состояние, семантика и дерево элементов остаются у приложения."/>
     <article className="doc-body single-doc"><h2>prepareBehavior</h2>
       <p>Подготовьте хук один раз на уровне модуля. Каждый вызов хука даёт отдельный callback ref. При замене элемента или размонтировании он вызывает функцию очистки.</p>
       <Code source={hookExample} filename="Field.tsx"/>
@@ -110,7 +110,7 @@ const principles = [
   ['code','Разметка принадлежит автору','Нативный элемент задаёт смысл и клавиатурное поведение. Классы добавляют материал и взаимодействие. Рецепт можно скопировать и адаптировать под свою задачу.'],
 ] as const
 export function Philosophy() {
-  return <><Hero icon="layers" title="Философия" eyebrow="Идея NEUI" art subtitle="Neo + UI отсылает к неоморфизму. По-русски название звучит как «не UI» и ставит в центр то, как интерфейс ощущается в работе."/>
+  return <><Hero title="Философия" art subtitle="Neo + UI отсылает к неоморфизму. По-русски название звучит как «не UI» и ставит в центр то, как интерфейс ощущается в работе."/>
     <section className="principles" aria-label="Принципы системы">{principles.map(([i,t,s])=><article key={t}><div className="card-glyph"><Icon name={i}/></div><h2>{t}</h2><p>{s}</p></article>)}</section>
     <div className="tradeoffs"><section><h2>Что даёт такой подход</h2><p>Один набор классов подходит для обычного HTML и JSX. Разработчик может заменить семантику, источник данных или способ валидации, сохранив знакомые жесты и визуальный ритм.</p></section>
     <section><h2>Цена гибкости</h2><p>Автор рецепта отвечает за доступное имя, фокус, клавиатуру и ошибки. Большие списки требуют виртуализации, а раскрытие в потоке двигает соседей. Для анимации ухода трансформеру нужен статически распознаваемый JSX-маркер.</p></section></div></>

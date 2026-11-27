@@ -1,3 +1,11 @@
+export function scrollContainer(region: HTMLElement) {
+  let container: HTMLElement | null = region.parentElement
+  while (container && !/^(auto|scroll|overlay)$/.test(getComputedStyle(container).overflowY)) {
+    container = container.parentElement
+  }
+  return container
+}
+
 export function revealTransitions(panel: HTMLElement) {
   return (panel.getAnimations?.({ subtree: true }) ?? []).filter(animation =>
     'transitionProperty' in animation && (animation.transitionProperty === 'grid-template-rows' ||
@@ -7,10 +15,7 @@ export function revealTransitions(panel: HTMLElement) {
 
 /** Only an explicit opening gesture may advance the containing scroller. */
 export function followExpansion(region: HTMLElement, panel: HTMLElement, motions?: readonly Animation[]) {
-  let container: HTMLElement | null = region.parentElement
-  while (container && !/^(auto|scroll|overlay)$/.test(getComputedStyle(container).overflowY)) {
-    container = container.parentElement
-  }
+  const container = scrollContainer(region)
   const scroller = container ?? document.scrollingElement
   if (!scroller) return () => {}
   const controller = new AbortController()

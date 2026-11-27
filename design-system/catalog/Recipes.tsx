@@ -41,7 +41,7 @@ function RecipeDetail({recipe}: {recipe:Recipe}) {
 }
 export default function Recipes({detail}: {detail?:string}) {
   const recipe = recipes.find(r=>r.id===detail) ?? recipes[0]
-  return <><Hero title="Рецепты" eyebrow="Прикладные композиции" icon="book"
+  return <><Hero title="Рецепты"
     subtitle="Рабочие поля из примитивов NEUI. Забирайте разметку, меняйте поведение и подключайте свои данные." />
     <div className="doc-layout"><nav className="side-index" aria-label="Рецепты">{recipes.map(r=>
       <a href={'#recipes/'+r.id} key={r.id} aria-current={recipe===r?'page':undefined}><Icon name={r.icon}/>{r.name}</a>)}</nav>
