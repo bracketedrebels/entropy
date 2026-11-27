@@ -4,6 +4,8 @@
 @import "./range.css";
 @import "./calendar/grid.css";
 
+@plugin "@neui/kit/relief";
+
 /* Resolve semantic utilities on the element, including inside nested themed surfaces. */
 @theme inline {
   --font-ui: var(--neui-font);

@@ -55,6 +55,23 @@ it('bundles one runtime and its worklet for an HTML app with Tailwind and no Rea
   expect(css).toMatch(/--neui-utility-duration:\s*var\(--tw-duration\)/)
 })
 
+it('builds the standalone relief plugin with typed depth, presets and variants', async () => {
+  await writeFile(join(root, 'app.css'), `@import "tailwindcss";
+    @plugin "@neui/kit/relief";
+    @source inline("neui-extruded neui-intruded neui-depth-0 neui-depth-[2.5px] hover:neui-depth-8");`)
+  const { output } = await build({
+    ...config(), plugins: [tailwindcss()], build: { write: false, minify: false, cssMinify: false },
+  })
+  const css = output.find(file => file.fileName.endsWith('.css')).source
+  expect(css).toMatch(/@property --neui-depth\s*\{[^}]*initial-value: 8px/s)
+  expect(css).toMatch(/\.neui-extruded\s*\{[^}]*box-shadow: calc/s)
+  expect(css).toMatch(/\.neui-intruded\s*\{[^}]*box-shadow: inset calc/s)
+  for (const value of ['0px', '2.5px', '8px']) expect(css).toContain(`--neui-depth: ${value}`)
+  expect(css).toContain('prefers-reduced-motion')
+  expect(output.filter(file => file.type === 'chunk').flatMap(file => Object.keys(file.modules))
+    .some(id => id.includes('/src/relief/'))).toBe(false)
+})
+
 it('injects into the custom TSX client entry and leaves the SSR entry free of browser behavior', async () => {
   const clientEntry = 'client.tsx'
   const input = join(root, clientEntry)

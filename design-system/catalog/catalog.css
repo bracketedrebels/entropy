@@ -56,6 +56,12 @@ body { margin:0 }
 .sample-stage .demo-markup {width:100%;min-width:0}
 .stage-ridge .neui-ridge {--neui-hit:34px;--neui-choice-height:34px}
 .stage-ridge :where(label,span),.stage-row {font-size:13px}
+.relief-tiles {display:flex;justify-content:center;gap:clamp(1rem,2vw,2rem);padding:2rem 0}
+.relief-tile {display:grid;place-items:center;inline-size:4rem;block-size:4rem;border-radius:1rem;color:var(--muted)}
+.relief-tile i {font-size:1.5rem}
+.relief-control {display:grid;grid-template-columns:1fr auto;align-items:baseline}
+.relief-control output {color:var(--muted);font-variant-numeric:tabular-nums}
+.relief-control input {grid-column:1 / -1}
 .stage-check .demo-markup {padding-block:20px}
 .stage-pill .demo-markup {display:grid;justify-content:center;text-align:center}
 .stage-check i {transform:scale(1.3)}
@@ -159,6 +165,8 @@ body { margin:0 }
   display:flex;align-items:center;gap:var(--neui-inset);
   --dock-icon:min(2rem,calc(var(--dock-hit) - 16px));
   --dock-padding:clamp(0px,calc((100vw - 22.5rem) / 10),calc((var(--dock-hit) - var(--dock-icon)) / 2));
+  /* The SVG ink stops slightly before the edge of its em square. */
+  --dock-label-end:calc(var(--neui-inset) + var(--dock-icon) / 8);
   user-select:none;touch-action:pan-y pinch-zoom;-webkit-tap-highlight-color:transparent;
 }
 .atlas .dock-link {
@@ -168,7 +176,7 @@ body { margin:0 }
   transition:padding-inline-start var(--neui-disclosure-duration,240ms) var(--neui-disclosure-ease,ease-in-out);
 }
 .dock-link > i {flex:none;font-size:var(--dock-icon);pointer-events:none}
-.dock-label {display:block;padding-inline:var(--neui-inset) max(0px,calc(var(--neui-inset) - var(--dock-padding)));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dock-label {display:block;padding-inline:var(--neui-inset) max(0px,calc(var(--dock-label-end) - var(--dock-padding)));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .atlas .dock-link[aria-current="page"] {padding-inline-start:var(--neui-inset);background-color:var(--neui-focus-fill)}
 @media (hover:hover) { .atlas .dock-link:not([aria-current]):hover {background-color:var(--soft)} }
 .atlas .dock-link:focus-visible {outline-offset:-3px}
