@@ -9,6 +9,8 @@
 @property --neui-row-radius { syntax:"<length>"; inherits:true; initial-value:24px }
 
 :where(.neui-surface) {
+  -webkit-tap-highlight-color: transparent;
+  --_neui-ridge-halo-filter: none;
   --neui-font: Ubuntu, system-ui, sans-serif;
   --neui-hit: 48px; --neui-action-height: 44px; --neui-choice-height: 64px;
   --neui-inset: 11px; --neui-row-radius: 24px; --neui-choice-radius: 32px;
@@ -26,6 +28,7 @@
   font: 300 1rem/1.5 var(--neui-font);
 }
 :where(.neui-surface[data-theme="dark"]) {
+  --_neui-ridge-halo-filter: initial;
   --neui-control-surface: #29313a;
   color-scheme: dark; --neui-bg: linear-gradient(180deg,#303740, #252d35 52%, #1f252c);
   --neui-text: #e1eaf1; --neui-muted: #adbcc8; --neui-channel: #283139;

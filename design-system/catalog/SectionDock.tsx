@@ -98,7 +98,7 @@ export function SectionDock({ active }: { active: SectionId }) {
     }}
     onKeyDown={byKey} onDragStart={e => e.preventDefault()}>
     {sections.map(([key, label, glyph]) =>
-      <a className="dock-link neui-relief neui-depth-0 active:neui-depth-4 aria-[current=page]:neui-depth-4" key={key} href={'#' + key}
+      <a className="dock-link neui-pill neui-ripple" key={key} href={'#' + key}
         draggable={false} onClick={e => {
           if (e.currentTarget.hash === location.hash && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) window.scrollTo(0, 0)
         }} aria-current={key === active ? 'page' : undefined} aria-label={label} title={label}>

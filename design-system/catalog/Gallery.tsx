@@ -1,5 +1,6 @@
 import { memo, useState } from 'react'
 import { Code, Intro, Icon } from './components'
+import { CatalogSection } from './CatalogSection'
 import { primitives } from './primitives'
 import type { Primitive } from './primitives'
 
@@ -13,9 +14,10 @@ function Card({ item, theme }: { item: Primitive; theme?: { index: number; selec
   const setIndex = theme?.select ?? setLocalIndex
   const variant = item.variants?.[index], View = variant?.View
   const { Playground } = item
-  return <article className="sample-card" id={'css/' + item.id} data-nav-label={item.title}>
-    <div className="card-head"><div className="card-title"><span className="card-glyph"><Icon name={item.icon} /></span><h3><a href={'#css/' + item.id}>{item.title}</a></h3></div>
-      <p>{item.summary}</p></div>
+  const id = 'css/' + item.id
+  return <CatalogSection className="sample-card" id={id} label={item.title} level={3}
+    title={<a className="card-title" href={'#' + id}><Icon name={item.icon}/>{item.title}</a>}>
+    <p className="card-summary">{item.summary}</p>
     {Playground ? <Playground /> : variant && <>
       <div className={'sample-stage stage-' + item.id}>
         {View ? <View key={index} /> : <Markup source={variant.preview ?? variant.source} />}
@@ -26,7 +28,7 @@ function Card({ item, theme }: { item: Primitive; theme?: { index: number; selec
       </div>
       <Code key={index} folded lang={View ? 'TSX' : 'HTML'} source={theme && !theme.grain ? variant.source.replace(' neui-grain', '') : variant.source} />
     </>}
-  </article>
+  </CatalogSection>
 }
 export function Gallery({ light, onTheme }: { light: boolean; onTheme: (light: boolean) => void }) {
   const [grain, setGrain] = useState(() => document.documentElement.classList.contains('neui-grain'))

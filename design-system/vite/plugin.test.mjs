@@ -52,6 +52,15 @@ it('bundles one runtime and its worklet for an HTML app with Tailwind and no Rea
   expect(css).toMatch(/--neui-ridge-depth:\s*0?\.5;/)
   expect(css).toMatch(/--neui-focus-strength:\s*1\.8;/)
   expect(css).toMatch(/mix-blend-mode:\s*overlay/)
+  const surfaces = postcss.parse(css)
+  const themeValue = (selector, name) => {
+    let value
+    surfaces.walkRules(selector, rule => rule.walkDecls(name, decl => { value = decl.value }))
+    return value
+  }
+  expect(themeValue(':where(.neui-surface)', '-webkit-tap-highlight-color')).toBe('transparent')
+  expect(themeValue(':where(.neui-surface)', '--_neui-ridge-halo-filter')).toBe('none')
+  expect(themeValue(/:where\(\.neui-surface\[data-theme=["']?dark/, '--_neui-ridge-halo-filter')).toBe('initial')
   const action = css.match(/\.action\s*\{([^}]+)\}/)?.[1]
   expect(action).toMatch(/--neui-ripple-target:\s*1/)
   expect(action).toMatch(/--neui-focus-target:\s*1/)

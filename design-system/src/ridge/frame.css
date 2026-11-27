@@ -25,8 +25,8 @@
 /* The filter sees the already masked lamp, including both rails of a sticky cap. */
 .neui-emitter {
   --_neui-excess:max(0, var(--neui-focus-strength,1) - 1);
-  filter:drop-shadow(0 0 min(4px, calc(2.5px * var(--_neui-excess)))
-    color-mix(in srgb, var(--neui-halo, currentColor) clamp(0%, calc(70% * var(--_neui-excess)), 100%), transparent));
+  filter:var(--_neui-ridge-halo-filter, drop-shadow(0 0 min(4px, calc(2.5px * var(--_neui-excess)))
+    color-mix(in srgb, var(--neui-halo, currentColor) clamp(0%, calc(70% * var(--_neui-excess)), 100%), transparent)));
 }
 .neui-meta { position:absolute; inset-inline:var(--neui-inset,11px); bottom:0; display:flex; flex-flow:row-reverse wrap-reverse; align-items:end; column-gap:var(--neui-inset,11px) }
 

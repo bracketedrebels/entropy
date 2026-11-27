@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ComponentType } from 'react'
+import { CatalogSection } from './CatalogSection'
 import { Intro, Code } from './components'
 import DateDemo from './recipes/DateDemo'
 import PeriodDemo from './recipes/PeriodDemo'
@@ -29,15 +30,15 @@ const recipes: Recipe[] = [
 function RecipeDetail({recipe}: {recipe:Recipe}) {
   const [file,setFile] = useState(recipe.files[0])
   const {View} = recipe
-  return <article className="recipe-detail" id={'recipes/' + recipe.id} data-nav-label={recipe.name}>
-    <div className="doc-intro"><h2>{recipe.name}</h2><p>{recipe.text}</p></div>
+  return <CatalogSection className="recipe-detail" id={'recipes/' + recipe.id} label={recipe.name}>
+    <p className="recipe-description">{recipe.text}</p>
     <div className="recipe-stage"><div className="neui-example"><View /></div></div>
     <div className="source-heading"><h3>Исходный код</h3>
       <select value={file} aria-label="Исходный файл рецепта" onChange={e=>setFile(e.target.value)}>
         {recipe.files.map(f=><option key={f}>{f}</option>)}
       </select></div>
     <Code source={source(file)} filename={file} key={file} folded />
-  </article>
+  </CatalogSection>
 }
 export default function Recipes() {
   return <><Intro subtitle="Рабочие поля из примитивов NEUI. Забирайте разметку, меняйте поведение и подключайте свои данные." />

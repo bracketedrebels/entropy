@@ -6,6 +6,7 @@ import '@fontsource/ubuntu/500.css'
 import '@fontsource/ubuntu/700.css'
 import './catalog.css'
 import '../stories/canvas.css'
+import { CompactCatalog, useCompactLayout } from './CatalogSection'
 import { Gallery } from './Gallery'
 import { LocalNavigation } from './LocalNavigation'
 import { SectionDock, sections } from './SectionDock'
@@ -39,6 +40,7 @@ function toSectionTop(event: React.MouseEvent<HTMLAnchorElement>) {
 }
 
 function App() {
+  const compact = useCompactLayout()
   const [page,setPage] = useState(route)
   const [content, setContent] = useState<HTMLDivElement | null>(null)
   const [light,setLight] = useState(()=>{ try {return localStorage.getItem('neui-catalog-theme')==='light'} catch {return false} })
@@ -57,7 +59,15 @@ function App() {
     document.documentElement.dataset.theme=light?'light':'dark'
     try {localStorage.setItem('neui-catalog-theme',light?'light':'dark')} catch { /* Theme still applies in memory. */ }
   },[light])
-  return <div className="atlas">
+  const tools = <div className="header-tools">
+    <button className="chrome-button neui-ripple" onClick={() => setLight(!light)}
+      aria-label={light ? 'Включить тёмную тему' : 'Включить светлую тему'} title={light ? 'Тёмная тема' : 'Светлая тема'}>
+      <Icon name={light ? 'moon' : 'lamp'}/>
+    </button>
+    <a className="chrome-button neui-ripple" href="https://github.com/bracketedrebels/entropy/tree/feat/trinet-react-kit/design-system"
+      aria-label="Исходники на GitHub" title="GitHub"><Icon name="github"/></a>
+  </div>
+  return <CompactCatalog.Provider value={compact}><div className="atlas">
     <a className="skip-link" href="#main-content" onClick={e=>{e.preventDefault();document.getElementById('main-content')?.focus()}}>К содержанию</a>
     <div className="catalog-field neui-ridge neui-track-focus neui-track-focus-within">
       <h1 className="island-title" slot="label">
@@ -65,17 +75,9 @@ function App() {
         <span aria-hidden="true"> · </span>
         <a className="legend-link neui-ripple" href={'#' + id} onClick={toSectionTop}>{title}</a>
       </h1>
+      {compact && <div slot="header" className="mobile-header-tools">{tools}</div>}
       <div className="catalog-content">
-        <header className="bar-inner">
-          <div className="header-tools">
-            <button className="chrome-button neui-ripple" onClick={() => setLight(!light)}
-              aria-label={light ? 'Включить тёмную тему' : 'Включить светлую тему'} title={light ? 'Тёмная тема' : 'Светлая тема'}>
-              <Icon name={light ? 'moon' : 'lamp'}/>
-            </button>
-            <a className="chrome-button neui-ripple" href="https://github.com/bracketedrebels/entropy/tree/feat/trinet-react-kit/design-system"
-              aria-label="Исходники на GitHub" title="GitHub"><Icon name="github"/></a>
-          </div>
-        </header>
+        {!compact && <header className="bar-inner">{tools}</header>}
         <main className="atlas-inner" id="main-content" tabIndex={-1}>
           <Suspense fallback={<p role="status">Загружаем рецепты…</p>}>
             <div key={id} data-page={id} ref={setContent}>
@@ -91,6 +93,6 @@ function App() {
       {content?.dataset.page === id && <LocalNavigation content={content} section={id} detail={detail} />}
       <SectionDock active={id} />
     </div>
-  </div>
+  </div></CompactCatalog.Provider>
 }
 createRoot(document.getElementById('root')!).render(<App/>)

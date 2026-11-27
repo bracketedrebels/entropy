@@ -79,10 +79,10 @@ export function LocalNavigation({ content, section, detail }: {
 
   if (!items.length) return null
   return <nav className="local-dock" key={section} aria-label="На этой странице">
+    <div className="reading-track" aria-hidden="true"><div ref={bar} /></div>
     <div className="local-strip" ref={strip}>
       {items.map((item, i) => <a key={item.id} href={'#' + item.id} className="local-pill neui-pill neui-ripple"
         aria-current={i === current ? 'location' : undefined}>{item.dataset.navLabel}</a>)}
     </div>
-    <div className="reading-track" aria-hidden="true"><div ref={bar} /></div>
   </nav>
 }
