@@ -12,4 +12,4 @@ export interface NeuiOptions {
 /** Connect NEUI's delegated behaviors to the client entry. */
 export function neui(options?: NeuiOptions): Plugin
 
-export function neuiLeaving(options?: { styles?: string[] }): Plugin
+export { neuiLeaving } from '@neui-tools/leaving/vite'

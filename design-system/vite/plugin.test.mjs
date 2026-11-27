@@ -16,6 +16,8 @@ let root
 beforeEach(async () => {
   root = await mkdtemp(join(tmpdir(), 'neui-vite-'))
   await mkdir(join(root, 'node_modules/@neui'), { recursive: true })
+  await mkdir(join(root, 'node_modules/@neui-tools'), { recursive: true })
+  await symlink(join(kit, 'leaving'), join(root, 'node_modules/@neui-tools/leaving'), 'dir')
   await symlink(kit, join(root, 'node_modules/@neui/kit'), 'dir')
   await symlink(join(kit, 'node_modules/tailwindcss'), join(root, 'node_modules/tailwindcss'), 'dir')
   await writeFile(join(root, 'index.html'), '<section class="neui-ridge neui-track-focus neui-ridge-radius-[1.5rem] neui-ridge-inset-[12px] neui-focus-band-[32px] neui-ridge-depth-0 neui-ridge-depth-[0.5] neui-focus-strength-[1.8]"><button class="action">Press</button></section><script type="module" src="./client.tsx"></script>')
@@ -179,7 +181,7 @@ it('builds aliased starting and leaving styles without rewriting the host class'
   await symlink(join(kit, 'node_modules/react'), join(root, 'node_modules/react'), 'dir')
   const { output } = await build({ ...config(), build: { write: false, minify: false, cssMinify: false } })
   const chunks = output.filter(file => file.type === 'chunk')
-  expect(chunks.some(file => Object.keys(file.modules).some(id => id.endsWith('/src/reveal/presence.tsx')))).toBe(true)
+  expect(chunks.some(file => Object.keys(file.modules).some(id => id.endsWith('/leaving/dist/presence.js')))).toBe(true)
   const css = output.find(file => file.fileName.endsWith('.css')).source
   expect(css).toMatch(/\.toolbar\s*\{/)
   expect(css).toContain('@starting-style')

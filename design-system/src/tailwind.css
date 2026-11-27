@@ -1,6 +1,6 @@
 @import "./styles.css" layer(components);
 @import "./check.css";
-@import "./reveal/collapse.css";
+@import "@neui-tools/leaving/tailwind.css";
 @import "./range.css";
 @import "./calendar/grid.css";
 
@@ -26,8 +26,6 @@
   --radius-row: var(--neui-row-radius);
   --radius-choice: var(--neui-choice-radius);
 }
-
-@custom-variant leaving (&[data-leaving="true"]);
 
 @utility neui-divider {
   inline-size: var(--neui-divider-size, 25%);

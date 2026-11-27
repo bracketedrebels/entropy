@@ -1,3 +1,5 @@
+@custom-variant leaving (&[data-leaving="true"]);
+
 @source inline("neui-collapse-block neui-collapse-inline");
 
 @utility neui-collapse-block {

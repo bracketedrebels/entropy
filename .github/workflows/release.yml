@@ -1,0 +1,63 @@
+name: Leaving package
+on:
+  pull_request:
+    paths:
+      - 'design-system/leaving/**'
+      - 'design-system/package*.json'
+      - '.github/workflows/release.yml'
+  push:
+    tags: ['@neui-tools/leaving@*']
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: design-system
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: design-system/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Pack and test the release archive
+        run: |
+          mkdir -p "$RUNNER_TEMP/release"
+          file=$(npm pack --workspace @neui-tools/leaving --pack-destination "$RUNNER_TEMP/release" --silent | tail -n 1)
+          node leaving/tests/packed.mjs "$RUNNER_TEMP/release/$file"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: leaving-package
+          path: ${{ runner.temp }}/release/*.tgz
+          if-no-files-found: error
+
+  publish:
+    if: github.event_name == 'push'
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@v4
+        with:
+          name: leaving-package
+      - name: Publish the tested tarball
+        run: |
+          set -eu
+          archive=(./*.tgz)
+          package=$(tar -xOzf "${archive[0]}" package/package.json)
+          test "$(jq -r '.name' <<< "$package")" = '@neui-tools/leaving'
+          test "$(jq -r '.name + "@" + .version' <<< "$package")" = "$GITHUB_REF_NAME"
+          npm publish "${archive[0]}" --access public

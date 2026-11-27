@@ -1,7 +1,7 @@
 import { parse } from '@babel/parser'
 import MagicString from 'magic-string'
 
-import { candidate } from './leaving-styles.mjs'
+import { candidate } from './styles.mjs'
 
 function marked(value, aliases) {
   return value.split(/\s+/).some(token => {
@@ -75,6 +75,6 @@ export function transformLeaving(code, id, aliases = new Set()) {
   })
   if (!edits.hasChanged()) return
   edits.appendLeft(program.directives.at(-1)?.end ?? program.interpreter?.end ?? 0,
-    '\nimport { presence as ' + alias + " } from '@neui/kit/presence';\n")
+    '\nimport { presence as ' + alias + " } from '@neui-tools/leaving/presence';\n")
   return { code: edits.toString(), map: edits.generateMap({ hires: true, source: id, includeContent: true }) }
 }

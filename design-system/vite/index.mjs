@@ -1,7 +1,8 @@
 import { resolve } from 'node:path'
 import { normalizePath } from 'vite'
-import { leavingIndex } from './leaving-styles.mjs'
-import { transformLeaving } from './leaving.mjs'
+import { neuiLeaving } from '@neui-tools/leaving/vite'
+
+export { neuiLeaving }
 
 const runtimes = ['@neui/kit/grain', '@neui/kit/ripple', '@neui/kit/ridge', '@neui/kit/swipe']
 const bootstrap = runtimes.map(runtime => `import '${runtime}';`).join('\n')
@@ -32,24 +33,6 @@ export function neui({ clientEntry, leaving = true, leavingStyles } = {}) {
       const transformed = exits ? await exits.transform(code, id) : undefined
       if (id !== entry || options?.ssr || this.environment?.config.consumer === 'server') return transformed
       return { code: (transformed?.code ?? code) + '\n' + bootstrap + '\n', map: transformed?.map ?? null }
-    },
-  }
-}
-
-
-/** Standalone Tailwind/React presence transform, also included in neui(). */
-export function neuiLeaving({ styles } = {}) {
-  const index = leavingIndex(styles)
-  return {
-    name: 'neui:leaving',
-    enforce: 'pre',
-    configResolved: config => index.configure(config),
-    buildStart() { return index.start(this) },
-    shouldTransformCachedModule: ({ id }) => index.stale(id) || null,
-    hotUpdate(ctx) { return index.hot(ctx) },
-    async transform(code, id) {
-      if (!/\.[jt]sx$/.test(id) || id.includes('/node_modules/')) return
-      return transformLeaving(code, id, await index.aliases(id))
     },
   }
 }

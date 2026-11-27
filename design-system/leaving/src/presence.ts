@@ -86,6 +86,6 @@ function Presence({ children }: { children?: ReactNode }) {
 }
 
 /** Emitted at statically marked JSX render sites. Adds no DOM wrapper. */
-export function presence(children: ReactNode) {
+export function presence(children: ReactNode): ReactElement {
   return createElement(Presence, { children })
 }

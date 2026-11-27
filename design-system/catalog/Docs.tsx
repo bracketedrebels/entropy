@@ -73,7 +73,8 @@ export function ViteDocs() {
         ['leavingStyles',"['**/*.css']", 'Шаблоны путей для поиска CSS-классов, включающих leaving через @apply.'],
       ]}/>
       <h3>Только уход элемента</h3><p>Если нужен только трансформер, его можно подключить отдельно. При использовании обычного neui() он уже включён.</p>
-      <Code source={"import { neuiLeaving } from '@neui/kit/vite'\n\nexport default { plugins: [neuiLeaving({ styles: ['src/**/*.css'] })] }"} lang="TS"/>
+      <Code source={"import { neuiLeaving } from '@neui-tools/leaving/vite'\n\nexport default { plugins: [neuiLeaving({ styles: ['src/**/*.css'] })] }"} lang="TS"/>
+      <Code source={'@import "tailwindcss";\n@import "@neui-tools/leaving/tailwind.css";'} filename="src/app.css"/>
       <p>Маркер ставится на корневой DOM-элемент условного выражения или элемента списка со стабильным key. Приложение хранит черновик ввода, если он должен пережить размонтирование.</p>
     </CatalogSection><CatalogSection className="doc-body" id="vite/icons" label="Иконки и переходы">
       <p>Класс выбирает маску, currentColor задаёт цвет. Между произвольными знаками доступно растворение, а зарегистрированная пара получает собственное движение.</p>
