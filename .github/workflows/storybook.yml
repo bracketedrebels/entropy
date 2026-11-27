@@ -39,11 +39,9 @@ jobs:
     needs: storybook
     runs-on: ubuntu-latest
     concurrency: entropy-pages-publish
-    environment: github-pages
     permissions:
       contents: write
       pages: write
-      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,7 +61,13 @@ jobs:
             git -c user.name=github-actions -c user.email=github-actions@users.noreply.github.com commit -m "Publish Storybook for ${GITHUB_SHA}"
             git push origin HEAD:gh-pages
           fi
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: published
-      - uses: actions/deploy-pages@v4
+      - name: Build Pages from its configured source branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: published
+        run: |
+          commit=$(git rev-parse HEAD)
+          latest=$(gh api "repos/$GITHUB_REPOSITORY/pages/builds/latest" --jq 'select(.status != "errored") | .commit' || true)
+          if [ "$latest" != "$commit" ]; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds" --silent
+          fi
