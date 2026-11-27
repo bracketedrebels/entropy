@@ -81,9 +81,9 @@ export const primitives: Primitive[] = [
     ridge('Радиус 16', 'neui-ridge neui-track-focus neui-ridge-radius-[16px]', 'ridge-small'),
   ] },
   { id: 'extruded', title: 'Extruded', icon: 'layers', family: material,
-    summary: 'Мягкая тень справа внизу приподнимает плитку над поверхностью.', keywords: ['рельеф', 'экструзия', 'neui-depth'], Playground: Extrusion },
+    summary: 'Блик у верхней кромки и тень под нижней придают плитке высоту.', keywords: ['рельеф', 'экструзия', 'neui-relief', 'neui-inner-shadow', 'neui-depth'], Playground: Extrusion },
   { id: 'intruded', title: 'Intruded', icon: 'layers', family: material,
-    summary: 'Тень внутри верхнего края задаёт глубину углубления.', keywords: ['рельеф', 'углубление', 'neui-depth'], Playground: Intrusion },
+    summary: 'При отрицательной глубине верхняя стенка затенена, а нижняя ловит свет.', keywords: ['рельеф', 'углубление', 'neui-relief', 'neui-inner-shadow', 'neui-depth'], Playground: Intrusion },
   { id: 'ripple', title: 'Ripple', icon: 'wave', family: motion, summary: 'Волна расходится от точки касания.', variants: [
     wave('800 мс', 'duration-800'), wave('500 мс', 'duration-500'), wave('1500 мс', 'duration-1500'), wave('Срез', 'duration-800', true),
   ] },
