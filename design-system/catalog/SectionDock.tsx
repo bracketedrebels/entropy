@@ -1,13 +1,12 @@
 import { useEffect, useRef } from 'react'
 import type { KeyboardEvent, PointerEvent } from 'react'
-import { Icon } from './components'
 
 export const sections = [
-  ['css', 'CSS API', 'code'],
-  ['vite', 'Vite API', 'bolt'],
-  ['react', 'React API', 'orbit'],
-  ['recipes', 'Рецепты', 'book'],
-  ['philosophy', 'Философия', 'aperture'],
+  ['css', 'CSS API', 'neuicon-dock-css'],
+  ['vite', 'Vite API', 'neuicon-dock-vite'],
+  ['react', 'React API', 'neuicon-dock-react'],
+  ['recipes', 'Рецепты', 'neuicon-dock-recipes'],
+  ['philosophy', 'Философия', 'neuicon-dock-philosophy'],
 ] as const
 
 type SectionId = (typeof sections)[number][0]
@@ -101,7 +100,7 @@ export function SectionDock({ active }: { active: SectionId }) {
     {sections.map(([key, label, glyph]) =>
       <a className="dock-link neui-ripple" key={key} href={'#' + key}
         draggable={false} aria-current={key === active ? 'page' : undefined} aria-label={label} title={label}>
-        <Icon name={glyph} /><i aria-hidden="true" className="dock-point neui-check-radio" />
+        <i aria-hidden="true" className={glyph} />
       </a>)}
   </nav></div>
 }

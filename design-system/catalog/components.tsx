@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 const iconClasses = {
-  bolt:'neuicon-bolt', orbit:'neuicon-orbit', aperture:'neuicon-aperture',
   layers:'neuicon-layers', wave:'neuicon-wave', lamp:'neuicon-lamp', marker:'neuicon-marker',
   braces:'neuicon-braces', code:'neuicon-code', copy:'neuicon-copy', tick:'neuicon-tick',
   grid:'neuicon-grid', tag:'neuicon-tag', star:'neuicon-star', expand:'neuicon-expand',
-  sliders:'neuicon-sliders', moon:'neuicon-moon', calendar:'neuicon-calendar', book:'neuicon-book',
+  sliders:'neuicon-sliders', moon:'neuicon-moon', calendar:'neuicon-calendar',
   github:'neuicon-github', search:'neuicon-search', clear:'neuicon-clear', chevron:'neuicon-chevron',
 } as const
 export function Icon({ name }: { name: string }) {
