@@ -1,4 +1,10 @@
+import { readFileSync } from 'node:fs'
 import plugin from 'tailwindcss/plugin'
+
+// Embed one static nine-slice tile at build time. The transparent middle leaves
+// content clear and the outset reaches the soft falloff outside raised edges.
+const noise = readFileSync(new URL('./dither.svg', import.meta.url), 'utf8')
+const noiseImage = `url("data:image/svg+xml,${encodeURIComponent(noise)}")`
 
 const light = 'var(--neui-relief-light, var(--neui-lip, #ffffffc7))'
 const shade = 'var(--neui-relief-shade, var(--neui-shadow, #73859368))'
@@ -28,6 +34,13 @@ const body = {
   '--_neui-face-width': 'max(var(--_neui-rise), 2 * var(--_neui-recess))',
   '--_neui-face-offset': 'calc(var(--neui-depth) - var(--_neui-recess))',
   cornerShape: 'squircle',
+  '--_neui-grain-outset': 'min(24px, 1.5 * var(--_neui-rise))',
+  '--_neui-grain-inset': 'min(32px, 2 * max(var(--_neui-rise), var(--_neui-recess)))',
+  borderImageSource: 'var(--neui-relief-dither, var(--_neui-relief-noise))',
+  borderImageSlice: '32',
+  borderImageWidth: 'calc(var(--_neui-grain-inset) + var(--_neui-grain-outset))',
+  borderImageOutset: 'var(--_neui-grain-outset)',
+  borderImageRepeat: 'round',
   boxShadow: [
     contour('--_neui-rise'),
     contour('--_neui-recess', 'inset '),
@@ -42,6 +55,7 @@ const body = {
 
 export default plugin(({ addBase, addUtilities, matchUtilities }) => {
   addBase({
+    ':root, :host': { '--_neui-relief-noise': noiseImage },
     '@property --neui-depth': { syntax: '"<length>"', inherits: 'false', initialValue: '8px' },
   })
   addUtilities({
