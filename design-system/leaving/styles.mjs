@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import postcss from 'postcss'
 import { glob } from 'tinyglobby'
 
-const presets = fileURLToPath(new URL('../src/reveal/collapse.css', import.meta.url))
+const presets = fileURLToPath(new URL('./tailwind.css', import.meta.url))
 const ignore = ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/storybook-static/**', '**/coverage/**']
 const namePattern = /^[a-zA-Z_][\w-]*$/
 

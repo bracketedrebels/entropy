@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { expect, it } from 'vitest'
-import { transformLeaving } from './leaving.mjs'
+import { transformLeaving } from '../transform.mjs'
 
 it('wraps marked immediate render sites and preserves source, keys, directives and refs', () => {
   const source = `'use client';
