@@ -57,7 +57,7 @@ body { margin:0 }
 .stage-ridge .neui-ridge {--neui-hit:34px;--neui-choice-height:34px}
 .stage-ridge :where(label,span),.stage-row {font-size:13px}
 .relief-tiles {display:flex;justify-content:center;gap:clamp(1rem,2vw,2rem);padding:2rem 0}
-.relief-tile {display:grid;place-items:center;inline-size:4rem;block-size:4rem;border-radius:1rem;color:var(--muted)}
+.relief-tile {display:grid;place-items:center;inline-size:4rem;block-size:4rem;color:var(--muted)}
 .relief-tile i {font-size:1.5rem}
 .relief-control {display:grid;grid-template-columns:1fr auto;align-items:baseline}
 .relief-control output {color:var(--muted);font-variant-numeric:tabular-nums}

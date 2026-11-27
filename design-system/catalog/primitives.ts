@@ -4,7 +4,7 @@ import block from './examples/CollapseBlock.tsx?raw'
 import CollapseInline from './examples/CollapseInline'
 import inline from './examples/CollapseInline.tsx?raw'
 
-import { Extrusion, Intrusion } from './examples/Relief'
+import Relief from './examples/Relief'
 import Swipe from './examples/Swipe'
 import swipe from './examples/Swipe.tsx?raw'
 
@@ -80,10 +80,9 @@ export const primitives: Primitive[] = [
     ridge('Широкий отступ', 'neui-ridge neui-track-focus neui-ridge-inset-[18px]', 'ridge-inset'),
     ridge('Радиус 16', 'neui-ridge neui-track-focus neui-ridge-radius-[16px]', 'ridge-small'),
   ] },
-  { id: 'extruded', title: 'Extruded', icon: 'layers', family: material,
-    summary: 'Блик у верхней кромки и тень под нижней придают плитке высоту.', keywords: ['рельеф', 'экструзия', 'neui-relief', 'neui-inner-shadow', 'neui-depth'], Playground: Extrusion },
-  { id: 'intruded', title: 'Intruded', icon: 'layers', family: material,
-    summary: 'При отрицательной глубине верхняя стенка затенена, а нижняя ловит свет.', keywords: ['рельеф', 'углубление', 'neui-relief', 'neui-inner-shadow', 'neui-depth'], Playground: Intrusion },
+  { id: 'relief', title: 'Relief', icon: 'layers', family: material,
+    summary: 'У поднятой плитки середина вогнута, у утопленной — выпукла.',
+    keywords: ['рельеф', 'экструзия', 'интрузия', 'углубление', 'neui-extruded', 'neui-intruded', 'neui-depth', 'squircle'], Playground: Relief },
   { id: 'ripple', title: 'Ripple', icon: 'wave', family: motion, summary: 'Волна расходится от точки касания.', variants: [
     wave('800 мс', 'duration-800'), wave('500 мс', 'duration-500'), wave('1500 мс', 'duration-1500'), wave('Срез', 'duration-800', true),
   ] },

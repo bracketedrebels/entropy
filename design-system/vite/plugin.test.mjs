@@ -56,10 +56,10 @@ it('bundles one runtime and its worklet for an HTML app with Tailwind and no Rea
   expect(css).toMatch(/--neui-utility-duration:\s*var\(--tw-duration\)/)
 })
 
-it('builds signed relief and independently composable inner shading', async () => {
+it('builds signed relief with an integrated counter-curved face and continuous corners', async () => {
   await writeFile(join(root, 'app.css'), `@import "tailwindcss";
     @plugin "@neui/kit/relief";
-    @source inline("neui-relief neui-inner-shadow neui-extruded neui-intruded neui-depth-0 neui-depth-[-2.5px] active:-neui-depth-4 hover:neui-depth-8");`)
+    @source inline("neui-relief neui-extruded neui-intruded neui-depth-0 neui-depth-[-2.5px] active:-neui-depth-4 hover:neui-depth-8");`)
   const { output } = await build({
     ...config(), plugins: [tailwindcss()], build: { write: false, minify: false, cssMinify: false },
   })
@@ -71,12 +71,14 @@ it('builds signed relief and independently composable inner shading', async () =
     sheet.walkRules('.' + name, rule => rule.walkDecls(decl => { values[decl.prop] = decl.value }))
     return values
   }
-  const signed = declarations('neui-relief'), face = declarations('neui-inner-shadow')
+  const signed = declarations('neui-relief')
   expect(signed['--_neui-recess']).toBe('max(0px, 0px - var(--neui-depth))')
   expect(signed['--_neui-rise']).toBe('max(0px, var(--neui-depth))')
   expect(declarations('neui-intruded')['--neui-depth']).toBe('-8px')
-  expect(face['--_neui-relief-face']).toMatch(/^inset 0 /)
-  expect(face['--_neui-relief-contour']).toBeUndefined()
+  expect(signed['corner-shape']).toBe('squircle')
+  expect(signed['--_neui-face-offset']).toBe('calc(var(--neui-depth) - var(--_neui-recess))')
+  const faceOffsets = [...signed['box-shadow'].matchAll(/inset 0 calc\(var\(--_neui-face-offset\) \* ([-.\d]+)\)/g)]
+  expect(faceOffsets.map(match => Math.sign(Number(match[1])))).toEqual([1, -1])
   expect(css).toContain('active\\:-neui-depth-4')
   for (const value of ['0px', '-2.5px', '8px']) expect(css).toContain(`--neui-depth: ${value}`)
   expect(css).toContain('prefers-reduced-motion')

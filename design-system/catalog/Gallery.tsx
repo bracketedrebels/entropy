@@ -31,7 +31,8 @@ export function Gallery({ detail, light, onTheme }: { detail?: string; light: bo
   useEffect(() => {
     if (!detail) return
     setFamily('Все'); setQuery('')
-    const frame = requestAnimationFrame(() => document.getElementById('sample-' + detail)?.scrollIntoView({block:'start'}))
+    const target = detail === 'extruded' || detail === 'intruded' ? 'relief' : detail
+    const frame = requestAnimationFrame(() => document.getElementById('sample-' + target)?.scrollIntoView({block:'start'}))
     return () => cancelAnimationFrame(frame)
   }, [detail])
   const visible = primitives.filter(p => (family === 'Все' || p.family === family) &&

@@ -2,14 +2,13 @@ import plugin from 'tailwindcss/plugin'
 
 const light = 'var(--neui-relief-light, var(--neui-lip, #ffffffc7))'
 const shade = 'var(--neui-relief-shade, var(--neui-shadow, #73859368))'
-const flat = '0 0 transparent'
 
 // All offsets lie on the vertical light axis. The same offset on an inset
 // shadow colours the opposite wall, keeping the light source fixed.
-function layer(depth, inset, offset, blur, spread, color, strength) {
+function layer(depth, inset, offset, blur, spread, color, strength, offsetDepth = depth) {
   const length = factor => `calc(var(${depth}) * ${factor})`
   const tint = strength === 100 ? color : `color-mix(in srgb, ${color} ${strength}%, transparent)`
-  return `${inset}0 ${length(offset)} ${length(blur)} ${length(spread)} ${tint}`
+  return `${inset}0 calc(var(${offsetDepth}) * ${offset}) ${length(blur)} ${length(spread)} ${tint}`
 }
 
 function contour(depth, inset = '') {
@@ -21,40 +20,34 @@ function contour(depth, inset = '') {
   ].join(', ')
 }
 
-const paint = {
-  boxShadow: 'var(--_neui-relief-face, 0 0 transparent), var(--_neui-relief-contour, 0 0 transparent)',
+const body = {
+  '--_neui-rise': 'max(0px, var(--neui-depth))',
+  '--_neui-recess': 'max(0px, 0px - var(--neui-depth))',
+  // The recessed face spans a wider area than the inner rim. Its light must
+  // still be visible further inside once the rim shadow has fallen off.
+  '--_neui-face-width': 'max(var(--_neui-rise), 2 * var(--_neui-recess))',
+  '--_neui-face-offset': 'calc(var(--neui-depth) - var(--_neui-recess))',
+  cornerShape: 'squircle',
+  boxShadow: [
+    contour('--_neui-rise'),
+    contour('--_neui-recess', 'inset '),
+    layer('--_neui-face-width', 'inset ', .58, 1.38, -.20, shade, 38, '--_neui-face-offset'),
+    layer('--_neui-face-width', 'inset ', -.48, 1.15, -.17, light, 43, '--_neui-face-offset'),
+  ].join(', '),
   transitionProperty: '--neui-depth',
   transitionDuration: 'var(--tw-duration, 240ms)',
   transitionTimingFunction: 'var(--tw-ease, ease-out)',
   '@media (prefers-reduced-motion: reduce)': { transitionDuration: '0s' },
 }
-const body = {
-  ...paint,
-  '--_neui-rise': 'max(0px, var(--neui-depth))',
-  '--_neui-recess': 'max(0px, 0px - var(--neui-depth))',
-  '--_neui-relief-contour': [contour('--_neui-rise'), contour('--_neui-recess', 'inset ')].join(', '),
-}
 
 export default plugin(({ addBase, addUtilities, matchUtilities }) => {
-  // Keep the two paint layers local even when relief surfaces are nested.
-  const shadowSlot = { syntax: '"*"', inherits: 'false', initialValue: flat }
   addBase({
     '@property --neui-depth': { syntax: '"<length>"', inherits: 'false', initialValue: '8px' },
-    '@property --_neui-relief-contour': shadowSlot,
-    '@property --_neui-relief-face': shadowSlot,
   })
   addUtilities({
     '.neui-relief': body,
     '.neui-extruded': body,
     '.neui-intruded': { ...body, '--neui-depth': '-8px' },
-    '.neui-inner-shadow': {
-      ...paint,
-      '--_neui-face-depth': 'max(var(--neui-depth), 0px - var(--neui-depth))',
-      '--_neui-relief-face': [
-        layer('--_neui-face-depth', 'inset ', .58, 1.38, -.20, shade, 38),
-        layer('--_neui-face-depth', 'inset ', -.48, 1.15, -.17, light, 43),
-      ].join(', '),
-    },
   })
   matchUtilities(
     { 'neui-depth': value => ({ '--neui-depth': value }) },
