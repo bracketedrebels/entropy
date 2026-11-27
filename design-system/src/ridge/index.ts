@@ -1,5 +1,5 @@
 import { mountRidge } from './frame'
-import { trackFocus } from './trackFocus'
+import { refreshFocusScope, trackFocus } from './trackFocus'
 
 type Attach = (element: HTMLElement) => void | (() => void)
 
@@ -27,7 +27,11 @@ export function observeBehaviors(doc: Document) {
   const observer = new MutationObserver(records => {
     let removed = false
     for (const record of records) {
-      if (record.type === 'attributes') update(record.target as Element)
+      if (record.type === 'attributes') {
+        const element = record.target as Element
+        update(element)
+        refreshFocusScope(element)
+      }
       else {
         record.addedNodes.forEach(scan)
         if (record.removedNodes.length) removed = true

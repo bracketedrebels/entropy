@@ -44,7 +44,7 @@ const useMeasure = prepareBehavior<HTMLElement>(node => {
 
 export function Field() {
   const ref = useMeasure()
-  return <section ref={ref} className="neui-ridge">
+  return <section ref={ref} className="neui-ridge neui-track-focus">
     <h2 slot="label">Параметры</h2>
   </section>
 }`

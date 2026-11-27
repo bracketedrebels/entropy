@@ -88,7 +88,7 @@ export function SectionDock({ active }: { active: SectionId }) {
     }
   }
 
-  return <div className="dock-frame neui-ridge"><nav ref={nav} className="section-dock" aria-label="Разделы каталога"
+  return <div className="dock-frame neui-ridge neui-track-focus"><nav ref={nav} className="section-dock" aria-label="Разделы каталога"
     onPointerDown={start} onPointerMove={track} onPointerUp={finish}
     onPointerCancel={() => { stroke.current = null }}
     onLostPointerCapture={e => { if (e.target === e.currentTarget) stroke.current = null }}

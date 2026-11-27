@@ -69,6 +69,28 @@ it('allows a standalone tracker, caret overrides, and changing focus scopes whil
   stop()
 })
 
+it('lets an aggregate ridge follow a nested control while ordinary scopes stay local', async () => {
+  const outer = document.createElement('section')
+  outer.className = 'neui-ridge neui-track-focus'
+  outer.innerHTML = '<h1 slot="label"><a href="#home">NEUI</a></h1><div class="neui-ridge neui-track-focus"><input></div>'
+  document.body.append(outer)
+  await settle()
+  const inner = outer.querySelector('div')!
+  inner.querySelector('input')!.focus()
+  expect(signal(outer)).toBe('')
+  outer.classList.add('neui-track-focus-within')
+  await settle()
+  expect(signal(outer)).toBe('1')
+  expect(signal(inner)).toBe('1')
+  outer.classList.remove('neui-track-focus-within')
+  await settle()
+  expect(signal(outer)).toBe('')
+  outer.querySelector('a')!.focus()
+  await settle()
+  expect(signal(inner)).toBe('')
+  expect(signal(outer)).toBe('1')
+})
+
 it('keeps the light in the focused sticky panel’s coordinates across scroll reversals and releases it on blur', async () => {
   const shell = document.createElement('section')
   shell.className = 'neui-ridge neui-track-focus'

@@ -7,6 +7,10 @@ const scopes = new WeakMap<Element, () => void>()
 type FocusSample = (target: Element | null, viewportY: number) => void
 const projections = new WeakMap<HTMLElement, FocusSample>()
 
+export function refreshFocusScope(scope: Element) {
+  scopes.get(scope)?.()
+}
+
 export function projectFocus(scope: HTMLElement, sample: FocusSample) {
   projections.set(scope, sample)
   scopes.get(scope)?.()
@@ -47,7 +51,8 @@ export const trackFocus = retain((scope: HTMLElement) => {
   function sync() {
     if (stopped) return
     const active = doc.activeElement
-    const next = nearestScope(active) === scope ? active : null
+    const within = scope.classList.contains('neui-track-focus-within')
+    const next = (within ? scope.contains(active) : nearestScope(active) === scope) ? active : null
     if (target !== next) {
       release()
       target = next

@@ -4,7 +4,7 @@
 .neui-head { position:sticky; top:var(--neui-pin-top,8px); height:var(--neui-head,64px) }
 .neui-bottom-track { inset:var(--neui-head,64px) 0 0; display:flex; flex-direction:column; justify-content:flex-end }
 .neui-foot { position:sticky; bottom:var(--neui-pin-bottom,8px); height:var(--neui-foot,36px); flex:none }
-.neui-caption { display:block; position:relative; width:fit-content; padding-right:8px; max-width:calc(100% - 58px); overflow-wrap:anywhere; font-size:1.125rem; line-height:1.45 }
+.neui-caption { pointer-events:auto; display:block; position:relative; width:fit-content; padding-right:8px; max-width:calc(100% - 58px); overflow-wrap:anywhere; font-size:1.125rem; line-height:1.45 }
 .neui-baseline { display:inline-block; height:0; width:0; vertical-align:baseline }
 .neui-header-slot:not(:empty) { position:relative; pointer-events:auto; margin-inline:var(--neui-inset,11px) }
 .neui-aperture,.neui-rails { overflow:clip }

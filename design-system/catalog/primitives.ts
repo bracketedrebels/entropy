@@ -76,7 +76,7 @@ const selection = 'Выбор', layout = 'Раскладка', motion = 'Дви�
 export const primitives: Primitive[] = [
   { id: 'ridge', title: 'Ridge', icon: 'layers', family: material, summary: 'Жёлоб объединяет строки в одно поле.', variants: [
     ridge('С фокусом', 'neui-ridge neui-track-focus', 'ridge-focus'),
-    ridge('Без трекера', 'neui-ridge', 'ridge-base'),
+    ridge('Широкий отступ', 'neui-ridge neui-track-focus neui-ridge-inset-[18px]', 'ridge-inset'),
     ridge('Радиус 16', 'neui-ridge neui-track-focus neui-ridge-radius-[16px]', 'ridge-small'),
   ] },
   { id: 'ripple', title: 'Ripple', icon: 'wave', family: motion, summary: 'Волна расходится от точки касания.', variants: [
