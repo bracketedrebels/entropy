@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ridge · Виртуализация</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; line-height: 1.5 }
+    body { max-width: 64rem; margin: 1.5rem auto; padding-inline: 1rem }
+    button { font: inherit; padding: .4rem 1rem; cursor: pointer }
+    iframe { width: 100%; height: 330px; border: 0; margin-block: 1rem }
+    #result { overflow-x: auto }
+    table { border-collapse: collapse; margin-block: 1rem; font-variant-numeric: tabular-nums }
+    td, th { padding: .25rem .65rem; text-align: start }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere }
+  </style>
+</head>
+<body>
+  <h1>Регистрация Ridge при виртуализации</h1>
+  <p>Две production-сборки одной формы. Список заменяет 32 из 128 строк. Граф заменяет 6 из 48 узлов, у каждого четвёртого есть вложенное поле. Источник содержит 20 000 записей.</p>
+  <button id="run">Запустить сравнение</button>
+  <output id="status" aria-live="polite"></output>
+  <div id="result"></div>
+  <div id="stage"></div>
+  <script type="module" src="./runner.mjs"></script>
+</body>
+</html>
