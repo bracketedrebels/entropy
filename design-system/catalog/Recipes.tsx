@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ComponentType } from 'react'
-import { Intro, Code, Icon } from './components'
+import { Intro, Code } from './components'
 import DateDemo from './recipes/DateDemo'
 import PeriodDemo from './recipes/PeriodDemo'
 import TagsDemo from './recipes/TagsDemo'
@@ -29,7 +29,7 @@ const recipes: Recipe[] = [
 function RecipeDetail({recipe}: {recipe:Recipe}) {
   const [file,setFile] = useState(recipe.files[0])
   const {View} = recipe
-  return <article className="recipe-detail">
+  return <article className="recipe-detail" id={'recipes/' + recipe.id} data-nav-label={recipe.name}>
     <div className="doc-intro"><h2>{recipe.name}</h2><p>{recipe.text}</p></div>
     <div className="recipe-stage"><div className="neui-example"><View /></div></div>
     <div className="source-heading"><h3>Исходный код</h3>
@@ -39,11 +39,7 @@ function RecipeDetail({recipe}: {recipe:Recipe}) {
     <Code source={source(file)} filename={file} key={file} folded />
   </article>
 }
-export default function Recipes({detail}: {detail?:string}) {
-  const recipe = recipes.find(r=>r.id===detail) ?? recipes[0]
-  return <><Intro
-    subtitle="Рабочие поля из примитивов NEUI. Забирайте разметку, меняйте поведение и подключайте свои данные." />
-    <div className="doc-layout"><nav className="side-index" aria-label="Рецепты">{recipes.map(r=>
-      <a className="neui-pill neui-ripple" href={'#recipes/'+r.id} key={r.id} aria-current={recipe===r?'page':undefined}><Icon name={r.icon}/>{r.name}</a>)}</nav>
-    <RecipeDetail key={recipe.id} recipe={recipe}/></div></>
+export default function Recipes() {
+  return <><Intro subtitle="Рабочие поля из примитивов NEUI. Забирайте разметку, меняйте поведение и подключайте свои данные." />
+    <div className="doc-sections">{recipes.map(recipe => <RecipeDetail key={recipe.id} recipe={recipe} />)}</div></>
 }

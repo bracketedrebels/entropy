@@ -51,7 +51,7 @@ it('bundles one runtime and its worklet for an HTML app with Tailwind and no Rea
   expect(css).toMatch(/--neui-ridge-depth:\s*0;/)
   expect(css).toMatch(/--neui-ridge-depth:\s*0?\.5;/)
   expect(css).toMatch(/--neui-focus-strength:\s*1\.8;/)
-  expect(css).toMatch(/mix-blend-mode:\s*soft-light/)
+  expect(css).toMatch(/mix-blend-mode:\s*overlay/)
   const action = css.match(/\.action\s*\{([^}]+)\}/)?.[1]
   expect(action).toMatch(/--neui-ripple-target:\s*1/)
   expect(action).toMatch(/--neui-focus-target:\s*1/)

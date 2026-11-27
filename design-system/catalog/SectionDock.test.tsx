@@ -1,6 +1,7 @@
 import { afterEach, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { SectionDock } from './SectionDock'
+import { currentStop } from './LocalNavigation'
 
 afterEach(() => { cleanup(); history.replaceState(null, '', location.pathname) })
 
@@ -38,4 +39,12 @@ it('keeps a cancelled gesture on the current section and accepts the next tap', 
   expect(location.hash).toBe('#vite')
   pointer('pointerdown', 18, 10); pointer('pointerup', 18, 10)
   expect(fireEvent.click(link, { detail: 1 })).toBe(true)
+})
+
+it('keeps a tapped column current within its desktop row and follows the next scroll stop', () => {
+  const stops = [100, 100, 100, 410, 410, 700, 700]
+  expect(currentStop(stops, 100, 1)).toBe(1)
+  expect(currentStop(stops, 410, 1)).toBe(3)
+  expect(currentStop(stops, 700, 6)).toBe(6)
+  expect(currentStop(stops, 0, -1)).toBe(0)
 })

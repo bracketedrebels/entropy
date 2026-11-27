@@ -7,6 +7,7 @@ import '@fontsource/ubuntu/700.css'
 import './catalog.css'
 import '../stories/canvas.css'
 import { Gallery } from './Gallery'
+import { LocalNavigation } from './LocalNavigation'
 import { SectionDock, sections } from './SectionDock'
 import { Icon } from './components'
 import { ReactDocs, ViteDocs, Philosophy } from './Docs'
@@ -39,6 +40,7 @@ function toSectionTop(event: React.MouseEvent<HTMLAnchorElement>) {
 
 function App() {
   const [page,setPage] = useState(route)
+  const [content, setContent] = useState<HTMLDivElement | null>(null)
   const [light,setLight] = useState(()=>{ try {return localStorage.getItem('neui-catalog-theme')==='light'} catch {return false} })
   useEffect(()=>{
     const onHash=()=>setPage(route())
@@ -49,7 +51,7 @@ function App() {
   const { detail } = page
   useLayoutEffect(()=>{
     document.title = title + ' · NEUI'
-    if (id!=='css'||!detail) window.scrollTo(0, 0)
+    if (!detail) window.scrollTo(0, 0)
   },[id,title,detail])
   useLayoutEffect(()=>{
     document.documentElement.dataset.theme=light?'light':'dark'
@@ -75,13 +77,20 @@ function App() {
           </div>
         </header>
         <main className="atlas-inner" id="main-content" tabIndex={-1}>
-          {id==='css'?<Gallery detail={detail} light={light} onTheme={setLight}/>:id==='vite'?<ViteDocs detail={detail}/>:id==='react'?<ReactDocs/>:
-            id==='philosophy'?<Philosophy/>:<Suspense fallback={<p role="status">Загружаем рецепты…</p>}><Recipes detail={detail}/></Suspense>}
+          <Suspense fallback={<p role="status">Загружаем рецепты…</p>}>
+            <div key={id} data-page={id} ref={setContent}>
+              {id === 'css' ? <Gallery light={light} onTheme={setLight}/> : id === 'vite' ? <ViteDocs/> :
+                id === 'react' ? <ReactDocs/> : id === 'philosophy' ? <Philosophy/> : <Recipes/>}
+            </div>
+          </Suspense>
         </main>
         <footer className="atlas-foot"><span>NEUI <span>·</span> Дизайн-система</span><a href="./storybook/">Архив Storybook</a></footer>
       </div>
     </div>
-    <SectionDock active={id} />
+    <div className="catalog-dock">
+      {content?.dataset.page === id && <LocalNavigation content={content} section={id} detail={detail} />}
+      <SectionDock active={id} />
+    </div>
   </div>
 }
 createRoot(document.getElementById('root')!).render(<App/>)

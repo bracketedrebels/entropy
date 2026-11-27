@@ -87,7 +87,7 @@ export function SectionDock({ active }: { active: SectionId }) {
     }
   }
 
-  return <div className="dock-frame neui-ridge neui-track-focus"><nav ref={nav} className="section-dock" aria-label="Разделы каталога"
+  return <nav ref={nav} className="section-dock" aria-label="Разделы каталога"
     onPointerDown={start} onPointerMove={track} onPointerUp={finish}
     onPointerCancel={() => { stroke.current = null }}
     onLostPointerCapture={e => { if (e.target === e.currentTarget) stroke.current = null }}
@@ -98,12 +98,14 @@ export function SectionDock({ active }: { active: SectionId }) {
     }}
     onKeyDown={byKey} onDragStart={e => e.preventDefault()}>
     {sections.map(([key, label, glyph]) =>
-      <a className="dock-link neui-ripple" key={key} href={'#' + key}
-        draggable={false} aria-current={key === active ? 'page' : undefined} aria-label={label} title={label}>
+      <a className="dock-link neui-relief neui-depth-0 active:neui-depth-4 aria-[current=page]:neui-depth-4" key={key} href={'#' + key}
+        draggable={false} onClick={e => {
+          if (e.currentTarget.hash === location.hash && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) window.scrollTo(0, 0)
+        }} aria-current={key === active ? 'page' : undefined} aria-label={label} title={label}>
         <i aria-hidden="true" className={glyph} />
         {key === active && <span className="neui-collapse-inline" aria-hidden="true">
           <span className="neui-reveal-clip"><span className="dock-label">{label}</span></span>
         </span>}
       </a>)}
-  </nav></div>
+  </nav>
 }

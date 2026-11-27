@@ -11,7 +11,7 @@
     background-repeat: repeat;
     background-size: calc(128px / var(--_neui-grain-scale, 1)) auto;
     image-rendering: pixelated;
-    mix-blend-mode: soft-light;
+    mix-blend-mode: overlay;
     opacity: var(--neui-grain-opacity, .028);
   }
 }
