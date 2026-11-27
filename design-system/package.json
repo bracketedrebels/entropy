@@ -10,6 +10,7 @@
       "import": "./vite/index.mjs"
     },
     "./react": "./src/behaviors.ts",
+    "./grain": "./src/grain/index.ts",
     "./ridge": "./src/ridge/index.ts",
     "./swipe": "./src/swipe/index.ts",
     "./relief": "./src/relief/plugin.mjs",

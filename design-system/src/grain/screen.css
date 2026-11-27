@@ -1,0 +1,19 @@
+/* Equal parts black and white, in a fixed high-frequency pattern. Overlay
+   keeps their mean neutral against each individual backdrop colour channel. */
+@media screen and (forced-colors: none) {
+  :root.neui-grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    pointer-events: none;
+    user-select: none;
+    background-image: url("./tile.png");
+    background-repeat: repeat;
+    background-size: calc(128px / var(--_neui-grain-scale, 1)) auto;
+    background-position: var(--_neui-grain-origin, 0 0);
+    image-rendering: pixelated;
+    mix-blend-mode: overlay;
+    opacity: var(--neui-grain-opacity, .028);
+  }
+}

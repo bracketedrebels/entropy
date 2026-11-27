@@ -38,6 +38,7 @@ function config(options) {
 it('bundles one runtime and its worklet for an HTML app with Tailwind and no React', async () => {
   const { output } = await build({ ...config(), build: { write: false, minify: false, cssMinify: false } })
   const modules = output.filter(file => file.type === 'chunk').flatMap(chunk => Object.keys(chunk.modules))
+  expect(modules.filter(id => id.endsWith('/src/grain/index.ts'))).toHaveLength(1)
   expect(modules.filter(id => id.endsWith(runtime))).toHaveLength(1)
   expect(modules.filter(id => id.endsWith('/src/swipe/index.ts'))).toHaveLength(1)
   expect(modules.filter(id => id.endsWith('/src/ridge/index.ts'))).toHaveLength(1)
@@ -76,12 +77,7 @@ it('builds signed relief with an integrated counter-curved face and continuous c
   expect(signed['--_neui-rise']).toBe('max(0px, var(--neui-depth))')
   expect(declarations('neui-intruded')['--neui-depth']).toBe('-8px')
   expect(signed['corner-shape']).toBe('squircle')
-  // Keep the centre unpainted and the grain in a separate border-image layer,
-  // so it never masks the control, its children or the ripple/focus pseudo-elements.
-  expect(signed['border-image-slice']).toBe('32')
-  expect(signed['border-image-source']).toContain('var(--neui-relief-dither,')
-  expect(signed['border-image-outset']).toBe('var(--_neui-grain-outset)')
-  expect(css).toContain('data:image/svg+xml,')
+  expect(signed['border-image-source']).toBeUndefined()
   expect(signed['--_neui-face-offset']).toBe('calc(var(--neui-depth) - var(--_neui-recess))')
   const faceOffsets = [...signed['box-shadow'].matchAll(/inset 0 calc\(var\(--_neui-face-offset\) \* ([-.\d]+)\)/g)]
   expect(faceOffsets.map(match => Math.sign(Number(match[1])))).toEqual([1, -1])

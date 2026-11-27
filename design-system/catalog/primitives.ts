@@ -59,7 +59,7 @@ function swatches(name: string, theme: string) {
   <span class="text-muted">Подпись</span>
   <span class="neui-check-radio [--neui-check-level:1]" aria-label="Индикатор" role="img"></span>
 </div>`
-  return { name, preview, source: `<html class="neui-surface" data-theme="${theme}">
+  return { name, preview, source: `<html class="neui-surface neui-grain" data-theme="${theme}">
   <body>
 ${preview.split('\n').map(line => '    ' + line).join('\n')}
   </body>

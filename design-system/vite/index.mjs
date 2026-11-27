@@ -3,7 +3,7 @@ import { normalizePath } from 'vite'
 import { leavingIndex } from './leaving-styles.mjs'
 import { transformLeaving } from './leaving.mjs'
 
-const runtimes = ['@neui/kit/ripple', '@neui/kit/ridge', '@neui/kit/swipe']
+const runtimes = ['@neui/kit/grain', '@neui/kit/ripple', '@neui/kit/ridge', '@neui/kit/swipe']
 const bootstrap = runtimes.map(runtime => `import '${runtime}';`).join('\n')
 
 /** @type {typeof import('./index.d.mts').neui} */

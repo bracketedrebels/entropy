@@ -7,7 +7,7 @@ const Markup = memo(function Markup({ source }: { source: string }) {
   // Only bundled examples authored in this repository reach the preview.
   return <div className="demo-markup" dangerouslySetInnerHTML={{ __html: source }} />
 })
-function Card({ item, theme }: { item: Primitive; theme?: { index: number; select: (index: number) => void } }) {
+function Card({ item, theme }: { item: Primitive; theme?: { index: number; select: (index: number) => void; grain: boolean; toggleGrain: () => void } }) {
   const [localIndex, setLocalIndex] = useState(0)
   const index = theme?.index ?? localIndex
   const setIndex = theme?.select ?? setLocalIndex
@@ -21,13 +21,19 @@ function Card({ item, theme }: { item: Primitive; theme?: { index: number; selec
         {View ? <View key={index} /> : <Markup source={variant.preview ?? variant.source} />}
       </div>
       <div className="variants" aria-label={'Конфигурация ' + item.title}>{item.variants.map((v, i) =>
-        <button type="button" className="neui-pill neui-ripple" aria-pressed={index === i} key={v.name} onClick={() => setIndex(i)}>{v.name}</button>)}</div>
-      <Code key={index} folded lang={View ? 'TSX' : 'HTML'} source={variant.source} />
+        <button type="button" className="neui-pill neui-ripple" aria-pressed={index === i} key={v.name} onClick={() => setIndex(i)}>{v.name}</button>)}
+        {theme && <button type="button" className="neui-pill neui-ripple" aria-pressed={theme.grain} onClick={theme.toggleGrain}>Зерно страницы</button>}
+      </div>
+      <Code key={index} folded lang={View ? 'TSX' : 'HTML'} source={theme && !theme.grain ? variant.source.replace(' neui-grain', '') : variant.source} />
     </>}
   </article>
 }
 export function Gallery({ detail, light, onTheme }: { detail?: string; light: boolean; onTheme: (light: boolean) => void }) {
   const [family, setFamily] = useState('Все'), [query, setQuery] = useState('')
+  const [grain, setGrain] = useState(() => document.documentElement.classList.contains('neui-grain'))
+  function toggleGrain() {
+    setGrain(document.documentElement.classList.toggle('neui-grain'))
+  }
   useEffect(() => {
     if (!detail) return
     setFamily('Все'); setQuery('')
@@ -46,7 +52,7 @@ export function Gallery({ detail, light, onTheme }: { detail?: string; light: bo
         <label className="search-box neui-focus neui-ripple"><Icon name="search"/><input aria-label="Поиск по CSS API" type="search" value={query} placeholder="Найти класс…" onChange={e=>setQuery(e.target.value)} /></label></div>
       <div className="filters" aria-label="Группы примитивов">{['Все','Поверхность','Движение','Выбор','Раскладка'].map(f=>
         <button type="button" key={f} className="filter neui-pill neui-ripple" aria-pressed={family===f} onClick={()=>setFamily(f)}>{f}</button>)}</div>
-      <div className="samples">{visible.map(p=><Card item={p} key={p.id} theme={p.id === 'surface' ? { index: light ? 1 : 0, select: i => onTheme(i === 1) } : undefined}/>)}</div>
+      <div className="samples">{visible.map(p=><Card item={p} key={p.id} theme={p.id === 'surface' ? { index: light ? 1 : 0, select: i => onTheme(i === 1), grain, toggleGrain } : undefined}/>)}</div>
       {visible.length===0 && <div className="empty"><p>Подходящих композиций нет.</p><button className="setup-link neui-pill neui-ripple" onClick={()=>{setQuery('');setFamily('Все')}}>Сбросить фильтры</button></div>}
     </section>
   </>
