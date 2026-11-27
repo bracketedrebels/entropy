@@ -101,6 +101,9 @@ export function SectionDock({ active }: { active: SectionId }) {
       <a className="dock-link neui-ripple" key={key} href={'#' + key}
         draggable={false} aria-current={key === active ? 'page' : undefined} aria-label={label} title={label}>
         <i aria-hidden="true" className={glyph} />
+        {key === active && <span className="neui-collapse-inline" aria-hidden="true">
+          <span className="neui-reveal-clip"><span className="dock-label">{label}</span></span>
+        </span>}
       </a>)}
   </nav></div>
 }

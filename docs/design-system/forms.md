@@ -8,6 +8,10 @@ Give one editable value one **field**, one label and one enclosing groove (**rid
 
 The controls sit on a matte surface viewed from directly above. Ambient light falls from the top. A shallow cut has a narrow shaded upper lip, a lighter lower lip and a flat floor. A gentle vertical gradient is one surface treatment. The groove must also read over a different underlying material. Keep text on its baseline throughout a press. In the reference form, Ubuntu Light, a slightly larger field label and quieter descriptions establish the reading order.
 
+### Spacing inside a ridge
+
+Use the ridge inset (`--neui-inset`, 11 px by default in both themes) as the spacing unit for adjacent actions. In the section dock, apply it on all four sides between the ridge and the buttons, and once between neighbouring buttons. Measure to the edge of each focus background. The active label opens to the right of the icon with one inset between the two. Keep that space inside the disclosure so it closes with the label.
+
 ## 2. The groove follows its contents
 
 Align the label with the surrounding page text. The upper groove leaves the end of the label at its baseline and rounds the upper-right corner. The left wall ends beneath the label, level with the top of the first hit area. A wrapped label gets its full height before the first row begins.

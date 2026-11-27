@@ -131,9 +131,9 @@ body { margin:0 }
   --shell-top:max(14px,env(safe-area-inset-top));
   --dock-bottom:max(10px,env(safe-area-inset-bottom));
   --dock-hit:max(var(--neui-hit),3.375rem);
-  --dock-inset:4px;
+  --dock-inset:var(--neui-inset);
   --dock-clearance:calc(var(--dock-bottom) + var(--dock-hit) + 2 * var(--dock-inset) + var(--shell-gap));
-  display:grid;grid-template-rows:1fr auto;gap:var(--shell-gap);min-height:100dvh;
+  display:grid;grid-template:1fr auto / minmax(0,1fr);gap:var(--shell-gap);min-height:100dvh;
   padding:var(--shell-top) max(2vw,env(safe-area-inset-right)) var(--dock-bottom) max(2vw,env(safe-area-inset-left));
 }
 .catalog-field {
@@ -155,13 +155,21 @@ body { margin:0 }
   width:max-content;max-width:100%;--neui-inset:var(--dock-inset);--neui-row-radius:var(--dock-hit);
   --neui-pin-top:0px;--neui-pin-bottom:0px;
 }
-.section-dock {display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,var(--dock-hit));user-select:none;touch-action:pan-y pinch-zoom;-webkit-tap-highlight-color:transparent}
-.atlas .dock-link {
-  display:grid;place-items:center;min-width:0;height:var(--dock-hit);
-  border-radius:50%;line-height:1;color:var(--ink);
+.section-dock {
+  display:flex;align-items:center;gap:var(--neui-inset);
+  --dock-icon:min(2rem,calc(var(--dock-hit) - 16px));
+  --dock-padding:clamp(0px,calc((100vw - 22.5rem) / 10),calc((var(--dock-hit) - var(--dock-icon)) / 2));
+  user-select:none;touch-action:pan-y pinch-zoom;-webkit-tap-highlight-color:transparent;
 }
-.dock-link > i {font-size:min(2rem,calc(var(--dock-hit) - 16px));pointer-events:none}
-.atlas .dock-link[aria-current="page"] {background-color:var(--neui-focus-fill)}
+.atlas .dock-link {
+  display:flex;align-items:center;justify-content:center;min-width:var(--dock-icon);height:var(--dock-hit);
+  padding-inline:var(--dock-padding);
+  border-radius:var(--dock-hit);line-height:1;color:var(--ink);
+  transition:padding-inline-start var(--neui-disclosure-duration,240ms) var(--neui-disclosure-ease,ease-in-out);
+}
+.dock-link > i {flex:none;font-size:var(--dock-icon);pointer-events:none}
+.dock-label {display:block;padding-inline:var(--neui-inset) max(0px,calc(var(--neui-inset) - var(--dock-padding)));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atlas .dock-link[aria-current="page"] {padding-inline-start:var(--neui-inset);background-color:var(--neui-focus-fill)}
 @media (hover:hover) { .atlas .dock-link:not([aria-current]):hover {background-color:var(--soft)} }
 .atlas .dock-link:focus-visible {outline-offset:-3px}
 @media (max-width:720px) {
@@ -171,8 +179,14 @@ body { margin:0 }
   .catalog-field::part(caption) {margin-inline-start:var(--gutter)}
   .bar-inner {min-height:48px}
 }
+@media (max-width:22.5rem) {
+  .section-dock {--dock-icon:clamp(1.5625rem,calc(10vw - 7px),1.875rem);font-size:.875rem}
+}
 @media (max-height:480px) {
   .atlas {--shell-gap:4px;--shell-top:env(safe-area-inset-top);--dock-bottom:max(2px,env(safe-area-inset-bottom));--dock-hit:44px}
+}
+@media (prefers-reduced-motion:reduce) {
+  .atlas .dock-link {transition:none}
 }
 @media (forced-colors:active) {
   .atlas .dock-link[aria-current] {outline:2px solid Highlight;outline-offset:-4px}
