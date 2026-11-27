@@ -1,12 +1,16 @@
 # Form design guide
 
-The Trinet notification form is the reference for this guide. Its fields answer three different questions at a glance. What value have I chosen? Where am I working? What can I do here next? The same answers should remain legible as a field grows from one line to a full screen. [Try the reference form](https://trinet-radio-touch.dewyfrog69.chatgpt.site/?locale=ru-RU).
+NEUI is the design system. The Trinet notification form is its reference application. Its fields answer three different questions at a glance. What value have I chosen? Where am I working? What can I do here next? The same answers should remain legible as a field grows from one line to a full screen. [Try the reference form](https://trinet-radio-touch.dewyfrog69.chatgpt.site/?locale=ru-RU).
 
 ## 1. One value occupies one region of the surface
 
 Give one editable value one **field**, one label and one enclosing groove (**ridge**). “Куда доставлять сводку?” owns a set of destinations. Its six rows, its summary and its expand action all belong inside that boundary. Text entry and date selection use the same boundary even though their contents differ.
 
 The controls sit on a matte surface viewed from directly above. Ambient light falls from the top. A shallow cut has a narrow shaded upper lip, a lighter lower lip and a flat floor. A gentle vertical gradient is one surface treatment. The groove must also read over a different underlying material. Keep text on its baseline throughout a press. In the reference form, Ubuntu Light, a slightly larger field label and quieter descriptions establish the reading order.
+
+### Spacing inside a ridge
+
+Use the ridge inset (`--neui-inset`, 11 px by default in both themes) as the spacing unit for adjacent actions. In the section dock, apply it on all four sides between the ridge and the buttons, and once between neighbouring buttons. Measure to the edge of each focus background. The active label opens to the right of the icon with one inset between the two. Keep that space inside the disclosure so it closes with the label.
 
 ## 2. The groove follows its contents
 
@@ -18,7 +22,7 @@ Choose each corner from the shape beside it. Where a groove surrounds the rounde
 
 | Signal | What the user sees | How long it lasts |
 | --- | --- | --- |
-| Press | A soft lightening ripple starts under the finger and spreads to the rounded bounds of the hit area. The whole option row responds, including its label. | Appears on contact and holds under the finger. On release the wave finishes and fades. Cancellation clears it. |
+| Press | A shallow wave starts under the finger and travels across the material to the rounded bounds of the hit area. The whole option row responds, including its label. | Each contact starts an independent wave. Its relief decays as it travels, including during a long press. A cancelled gesture clears its own wave. |
 | Focus | Two short accents in the side grooves sit opposite the active row. In a multiline editor they track the visual line of the caret, including soft wraps. | Follows the current place of work. |
 | Selection | A small recessed point marks a single choice. A square marks membership in a multiple choice. | Persists when focus moves elsewhere and after the ripple fades. |
 
@@ -28,7 +32,7 @@ For keyboard activation, the ripple starts at the indicator. Keep the marker sma
 
 ## 4. Expansion makes room and preserves orientation
 
-Reveal choices, search and assistants in the reading flow. The next field moves down as the current one opens. The press registers immediately, then the movement slows towards its end. The reference ripple expands in about 240 ms and fades over roughly 170 ms. With reduced motion, the control still acknowledges the action and exposes the resulting state.
+Reveal choices, search and assistants in the reading flow. The next field moves down as the current one opens. The press registers immediately, then the movement slows towards its end. The ripple expands for 1000 ms with ease-out by default. A Tailwind duration utility on the target controls expansion. Warm light from above catches the north-facing slope of the crest. A subdued neutral shadow on the opposite slope feathers into the surrounding material. During the last 80% of the travel time, each crest loses height and spreads to both sides of its moving peak. At half amplitude the slopes are 1.5 times their original width, approaching twice that width as the relief disappears. Repeated presses can overlap. With reduced motion, the control still acknowledges the action and exposes the resulting state.
 
 Use one vertical scroll for the form and its open choices. On expansion, move the page just far enough to show the whole field if it fits. For a taller field, stop when its top reaches the top of the available viewport. The user takes the next scroll.
 
@@ -59,3 +63,13 @@ A capsule with a chevron is one target across its entire width. It describes the
 The form establishes the interaction language. The graph editor is the next place to test it. Consider a node with a selected input while keyboard focus moves to a port. Can a reader still identify the node, the saved choice, the focused port and the existing connection? A groove already denotes a boundary and a lamp denotes focus. A connection needs to remain recognisable when the lamp moves.
 
 A second trial is to open a node’s settings near the edge of the canvas. Check whether its title, ports and connected edges remain traceable as details appear, and whether the user can collapse it from where they finished editing. The graph prototype should settle how neighbours move and how connections are drawn.
+
+## React components
+
+The component kit includes Row, Reveal, Ridge, Pill and Field. The React notification settings story composes the reference fields, including the dependent email editor and linked single- and multiple-project pickers. The date assistant and swipeable tag input are also available in the React form. [Component API and Storybook setup](../../design-system/README.md)
+
+## Implementing the patterns
+
+The application owns the elements, their semantics and their order. Publish layout and material as CSS. Mark row children with named grid areas. A metadata capsule can be a native button or an output with the same class. The NEUI Vite adapter connects delegated press feedback once per client document. A native element opts in with `neui-ripple` or a Tailwind utility that applies it. Other bundlers can import `@neui/kit/ripple` in their client entry. Each ripple uses its CSS timing for independent progress and amplitude. A single pseudo-element paints the live waves. Attach hooks to individual elements for focus management and measurement. A hook factory can capture static options once outside rendering. Each mounted instance owns its listeners and cleanup.
+
+Publish compound structures such as the ridge as editable recipes. Their sticky tracks, drawing surface and content regions belong to the consuming markup. Keep the choice of renderer independent of the field’s value and accessible name. [CSS API, hooks and recipes](../../design-system/README.md)

@@ -1,0 +1,32 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><title>Окно виртуализации</title>
+<script>
+// Only the document-wide registration observer is timed. Both modes retain local layout observers.
+window.discovery = { time: 0, records: 0, observers: 0 }
+const NativeObserver = window.MutationObserver
+window.MutationObserver = class extends NativeObserver {
+  constructor(callback) {
+    super((records, observer) => {
+      if (!this.global) return callback(records, observer)
+      const start = performance.now()
+      try { callback(records, observer) }
+      finally {
+        window.discovery.time += performance.now() - start
+        window.discovery.records += records.length
+      }
+    })
+  }
+  observe(node, options) {
+    if (node === document && options.subtree && options.childList) {
+      this.global = true
+      window.discovery.observers++
+    }
+    return super.observe(node, options)
+  }
+}
+</script>
+<style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui}.window{height:320px;overflow:hidden}
+.list{display:grid}.item{height:24px}.graph{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:start;gap:3px}
+.graph section{min-width:0}.graph button{height:18px}button{font:inherit}
+</style>
+<body class="neui-surface" data-theme="dark"><main id="app"></main><script type="module" src="./fixture.tsx"></script></body></html>

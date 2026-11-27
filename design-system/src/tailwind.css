@@ -1,0 +1,83 @@
+@import "./styles.css" layer(components);
+@import "./check.css";
+@import "./reveal/collapse.css";
+@import "./range.css";
+@import "./calendar/grid.css";
+
+@plugin "@neui/kit/relief";
+
+/* Resolve semantic utilities on the element, including inside nested themed surfaces. */
+@theme inline {
+  --font-ui: var(--neui-font);
+  --color-ink: var(--neui-text);
+  --color-muted: var(--neui-muted);
+  --color-groove: var(--neui-channel);
+  --color-lip: var(--neui-lip);
+  --color-accent: var(--neui-copper);
+  --color-focus-core: var(--neui-core);
+  --color-focus-halo: var(--neui-halo);
+  --color-ripple: var(--neui-wave);
+  --color-pill: var(--neui-pill-bg);
+  --color-danger: var(--neui-danger);
+  --spacing-focus-band: var(--neui-band);
+  --spacing-hit: var(--neui-hit);
+  --spacing-action: var(--neui-action-height);
+  --spacing-choice: var(--neui-choice-height);
+  --radius-row: var(--neui-row-radius);
+  --radius-choice: var(--neui-choice-radius);
+}
+
+@custom-variant leaving (&[data-leaving="true"]);
+
+@utility neui-divider {
+  inline-size: var(--neui-divider-size, 25%);
+  block-size: 2px;
+  margin-inline: auto;
+  margin-block: .5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--neui-channel);
+  box-shadow: inset 0 1px 0 var(--neui-shadow), 0 1px 0 var(--neui-lip);
+  @media (forced-colors: active) { background: CanvasText; }
+}
+
+@utility bg-surface {
+  background: var(--neui-bg);
+}
+
+@utility neui-row-area-* {
+  grid-area: --value("leading", "content", "trailing");
+}
+
+/* Tailwind 4 registers --tw-duration without inheritance. Resolve it on the press target
+   so the painted pseudo-element receives the duration chosen by the active utility. */
+@layer components {
+  :where(.neui-ripple, [data-neui-press], .neui-focus, [data-neui-focus]) {
+    --neui-utility-duration: var(--tw-duration);
+    --neui-utility-ease: var(--tw-ease);
+  }
+}
+
+/* Allow @apply and Tailwind variants to opt a native element into delegation. */
+@utility neui-ripple {
+  --neui-ripple-target: 1;
+}
+
+@utility neui-swipe-right { touch-action: pan-y pinch-zoom; }
+
+@utility neui-focus { --neui-focus-target: 1; }
+
+/* Structural behaviors use literal class names. Sizing and paint remain CSS-owned. */
+@utility neui-ridge {
+  position: relative;
+}
+@utility neui-track-focus {
+  --neui-focus-active: 0;
+  --neui-focus-y: 0px;
+}
+
+@utility neui-ridge-radius-* { --neui-row-radius: --value([length]); }
+@utility neui-ridge-inset-* { --neui-inset: --value([length]); }
+@utility neui-focus-band-* { --neui-band: --value([length]); }
+@utility neui-ridge-depth-* { --neui-ridge-depth: --value(number, [number]); }
+@utility neui-focus-strength-* { --neui-focus-strength: --value(number, [number]); }

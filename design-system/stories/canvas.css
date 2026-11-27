@@ -1,0 +1,114 @@
+.neui-canvas { min-height:100svh; padding:clamp(20px, 5vw, 56px) clamp(18px, 5vw, 40px) }
+.docs-story .neui-canvas { min-height:200px }
+.neui-example { width:min(100%, 430px); margin-inline:auto }
+.neui-example h1 { margin:0 0 26px; font-size:clamp(1.6rem, 5vw, 2rem); line-height:1.2; font-weight:300; letter-spacing:-.025em }
+.neui-example .neui-ridge + .neui-ridge { margin-top:30px }
+.neui-choice { min-height:var(--neui-choice-height); border-radius:var(--neui-choice-radius) }
+.neui-ridge:has(.neui-choice) { --neui-row-radius:var(--neui-choice-radius) }
+.neui-option { position:absolute; width:1px; height:1px; opacity:0 }
+.neui-chev { display:inline-block; margin-inline-start:6px; vertical-align:-2px; transition:transform .2s }
+.neui-chev[data-open=true] { transform:rotate(180deg) }
+.neui-after { color:var(--neui-muted); margin:18px 0 0 }
+.neui-edit { display:block; padding:0; overflow:hidden }
+.neui-edit .neui-row-leading { position:absolute; inset-inline-start:6px; top:17px; pointer-events:none }
+.neui-edit .neui-row-copy { display:block }
+.neui-editor,.neui-caret-mirror { min-height:var(--neui-hit); margin:0; padding:12px 15px 12px 6px; width:100%;
+  font:inherit; line-height:24px; letter-spacing:inherit; text-indent:28px; color:inherit; background:transparent;
+  white-space:pre-wrap; overflow-wrap:anywhere; border:0; outline:none; display:block; resize:none; overflow:hidden }
+.neui-caret-mirror { visibility:hidden; pointer-events:none; position:absolute; inset:0 0 auto; }
+.neui-editor::placeholder { color:var(--neui-muted) }
+.neui-count { color:color-mix(in srgb,var(--neui-muted), var(--neui-danger) var(--urgency,0%)) }
+.neui-example .neui-field-input { font:inherit; width:100%; color:inherit; border:0; background:transparent; margin:0; outline:none }
+.neui-example .neui-field-input::placeholder { color:var(--neui-muted) }
+@media(prefers-reduced-motion:reduce) { .neui-chev { transition:none } }
+
+
+.neui-settings > .neui-ridge:not(:first-child) { margin-top:30px }
+.neui-conditional-field { padding-top:30px }
+.neui-catalog { position:relative; overflow:clip; overflow-anchor:none; --neui-project-height:4rem }
+/* The first viewport resizes in flow. Extra offscreen space is released immediately
+   on shrink and becomes available once expansion reaches the viewport. */
+.neui-catalog {
+  --catalog-height:calc(var(--neui-catalog-rows) * var(--neui-project-height));
+  --catalog-window:calc(100dvh + 2 * var(--neui-project-height));
+  --catalog-tail:max(0px, var(--catalog-height) - var(--catalog-window));
+}
+.neui-catalog-window {
+  height:min(var(--catalog-height),var(--catalog-window));
+  transition:height var(--neui-disclosure-duration,240ms) var(--neui-disclosure-ease,ease-in-out);
+}
+.neui-catalog::after {
+  content:""; display:block; height:var(--catalog-tail); max-height:var(--catalog-tail);
+  transition:max-height var(--neui-disclosure-duration,240ms) step-end;
+}
+@media(prefers-reduced-motion:reduce) { .neui-catalog-window,.neui-catalog::after { transition:none } }
+.neui-catalog-row { position:absolute; inset-inline:0; top:0 }
+.neui-catalog .neui-choice,.neui-pitch { height:var(--neui-project-height); min-height:0 }
+.neui-pitch { position:absolute; width:1px; visibility:hidden; pointer-events:none }
+.neui-entry { cursor:text }
+.neui-entry .neui-row-trailing:empty { display:none }
+.neui-field-input[type=search] { appearance:none }
+.neui-field-input[type=search]::-webkit-search-cancel-button { appearance:none }
+.neui-clear { display:grid; place-items:center; width:44px; height:44px; border:0; border-radius:50%; color:inherit; background:transparent; cursor:pointer }
+.neui-entry:has(input[type=search]) { padding-block:0 }
+.neui-editor[readonly] { color:var(--neui-muted) }
+.neui-settings .neui-option { scroll-margin-block:100px 64px }
+
+.neui-settings > .neui-date-field { margin-top:30px }
+.neui-date-entry { grid-template-columns:6px minmax(0,1fr) auto; column-gap:12px; padding-block:0 }
+.neui-date-segments { display:flex; align-items:center; width:max-content; font-variant-numeric:tabular-nums }
+.neui-date-action { grid-area:trailing }
+.neui-meta-actions .neui-pill, .neui-date-action .neui-pill { white-space:nowrap }
+.neui-date-cell,.neui-date-page,.neui-date-segment {
+  position:relative; isolation:isolate; border:0; color:inherit;
+  font:inherit; cursor:pointer; padding:2px; min-width:0; min-height:44px;
+}
+.neui-date-segment,.neui-date-page,.neui-date-cell:not([data-in-range=true]) { border-radius:999px; background:transparent }
+.neui-date-segment { padding-inline:4px }
+.neui-date-segment[aria-expanded=true] { background:var(--neui-pill-bg) }
+.neui-date-segment[aria-invalid=true] { text-decoration:underline dotted var(--neui-danger) }
+.neui-date-viewport { overflow:clip; transition:height 240ms ease-in-out }
+.neui-date-stack { position:relative }
+.neui-date-content { display:flow-root }
+.neui-date-screen[data-direction="0"] { position:relative }
+.neui-date-screen { position:absolute; inset:0 0 auto; transition:transform 240ms ease-out,visibility 0s; font-variant-numeric:tabular-nums }
+.neui-date-screen[data-direction="-1"],.neui-date-screen[data-direction="1"] { visibility:hidden; transition-delay:0s,240ms }
+.neui-date-screen[data-direction="-1"] { transform:translateX(-100%) }
+.neui-date-screen[data-direction="1"] { transform:translateX(100%) }
+.neui-date-nav { display:grid; grid-template-columns:minmax(0,1fr) 44px 44px; align-items:center; color:var(--neui-muted) }
+.neui-date-field { --neui-date-caption-start: 5px }
+.neui-date-nav small, .neui-date-field .neui-note { padding-inline-start:var(--neui-date-caption-start,5px) }
+.neui-date-page { font-size:1.4rem }
+.neui-date-page:disabled { opacity:.35 }
+.neui-date-week { text-align:center; font-size:.8125rem; color:var(--neui-muted) }
+.neui-date-cell { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; line-height:1.2 }
+.neui-date-cell[aria-checked=true] { --neui-check-level:1 }
+.neui-date-cell[aria-current=date] > :first-child { text-decoration:underline; text-underline-offset:3px }
+.neui-calendar-pager { position:relative; display:grid; grid-auto-columns:100%; overflow-x:auto; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:none; overflow-anchor:none }
+.neui-calendar-pager > * { grid-row:1; scroll-snap-align:start; scroll-snap-stop:always; align-content:start; grid-auto-rows:minmax(44px,auto) }
+@media(prefers-reduced-motion:reduce) { .neui-date-screen,.neui-date-viewport { transition:none } }
+.neui-date-week [data-weekend] { font-style:italic }
+.neui-calendar-pager { user-select:none }
+.neui-calendar-pager[data-dragging] { scroll-snap-type:none; cursor:grabbing }
+
+.neui-step-actions { display:flex; flex-wrap:wrap; gap:0 4px; padding-inline:8px }
+.neui-step-actions :disabled { opacity:.45; cursor:default }
+.neui-scale-example { padding:0 12px 4px }
+.neui-scale-example > input { display:block }
+.neui-scale-example .neui-range-ticks { margin-block-start:-12px }
+.neui-scale-labels { display:flex; justify-content:space-between; margin-top:4px; color:var(--neui-muted); font-size:.875rem; font-variant-numeric:tabular-nums }
+.neui-number-entry { display:flex; align-items:center }
+.neui-number-entry > label { flex:1; min-width:0; padding-block:0 }
+.neui-number-entry .neui-pill { margin-inline-start:var(--neui-inset,11px); white-space:nowrap; max-inline-size:none }
+.neui-quantity { display:flex; align-items:baseline; gap:.3em; min-width:0; font-variant-numeric:tabular-nums }
+.neui-quantity-value { position:relative; min-width:1ch; padding-inline-end:1px; overflow:hidden }
+.neui-quantity-value > span { visibility:hidden; white-space:pre }
+.neui-quantity-value > input { position:absolute; inset:0; padding:0; min-width:0; font-variant-numeric:inherit }
+
+.neui-date-entry > .neui-date-segments { grid-area:content }
+.neui-date-pair { display:flex; flex-wrap:wrap; align-items:center; gap:0 .3em; font-variant-numeric:tabular-nums }
+.neui-date-bound { display:inline-flex; align-items:center; gap:.3em }
+.neui-date-pair .neui-date-segment { padding-inline:.12em }
+.neui-date-separator { color:var(--neui-muted) }
+.neui-date-cell[data-endpoint] { --neui-check-level:1 }
+.neui-date-cell:disabled { opacity:.38; cursor:default }

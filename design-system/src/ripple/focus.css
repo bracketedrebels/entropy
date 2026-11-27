@@ -1,0 +1,49 @@
+@property --neui-focus-target { syntax: "<integer>"; inherits: false; initial-value: 0 }
+
+.neui-focus { --neui-focus-target: 1 }
+.neui-focus, [data-neui-focus] {
+  position: relative;
+  isolation: isolate;
+  --neui-focus-enabled: var(--neui-focus-target);
+  --neui-focus-progress: 1;
+  --neui-focus-origin-x: 50%;
+  --neui-focus-origin-y: 50%;
+}
+
+.neui-focus::before, [data-neui-focus]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: var(--neui-focus-fill, color-mix(in srgb, currentColor 9%, transparent));
+  border-radius: inherit;
+  --neui-contact: calc(var(--neui-focus-progress) * 100%);
+  --neui-feather: calc(14px * (1 - var(--neui-focus-progress)));
+  mask-image: radial-gradient(circle farthest-corner at var(--neui-focus-origin-x) var(--neui-focus-origin-y),
+    black calc(var(--neui-contact) - var(--neui-feather)), transparent calc(var(--neui-contact) + .75px));
+  opacity: 0;
+  animation-duration: var(--neui-growth);
+  transition: opacity 140ms ease-out;
+}
+
+:is(.neui-focus,[data-neui-focus]):focus-within::before {
+  opacity: var(--neui-focus-enabled);
+  /* The moving mask reveals the contact immediately. Only blur fades. */
+  transition-duration: 0s;
+}
+@media (forced-colors: none) {
+  :is(.neui-focus,[data-neui-focus]):focus-visible,
+  :is(.neui-focus,[data-neui-focus]).neui-row:focus-within,
+  :is(.neui-focus,[data-neui-focus]) :is(input,textarea):focus-visible { outline: none }
+}
+@media (forced-colors: active) {
+  :is(.neui-focus,[data-neui-focus]):focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.neui-focus,[data-neui-focus])::before,
+  :is(.neui-focus,[data-neui-focus]):focus-within::before { animation-duration: 0s; transition-duration: 0s }
+}

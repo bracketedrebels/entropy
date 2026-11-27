@@ -1,0 +1,15 @@
+@source inline("neui-collapse-block neui-collapse-inline");
+
+@utility neui-collapse-block {
+  @apply grid grid-rows-[1fr] items-start overflow-clip transition-[grid-template-rows,opacity] starting:opacity-0 leaving:opacity-0 starting:grid-rows-[0fr] leaving:grid-rows-[0fr];
+  transition-duration: var(--tw-duration, var(--neui-disclosure-duration, 240ms));
+  transition-timing-function: var(--tw-ease, var(--neui-disclosure-ease, ease-in-out));
+  @media (prefers-reduced-motion: reduce) { transition-property: none; }
+}
+
+@utility neui-collapse-inline {
+  @apply inline-grid min-w-0 grid-cols-[1fr] justify-items-start overflow-clip transition-[grid-template-columns,opacity] starting:opacity-0 leaving:opacity-0 starting:grid-cols-[0fr] leaving:grid-cols-[0fr];
+  transition-duration: var(--tw-duration, var(--neui-disclosure-duration, 240ms));
+  transition-timing-function: var(--tw-ease, var(--neui-disclosure-ease, ease-in-out));
+  @media (prefers-reduced-motion: reduce) { transition-property: none; }
+}

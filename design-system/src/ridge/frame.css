@@ -1,0 +1,38 @@
+.neui-top-track, .neui-bottom-track { position:absolute; z-index:1; pointer-events:none }
+.neui-top-track { inset:0 0 var(--neui-foot,36px); overflow:clip }
+.neui-top-track:has(.neui-cap-lamp) { overflow:visible; z-index:2 }
+.neui-head { position:sticky; top:var(--neui-pin-top,8px); height:var(--neui-head,64px) }
+.neui-bottom-track { inset:var(--neui-head,64px) 0 0; display:flex; flex-direction:column; justify-content:flex-end }
+.neui-foot { position:sticky; bottom:var(--neui-pin-bottom,8px); height:var(--neui-foot,36px); flex:none }
+.neui-caption { pointer-events:auto; display:block; position:relative; width:fit-content; padding-right:8px; max-width:calc(100% - 58px); overflow-wrap:anywhere; font-size:1.125rem; line-height:1.45 }
+.neui-baseline { display:inline-block; height:0; width:0; vertical-align:baseline }
+.neui-header-slot:not(:empty) { position:relative; pointer-events:auto; margin-inline:var(--neui-inset,11px) }
+.neui-aperture,.neui-rails { overflow:clip }
+.neui-ink { position:relative }
+.neui-body { padding:var(--neui-start,32px) var(--neui-inset,11px) var(--neui-foot-pad,11px) }
+.neui-rails { position:absolute; inset:var(--neui-head) 0 var(--neui-foot); pointer-events:none }
+.neui-groove { width:100%; height:100%; position:absolute; inset:0; overflow:hidden; pointer-events:none }
+.neui-cap-lamp { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none }
+.neui-cut,.neui-lip,.neui-floor { fill:none; stroke-linecap:round; stroke-linejoin:round }
+.neui-cut,.neui-lip,.neui-floor {
+  --_neui-depth:clamp(0, var(--neui-ridge-depth,1), 1);
+  opacity:var(--_neui-depth);
+}
+.neui-cut { transform:translate(calc(-.35px * var(--_neui-depth)),calc(-.55px * var(--_neui-depth))); stroke:var(--neui-shadow);stroke-width:2.2px }
+.neui-lip { transform:translate(calc(.35px * var(--_neui-depth)),calc(.65px * var(--_neui-depth))); stroke:var(--neui-lip);stroke-width:2.2px }
+.neui-floor { stroke:var(--neui-channel);stroke-width:1.7px }
+.neui-light { height:var(--neui-band,24px); y:calc(var(--neui-cap-light-y,var(--neui-focus-y,0px)) - var(--neui-band,24px) / 2); opacity:calc(var(--neui-focus-active,0) * clamp(0, var(--neui-focus-strength,1), 1)); transition:opacity 140ms }
+/* The filter sees the already masked lamp, including both rails of a sticky cap. */
+.neui-emitter {
+  --_neui-excess:max(0, var(--neui-focus-strength,1) - 1);
+  filter:var(--_neui-ridge-halo-filter, drop-shadow(0 0 min(4px, calc(2.5px * var(--_neui-excess)))
+    color-mix(in srgb, var(--neui-halo, currentColor) clamp(0%, calc(70% * var(--_neui-excess)), 100%), transparent)));
+}
+.neui-meta { position:absolute; inset-inline:var(--neui-inset,11px); bottom:0; display:flex; flex-flow:row-reverse wrap-reverse; align-items:end; column-gap:var(--neui-inset,11px) }
+
+@media(prefers-reduced-motion:reduce) { .neui-light { transition:none } }
+@media(forced-colors:active) { .neui-floor { stroke:CanvasText } }
+/* Resolve theme, responsive and inline lengths through layout, including rem and calc(). */
+.neui-metrics,.neui-pins { position:absolute; visibility:hidden; pointer-events:none; inset:0 auto auto 0 }
+.neui-metrics { width:var(--neui-row-radius,24px); height:var(--neui-inset,11px) }
+.neui-pins { width:var(--neui-pin-top,8px); height:var(--neui-pin-bottom,8px) }

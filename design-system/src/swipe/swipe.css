@@ -1,0 +1,26 @@
+@property --neui-swipe-progress { syntax:"<number>"; inherits:true; initial-value:0 }
+@property --neui-swipe-tension { syntax:"<number>"; inherits:true; initial-value:0 }
+
+.neui-swipe-right {
+  position:relative; isolation:isolate; overflow:clip; touch-action:pan-y pinch-zoom; user-select:none;
+  --neui-swipe-progress:0; --neui-swipe-tension:0; --neui-swipe-stretch:calc(32px * var(--neui-swipe-tension)); --neui-swipe-inset:8px;
+  --neui-swipe-offset:calc(var(--neui-swipe-progress) * var(--neui-swipe-travel, 0px) + var(--neui-swipe-stretch));
+  transition:--neui-swipe-progress 180ms ease-out, --neui-swipe-tension 180ms ease-out;
+}
+.neui-swipe-right[data-neui-swiping] { transition:none }
+.neui-swipe-right[data-neui-swipe-open=true] { --neui-swipe-progress:1 }
+.neui-swipe-content { translate:var(--neui-swipe-offset) 0; touch-action:pan-y pinch-zoom }
+.neui-swipe-action {
+  position:absolute; z-index:1; top:var(--neui-swipe-inset); bottom:var(--neui-swipe-inset);
+  left:calc(var(--neui-swipe-progress) * var(--neui-swipe-inset)); width:max-content;
+  padding:0 12px; border:0; border-radius:999px; font:inherit; color:inherit; background:transparent;
+  clip-path:inset(0 calc((1 - var(--neui-swipe-progress)) * 100% - var(--neui-swipe-stretch) / 2) 0 0 round 999px);
+  pointer-events:none;
+}
+.neui-swipe-action::before {
+  content:""; position:absolute; z-index:-1; inset:0 calc(var(--neui-swipe-stretch) / -2) 0 0; border-radius:inherit;
+  background:var(--neui-swipe-fill, var(--neui-pill-bg)); opacity:var(--neui-swipe-progress);
+}
+.neui-swipe-right[data-neui-swipe-open=true]:not([data-neui-swiping]) > .neui-swipe-action { cursor:pointer; pointer-events:auto }
+.neui-swipe-action:focus-visible { outline:2px solid currentColor; outline-offset:-2px }
+@media (prefers-reduced-motion:reduce) { .neui-swipe-right { transition:none } }

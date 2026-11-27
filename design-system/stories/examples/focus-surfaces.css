@@ -1,0 +1,37 @@
+.focus-surfaces {
+  --lab-ring: #67808d;
+  --lab-light: rgb(255 242 209 / .87);
+  --lab-line: rgb(167 103 51 / .19);
+}
+[data-theme=dark] .focus-surfaces {
+  --lab-ring: #d7e2eb99;
+  --lab-light: rgb(255 216 159 / .22);
+  --lab-line: rgb(246 204 148 / .18);
+}
+
+.focus-surfaces legend { padding:0; font-size:1.25rem }
+.focus-surfaces-options { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); margin-block-start:8px }
+.focus-surfaces-options label {
+  display:flex; align-items:center; justify-content:center; gap:8px; min-height:44px;
+  border-radius:var(--neui-row-radius); cursor:pointer; color:var(--neui-muted);
+}
+.focus-surfaces-options label:has(:checked) { color:var(--neui-text); background:var(--neui-pill-bg); --neui-check-level:1 }
+.focus-surfaces-options label:has(:focus-visible) { outline:2px solid currentColor; outline-offset:-2px }
+.focus-surfaces-hint { min-height:3em; margin:8px 0 20px; color:var(--neui-muted); font-size:.9375rem; line-height:1.5 }
+
+.focus-surfaces[data-material=ring] .neui-edit::before {
+  background:transparent;
+  border:1px solid var(--lab-ring);
+  --neui-feather:0px;
+}
+.focus-surfaces[data-material=light] .neui-edit {
+  --neui-focus-fill:radial-gradient(ellipse 85% 8rem at 50% 0%, var(--lab-light), transparent);
+}
+.focus-surfaces[data-material=line] .neui-edit {
+  --neui-focus-fill:linear-gradient(to bottom, transparent calc(var(--lab-line-y) - 1.4rem),
+    var(--lab-line) var(--lab-line-y), transparent calc(var(--lab-line-y) + 1.4rem));
+  --lab-line-y:calc(var(--lab-last-focus-y, 0px) - var(--neui-start, 0px));
+}
+.focus-surfaces[data-material=line] .neui-edit:focus-within {
+  --lab-line-y:calc(var(--neui-focus-y) - var(--neui-start, 0px));
+}

@@ -1,0 +1,69 @@
+name: Component catalog
+on:
+  push:
+    branches: [master]
+    paths: ['design-system/**', '.github/workflows/storybook.yml']
+  pull_request:
+    branches: [master]
+    paths: ['design-system/**', '.github/workflows/storybook.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  storybook:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: design-system
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: design-system/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build-storybook
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trinet-storybook
+          path: design-system/storybook-static
+          if-no-files-found: error
+
+  publish:
+    if: github.ref == 'refs/heads/master'
+    needs: storybook
+    runs-on: ubuntu-latest
+    concurrency: entropy-pages-publish
+    environment: github-pages
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: published
+      - uses: actions/download-artifact@v4
+        with:
+          name: trinet-storybook
+          path: catalog
+      - name: Publish the catalog under storybook/
+        run: |
+          mkdir -p published/storybook
+          rsync -a --delete catalog/ published/storybook/
+          cd published
+          git add -- storybook
+          if ! git diff --cached --quiet; then
+            git -c user.name=github-actions -c user.email=github-actions@users.noreply.github.com commit -m "Publish Storybook for ${GITHUB_SHA}"
+            git push origin HEAD:gh-pages
+          fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: published
+      - uses: actions/deploy-pages@v4

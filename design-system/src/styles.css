@@ -1,0 +1,117 @@
+@import "./grain/screen.css";
+@import "./ripple/effect.css";
+@import "./ripple/focus.css";
+@import "./ridge/frame.css";
+@import "./swipe/swipe.css";
+
+@property --neui-ridge-depth { syntax:"<number>"; inherits:true; initial-value:1 }
+@property --neui-focus-strength { syntax:"<number>"; inherits:true; initial-value:1 }
+@property --neui-row-radius { syntax:"<length>"; inherits:true; initial-value:24px }
+
+:where(.neui-surface) {
+  -webkit-tap-highlight-color: transparent;
+  --_neui-ridge-halo-filter: none;
+  --neui-font: Ubuntu, system-ui, sans-serif;
+  --neui-hit: 48px; --neui-action-height: 44px; --neui-choice-height: 64px;
+  --neui-inset: 11px; --neui-row-radius: 24px; --neui-choice-radius: 32px;
+  --neui-bg: linear-gradient(180deg, #f3f6f8, #e6ecf1 49%, #d4dee7);
+  --neui-control-surface: #e6ecf1;
+  --neui-text: #293944; --neui-muted: #586b78; --neui-channel: #adbcc57a;
+  --neui-shadow: #73859368; --neui-lip: #ffffffc7; --neui-copper: #ad4a12;
+  --neui-check-color: var(--neui-copper); --neui-check-emission: 0; --neui-check-tint: 0%;
+  --neui-mark-selected: var(--neui-copper); --neui-mark-shadow: inset 0 1px 1px var(--neui-shadow), 0 1px 0 var(--neui-lip);
+  --neui-ridge-light-fill:var(--neui-copper); --neui-band: 24px; --neui-core: #b64c10; --neui-halo: #b64c10;
+  --neui-focus-fill: rgb(255 255 255 / .62);
+  --neui-wave: #ffffffba; --neui-wave-highlight: #fff7e496; --neui-wave-shadow: #40546628; --neui-pill-bg: #72869816; --neui-danger: #a2352a;
+  --neui-pin-top: calc(8px + env(safe-area-inset-top)); --neui-pin-bottom: calc(8px + env(safe-area-inset-bottom));
+  color-scheme: light; color: var(--neui-text); background: var(--neui-bg);
+  font: 300 1rem/1.5 var(--neui-font);
+}
+:where(.neui-surface[data-theme="dark"]) {
+  --_neui-ridge-halo-filter: initial;
+  --neui-control-surface: #29313a;
+  color-scheme: dark; --neui-bg: linear-gradient(180deg,#303740, #252d35 52%, #1f252c);
+  --neui-text: #e1eaf1; --neui-muted: #adbcc8; --neui-channel: #283139;
+  --neui-shadow: #0b121aab; --neui-lip: #72818c75; --neui-core: #ffdfae; --neui-halo: #bd8960;
+  --neui-check-color:#ff994d; --neui-check-emission:1; --neui-check-tint:90%;
+  --neui-mark-selected:#fff4dc; --neui-mark-shadow:0 0 2px 1px #ffc187,0 0 9px 2px #ff994d7d;
+  --neui-focus-fill: rgb(203 223 238 / .095);
+  --neui-ridge-light-fill:initial; --neui-band: 64px; --neui-wave: #cbe8ff30; --neui-wave-highlight: #ffdfa624; --neui-wave-shadow: #080e154c; --neui-pill-bg: #93aabc16; --neui-danger: #ffa99b;
+}
+.neui-surface *, .neui-surface *::before, .neui-surface *::after { box-sizing: border-box }
+.neui-row {
+  position: relative; isolation: isolate; display: grid; width: 100%; min-height: var(--neui-hit,48px);
+  grid-template-areas: "leading content trailing";
+  grid-template-columns: 6px minmax(0,1fr) auto; align-items: center; column-gap: 18px;
+  padding: 8px 12px 8px 10px; border: 0; border-radius: var(--neui-row-radius,24px);
+  font: inherit; text-align: start; color: inherit; background: transparent;
+}
+button.neui-row, label.neui-row, .neui-pill-action { cursor: pointer; touch-action: manipulation }
+.neui-mark { width:6px; height:6px; border-radius:1.5px; background:var(--neui-channel); box-shadow:inset 0 1px 1px var(--neui-shadow),0 1px 0 var(--neui-lip) }
+.neui-mark[data-round] { border-radius:50% }
+.neui-mark[data-selected=true] { background:var(--neui-mark-selected); box-shadow:var(--neui-mark-shadow) }
+.neui-row-leading { grid-area: leading; display: grid; place-content: center }
+.neui-row-copy { grid-area: content; min-width: 0; overflow-wrap: anywhere }
+.neui-row-copy small, .neui-note { display: block; margin: 1px 0 0; font: inherit; font-size: .875rem; color: var(--neui-muted) }
+.neui-row-trailing { grid-area: trailing }
+.neui-row:focus-visible, .neui-row:has(:where(input, textarea, button):focus-visible) { outline: 1px solid currentColor; outline-offset:-2px }
+/* The ridge already locates the focused row, including the sticky search input. */
+@media (forced-colors: none) {
+  :is(.neui-ridge.neui-track-focus,[data-neui-legacy-focus]) .neui-row:focus-within,
+  :is(.neui-ridge.neui-track-focus,[data-neui-legacy-focus]) .neui-row :is(input, textarea):focus { outline: none }
+}
+.neui-row:disabled,.neui-row:has(:disabled) { color:var(--neui-muted); cursor:default }
+.neui-reveal { display:grid; grid-template-rows:0fr; transition:grid-template-rows var(--neui-disclosure-duration,240ms) var(--neui-disclosure-ease,ease-in-out) }
+.neui-reveal[data-open=true] { grid-template-rows:1fr }
+.neui-reveal-clip { min-height:0; min-width:0; overflow:clip }
+.neui-reveal-inline,.neui-reveal-inline[data-open=true] { grid-template-rows:auto; transition-property:grid-template-columns }
+.neui-reveal-inline { display:inline-grid; grid-template-columns:0fr }
+.neui-reveal-inline[data-open=true] { grid-template-columns:1fr }
+/* Compatibility for the React recipe in apps importing plain styles.css. */
+.neui-reveal.neui-collapse-block[data-leaving] { grid-template-rows:0fr }
+.neui-reveal.neui-collapse-inline[data-leaving] { grid-template-columns:0fr }
+@starting-style {
+  .neui-reveal.neui-collapse-block[data-open=true] { grid-template-rows:0fr }
+  .neui-reveal.neui-collapse-inline[data-open=true] { grid-template-columns:0fr }
+}
+.neui-reveal[inert] { pointer-events:none }
+.neui-ridge { position:relative; --neui-cap-light-y:initial }
+:where(.neui-ridge) {
+  transition-property: --neui-ridge-depth, --neui-focus-strength;
+  transition-duration: var(--tw-duration, 240ms);
+  transition-timing-function: var(--tw-ease, ease-out);
+}
+@media (prefers-reduced-motion:reduce) { :where(.neui-ridge) { transition-duration:0s } }
+:where(.neui-ridge,.neui-track-focus) { --neui-focus-active:0; --neui-focus-y:0px }
+.neui-meta-group { display:contents }
+.neui-meta-panel { width:100% }
+.neui-meta-actions {
+  display:flex; flex-flow:row-reverse wrap-reverse; align-items:end; column-gap:0;
+  transition:column-gap var(--neui-disclosure-duration,240ms) var(--neui-disclosure-ease,ease-in-out);
+}
+.neui-meta-actions:has(> :nth-child(2 of :not([data-leaving]))) { column-gap:var(--neui-inset,11px) }
+@media(prefers-reduced-motion:reduce) { .neui-meta-actions { transition:none } }
+.neui-pill {
+  --neui-pill-inset: 10px;
+  position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--neui-action-height,44px); max-width: 100%; padding: calc(var(--neui-pill-inset) + 2px) 12px;
+  margin: 0; border: 0; color: var(--neui-muted); background: transparent; font: inherit;
+  font-size: .875rem; line-height: 20px; overflow-wrap: anywhere;
+}
+.neui-pill::before {
+  content: ""; position: absolute; inset: var(--neui-pill-inset) 0; border-radius: 999px;
+  z-index: -1; pointer-events: none; background: var(--neui-pill-bg);
+}
+button.neui-pill, .neui-pill-action { pointer-events: auto; cursor: pointer; touch-action: manipulation }
+.neui-pill:focus-visible { outline: none }
+.neui-pill:focus-visible::before { outline: 2px solid currentColor; outline-offset: 2px }
+button.neui-pill:active::before { background: var(--neui-wave) }
+.neui-surface[data-theme=light] .neui-light { fill:var(--neui-copper) }
+.neui-group { min-width:0; margin:0; border:0; padding:0 }
+.neui-note { padding:4px 10px 4px 34px }
+.neui-error { color:var(--neui-danger) }
+@media(prefers-reduced-motion:reduce) { .neui-reveal,.neui-light { transition:none } }
+@media(forced-colors:active) {
+  .neui-floor { stroke:CanvasText }
+  .neui-row:focus-within,.neui-pill:focus-visible::before { outline:2px solid Highlight }
+}
